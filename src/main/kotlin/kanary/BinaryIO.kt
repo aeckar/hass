@@ -98,6 +98,10 @@ value class BinaryOutput internal constructor(private val stream: OutputStream) 
         }
     }
 
+    fun flush() {
+        stream.flush()
+    }
+
     override fun close() {
         stream.close()
     }
