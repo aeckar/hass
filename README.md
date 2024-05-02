@@ -10,7 +10,9 @@ There are alternative binary formats, however their implementations often requir
 
 ## Concepts
 
-Kanary supports serialization of all primitive types, as well as any top-level (excluding local and unnamed) classes with a defined serialization protocol. The primary entry-point of the API is `protocolOf`.
+Kanary supports serialization of all primitive types, as well as any top-level (excluding local and unnamed) classes
+with a defined serialization protocol.
+The primary entry-point of the API is `protocolOf`.
 
 ```kotlin
 inline fun <reified T> protocolOf(builder: ProtocolBuilderScope<T>.() -> Unit) { /* ... */ }
@@ -25,8 +27,9 @@ class ProtocolBuilderScope<T> {
 }
 ```
 
-Protocol declarations **must** be made from within the `init` block of any companion object. The exact object does not matter as long as the
-type parameter `T` is correctly assigned. These calls are thread-safe and non-blocking, since they are evaluated during class loading.
+`protocolOf()` **must** be called from within the `init` block of the
+companion object of the class that is being defined protocol.
+This ensures thread-safety, since the protocol is only defined once the classes is loaded in (used).
 
 `BinaryInput` provides read functionality, while `BinaryOutput` provides write functionality.
 
@@ -58,11 +61,11 @@ value class BinaryOutput internal constructor(private val stream: OutputStream) 
 
 class Person(val name: String, val id: Int) {
     private companion object {
-        init { defineProtocol() }
+        init { protocol }
     }
 }
 
-private fun defineProtocol() = protocolOf<Person> {
+private val protocol = protocolOf<Person> { // Evaluated once in companion initializer
     read = {
         val name = readString()
         val id = readInt()

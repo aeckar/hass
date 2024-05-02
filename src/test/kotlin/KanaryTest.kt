@@ -5,6 +5,44 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import kotlin.test.assertEquals
 
+val dataProtocol = protocolOf<Data> {
+    read = {
+        Data(
+            readBoolean(),
+            readByte(),
+            readChar(),
+            readShort(),
+            readInt(),
+            readLong(),
+            readFloat(),
+            readDouble(),
+            readString(),
+            read()
+        )
+    }
+    write = {
+        write(it.booleanValue)
+        write(it.byteValue)
+        write(it.charValue)
+        write(it.shortValue)
+        write(it.intValue)
+        write(it.longValue)
+        write(it.floatValue)
+        write(it.doubleValue)
+        write(it.stringValue)
+        write(it.objValue)
+    }
+}
+
+val messageProtocol = protocolOf<Message> {
+    read = {
+        Message(readString())
+    }
+    write = {
+        write(it.message)
+    }
+}
+
 data class Data(
     val booleanValue: Boolean,
     val byteValue: Byte,
@@ -18,51 +56,13 @@ data class Data(
     val objValue: Message
 ) {
     private companion object {
-        init {
-            protocolOf<Data> {
-                read = {
-                    Data(
-                        readBoolean(),
-                        readByte(),
-                        readChar(),
-                        readShort(),
-                        readInt(),
-                        readLong(),
-                        readFloat(),
-                        readDouble(),
-                        readString(),
-                        read()
-                    )
-                }
-                write = {
-                    write(it.booleanValue)
-                    write(it.byteValue)
-                    write(it.charValue)
-                    write(it.shortValue)
-                    write(it.intValue)
-                    write(it.longValue)
-                    write(it.floatValue)
-                    write(it.doubleValue)
-                    write(it.stringValue)
-                    write(it.objValue)
-                }
-            }
-        }
+        init { dataProtocol }
     }
 }
 
 data class Message(val message: String) {
     private companion object {
-        init {
-            protocolOf<Message> {
-                read = {
-                    Message(readString())
-                }
-                write = {
-                    write(it.message)
-                }
-            }
-        }
+        init { messageProtocol }
     }
 }
 
