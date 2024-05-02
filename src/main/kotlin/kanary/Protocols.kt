@@ -13,7 +13,7 @@ internal val definedProtocols = mutableMapOf<String,Pair<ReadOperation<*>,WriteO
  * @throws ReassignmentException either of the operations are defined twice,
  * or this is called more than once for type [T]
  */
-inline fun <reified T> protocol(builder: ProtocolBuilderScope<T>.() -> Unit) {
+inline fun <reified T> protocolOf(builder: ProtocolBuilderScope<T>.() -> Unit) {
     val className = T::class.qualifiedName ?: throw MissingProtocolException("Only top-level classes can be assigned a protocol")
     if (className in definedProtocols) {
         throw ReassignmentException("Protocol for class '$className' defined twice")

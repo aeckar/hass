@@ -19,7 +19,7 @@ data class Data(
 ) {
     private companion object {
         init {
-            protocol<Data> {
+            protocolOf<Data> {
                 read = {
                     Data(
                         readBoolean(),
@@ -54,7 +54,7 @@ data class Data(
 data class Message(val message: String) {
     private companion object {
         init {
-            protocol<Message> {
+            protocolOf<Message> {
                 read = {
                     Message(readString())
                 }

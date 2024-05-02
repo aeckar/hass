@@ -19,7 +19,7 @@ fun InputStream.binary() = BinaryInput(this)
 fun OutputStream.binary() = BinaryOutput(this)
 
 /**
- * A binary stream with functions for reading primitives or classes with a [protocol] in Kanary format.
+ * A binary stream with functions for reading primitives or classes with a [protocolOf] in Kanary format.
  * Does not support marking.
  * Calling [close] also closes the underlying stream.
  */
@@ -63,7 +63,7 @@ value class BinaryInput internal constructor(private val stream: InputStream) : 
 }
 
 /**
- * A binary stream with functions for writing primitives or classes with a [protocol] in Kanary format.
+ * A binary stream with functions for writing primitives or classes with a [protocolOf] in Kanary format.
  * Does not support marking.
  * Calling [close] also closes the underlying stream.
  */
