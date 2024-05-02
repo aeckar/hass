@@ -39,7 +39,7 @@ class ProtocolBuilderScope<T> {
      * Defines the binary read operation when [BinaryInput.read] is called with an object of class [T]
      * @throws ReassignmentException this is called more than once in a single scope
      */
-    fun read(onRead: ReadOperation<T>) {
+    fun read(onRead: BinaryInput.() -> T) {
         this.onRead = onRead
     }
 
@@ -47,7 +47,7 @@ class ProtocolBuilderScope<T> {
      * Defines the binary write operation when [BinaryOutput.write] is called with an object of class [T]
      * @throws ReassignmentException this is called more than once in a single scope
      */
-    fun write(onWrite: WriteOperation<T>) {
+    fun write(onWrite: BinaryOutput.(T) -> Unit) {
         this.onWrite = onWrite
     }
 }

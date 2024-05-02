@@ -4,16 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="- Made protocol require type parameter again (enforces thread-safety)&#10;- Created MissingProtocolException&#10;- Made exceptions more specific&#10;- General code cleanup">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/AssignOnce.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/AssignOnce.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/BinaryIO.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/BinaryIO.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Protocols.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Protocols.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/ReassignmentException.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/ReassignmentException.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/kotlin/KanaryTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/KanaryTest.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/resources/cache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/resources/cache.bin" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,8 +20,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Kotlin Class" />
         <option value="Kotlin File" />
+        <option value="Kotlin Class" />
       </list>
     </option>
   </component>
@@ -224,9 +216,29 @@
       <option name="presentableId" value="Default" />
       <updated>1714597578047</updated>
     </task>
+    <task id="LOCAL-00001" summary="Explicit type annotation no longer needed for protocol">
+      <option name="closed" value="true" />
+      <created>1714622136680</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1714622136680</updated>
+    </task>
+    <task id="LOCAL-00002" summary="- Made protocol require type parameter again (enforces thread-safety)&#10;- Created MissingProtocolException&#10;- Made exceptions more specific&#10;- General code cleanup">
+      <option name="closed" value="true" />
+      <created>1714624049858</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1714624049858</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="Explicit type annotation no longer needed for protocol" />
+    <MESSAGE value="- Made protocol require type parameter again (enforces thread-safety)&#10;- Created MissingProtocolException&#10;- Made exceptions more specific&#10;- General code cleanup" />
+    <option name="LAST_COMMIT_MESSAGE" value="- Made protocol require type parameter again (enforces thread-safety)&#10;- Created MissingProtocolException&#10;- Made exceptions more specific&#10;- General code cleanup" />
   </component>
 </project>
