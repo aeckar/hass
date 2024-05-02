@@ -10,7 +10,7 @@ For information that does not need to be accessed directly, JSON is memory-ineff
 There are alternative binary formats, however their implementations often require reflection and
 (for simple projects) are generally more complicated than the task they are trying to accomplish.
 
-## Concepts
+## Overview
 
 Kanary supports serialization of all primitive types, as well as any top-level (excluding local and unnamed) classes
 with a defined serialization protocol.
@@ -56,7 +56,17 @@ value class BinaryOutput internal constructor(private val stream: OutputStream) 
 }
 ```
 
+In the produced binary:
+
+- Primitives and their wrapper types are serialized to their exact value
+
+- Arrays and `Iterable<*>`s are serialized to their length, followed by each member
+
+- Classes are serialized to their [qualified class name](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/qualified-name.html), followed by the binary format specified by their protocol
+
 ## Example
+
+The class:
 
 ```kotlin
 // Person.kt
@@ -80,7 +90,34 @@ private val protocol = protocolOf<Person> { // Evaluated once in companion initi
 }
 ```
 
+produces the following binary file:
+
+```
+TODO
+```
+
 ## Benchmarks
 
 TODO
 
+## Changelog
+
+**v1.0**
+
+- Release
+
+**v1.1**
+
+- Download from JitPack fixed
+
+- Changed name of `protocol` to `protocolOf`.
+
+- `read` and `write` are now assigned as properties
+
+**v1.2**
+
+- Serialization by protocol prepends the class name to serialized data
+
+- Superclasses can now be deserialized from a serialized subclass with a defined protocol
+
+- Added I/O protocols for primitive wrapper types, array types, and types implementing `Iterable<*>`
