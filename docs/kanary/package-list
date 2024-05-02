@@ -1,0 +1,44 @@
+$dokka.format:gfm-v1
+$dokka.linkExtension:md
+$dokka.location:kanary////PointingToDeclaration/kanary/kanary/index.md
+$dokka.location:kanary//binary/java.io.InputStream#/PointingToDeclaration/kanary/kanary/binary.md
+$dokka.location:kanary//binary/java.io.OutputStream#/PointingToDeclaration/kanary/kanary/binary.md
+$dokka.location:kanary//protocolOf/#kotlin.Function1[kanary.ProtocolBuilderScope[TypeParam(bounds=[kotlin.Any?])],kotlin.Unit]/PointingToDeclaration/kanary/kanary/protocol-of.md
+$dokka.location:kanary/AssignOnce///PointingToDeclaration/kanary/kanary/-assign-once/index.md
+$dokka.location:kanary/AssignOnce/AssignOnce/#/PointingToDeclaration/kanary/kanary/-assign-once/-assign-once.md
+$dokka.location:kanary/AssignOnce/getValue/#kotlin.Any?#kotlin.reflect.KProperty[*]/PointingToDeclaration/kanary/kanary/-assign-once/get-value.md
+$dokka.location:kanary/AssignOnce/setValue/#kotlin.Any?#kotlin.reflect.KProperty[*]#TypeParam(bounds=[kotlin.Any])/PointingToDeclaration/kanary/kanary/-assign-once/set-value.md
+$dokka.location:kanary/BinaryInput///PointingToDeclaration/kanary/kanary/-binary-input/index.md
+$dokka.location:kanary/BinaryInput/close/#/PointingToDeclaration/kanary/kanary/-binary-input/close.md
+$dokka.location:kanary/BinaryInput/read/#/PointingToDeclaration/kanary/kanary/-binary-input/read.md
+$dokka.location:kanary/BinaryInput/readBoolean/#/PointingToDeclaration/kanary/kanary/-binary-input/read-boolean.md
+$dokka.location:kanary/BinaryInput/readByte/#/PointingToDeclaration/kanary/kanary/-binary-input/read-byte.md
+$dokka.location:kanary/BinaryInput/readChar/#/PointingToDeclaration/kanary/kanary/-binary-input/read-char.md
+$dokka.location:kanary/BinaryInput/readDouble/#/PointingToDeclaration/kanary/kanary/-binary-input/read-double.md
+$dokka.location:kanary/BinaryInput/readFloat/#/PointingToDeclaration/kanary/kanary/-binary-input/read-float.md
+$dokka.location:kanary/BinaryInput/readInt/#/PointingToDeclaration/kanary/kanary/-binary-input/read-int.md
+$dokka.location:kanary/BinaryInput/readLong/#/PointingToDeclaration/kanary/kanary/-binary-input/read-long.md
+$dokka.location:kanary/BinaryInput/readShort/#/PointingToDeclaration/kanary/kanary/-binary-input/read-short.md
+$dokka.location:kanary/BinaryInput/readString/#/PointingToDeclaration/kanary/kanary/-binary-input/read-string.md
+$dokka.location:kanary/BinaryOutput///PointingToDeclaration/kanary/kanary/-binary-output/index.md
+$dokka.location:kanary/BinaryOutput/close/#/PointingToDeclaration/kanary/kanary/-binary-output/close.md
+$dokka.location:kanary/BinaryOutput/flush/#/PointingToDeclaration/kanary/kanary/-binary-output/flush.md
+$dokka.location:kanary/BinaryOutput/write/#kotlin.Any/PointingToDeclaration/kanary/kanary/-binary-output/write.md
+$dokka.location:kanary/BinaryOutput/write/#kotlin.Boolean/PointingToDeclaration/kanary/kanary/-binary-output/write.md
+$dokka.location:kanary/BinaryOutput/write/#kotlin.Byte/PointingToDeclaration/kanary/kanary/-binary-output/write.md
+$dokka.location:kanary/BinaryOutput/write/#kotlin.Char/PointingToDeclaration/kanary/kanary/-binary-output/write.md
+$dokka.location:kanary/BinaryOutput/write/#kotlin.Double/PointingToDeclaration/kanary/kanary/-binary-output/write.md
+$dokka.location:kanary/BinaryOutput/write/#kotlin.Float/PointingToDeclaration/kanary/kanary/-binary-output/write.md
+$dokka.location:kanary/BinaryOutput/write/#kotlin.Int/PointingToDeclaration/kanary/kanary/-binary-output/write.md
+$dokka.location:kanary/BinaryOutput/write/#kotlin.Long/PointingToDeclaration/kanary/kanary/-binary-output/write.md
+$dokka.location:kanary/BinaryOutput/write/#kotlin.Short/PointingToDeclaration/kanary/kanary/-binary-output/write.md
+$dokka.location:kanary/BinaryOutput/write/#kotlin.String/PointingToDeclaration/kanary/kanary/-binary-output/write.md
+$dokka.location:kanary/MissingProtocolException///PointingToDeclaration/kanary/kanary/-missing-protocol-exception/index.md
+$dokka.location:kanary/MissingProtocolException/MissingProtocolException/#kotlin.String/PointingToDeclaration/kanary/kanary/-missing-protocol-exception/-missing-protocol-exception.md
+$dokka.location:kanary/ProtocolBuilderScope///PointingToDeclaration/kanary/kanary/-protocol-builder-scope/index.md
+$dokka.location:kanary/ProtocolBuilderScope/ProtocolBuilderScope/#/PointingToDeclaration/kanary/kanary/-protocol-builder-scope/-protocol-builder-scope.md
+$dokka.location:kanary/ProtocolBuilderScope/read/#/PointingToDeclaration/kanary/kanary/-protocol-builder-scope/read.md
+$dokka.location:kanary/ProtocolBuilderScope/write/#/PointingToDeclaration/kanary/kanary/-protocol-builder-scope/write.md
+$dokka.location:kanary/ReassignmentException///PointingToDeclaration/kanary/kanary/-reassignment-exception/index.md
+kanary
+
