@@ -3,6 +3,8 @@
 
 [![](https://jitpack.io/v/aeckar/kanary.svg)](https://jitpack.io/#aeckar/kanary)
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 ## Reasoning
 
 The goal of this library is to offer a simple, yet efficient API for binary serialization.
