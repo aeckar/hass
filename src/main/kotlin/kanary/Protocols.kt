@@ -36,11 +36,11 @@ class ProtocolBuilderScope<T> {
      * The binary read operation when [BinaryInput.read] is called with an object of class [T].
      * @throws ReassignmentException this is assigned to more than once in a single scope
      */
-    var read: ReadOperation<T> by AssignOnce()
+    var read: BinaryInput.() -> T by AssignOnce()
 
     /**
      * The binary write operation when [BinaryOutput.write] is called with an object of class [T]
      * @throws ReassignmentException this is assigned to more than once in a single scope
      */
-    var write: WriteOperation<T> by AssignOnce()
+    var write: BinaryOutput.(T) -> Unit by AssignOnce()
 }

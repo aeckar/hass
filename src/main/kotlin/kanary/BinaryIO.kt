@@ -1,6 +1,7 @@
 package kanary
 
 import java.io.Closeable
+import java.io.Flushable
 import java.io.InputStream
 import java.io.OutputStream
 import java.lang.Float.intBitsToFloat
@@ -68,7 +69,7 @@ value class BinaryInput internal constructor(private val stream: InputStream) : 
  * Calling [close] also closes the underlying stream.
  */
 @JvmInline
-value class BinaryOutput internal constructor(private val stream: OutputStream) : Closeable {
+value class BinaryOutput internal constructor(private val stream: OutputStream) : Closeable, Flushable {
     fun write(cond: Boolean) = stream.write(if (cond) 1 else 0)
     fun write(b: Byte) = stream.write(b.toInt())
     fun write(c: Char) = c.code.toLong().writeBytes(Char.SIZE_BYTES)
@@ -98,7 +99,7 @@ value class BinaryOutput internal constructor(private val stream: OutputStream) 
         }
     }
 
-    fun flush() {
+    override fun flush() {
         stream.flush()
     }
 
