@@ -21,7 +21,7 @@ inline fun <reified T> protocol(builder: ProtocolBuilderScope<T>.() -> Unit) {
     val builderScope = ProtocolBuilderScope<T>()
     builder(builderScope)
     try {
-        definedProtocols[className] = with (builderScope) { onRead to onWrite }   // thread-safe
+        definedProtocols[className] = with (builderScope) { read to write }   // thread-safe
     } catch (_: NullPointerException) {
         throw MissingProtocolException("Binary I/O only supported for top-level classes")
     }
@@ -32,22 +32,15 @@ inline fun <reified T> protocol(builder: ProtocolBuilderScope<T>.() -> Unit) {
  * The scope wherein a protocol's [read] and [write] operations are defined.
  */
 class ProtocolBuilderScope<T> {
-    var onRead: ReadOperation<T> by AssignOnce()
-    var onWrite: WriteOperation<T> by AssignOnce()
+    /**
+     * The binary read operation when [BinaryInput.read] is called with an object of class [T].
+     * @throws ReassignmentException this is assigned to more than once in a single scope
+     */
+    var read: ReadOperation<T> by AssignOnce()
 
     /**
-     * Defines the binary read operation when [BinaryInput.read] is called with an object of class [T]
-     * @throws ReassignmentException this is called more than once in a single scope
+     * The binary write operation when [BinaryOutput.write] is called with an object of class [T]
+     * @throws ReassignmentException this is assigned to more than once in a single scope
      */
-    fun read(onRead: BinaryInput.() -> T) {
-        this.onRead = onRead
-    }
-
-    /**
-     * Defines the binary write operation when [BinaryOutput.write] is called with an object of class [T]
-     * @throws ReassignmentException this is called more than once in a single scope
-     */
-    fun write(onWrite: BinaryOutput.(T) -> Unit) {
-        this.onWrite = onWrite
-    }
+    var write: WriteOperation<T> by AssignOnce()
 }

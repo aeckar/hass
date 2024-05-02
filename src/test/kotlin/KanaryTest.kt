@@ -20,7 +20,7 @@ data class Data(
     private companion object {
         init {
             protocol<Data> {
-                read {
+                read = {
                     Data(
                         readBoolean(),
                         readByte(),
@@ -34,7 +34,7 @@ data class Data(
                         read()
                     )
                 }
-                write {
+                write = {
                     write(it.booleanValue)
                     write(it.byteValue)
                     write(it.charValue)
@@ -55,10 +55,10 @@ data class Message(val message: String) {
     private companion object {
         init {
             protocol<Message> {
-                read {
+                read = {
                     Message(readString())
                 }
-                write {
+                write = {
                     write(it.message)
                 }
             }
