@@ -4,7 +4,7 @@ plugins {
     `maven-publish`
 }
 
-group = "com.github.eckar"
+group = "com.github.aeckar"
 version = "1.1"
 
 repositories {
@@ -20,7 +20,7 @@ dependencies {
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            groupId = "com.github.ladle-gh"
+            groupId = "com.github.aeckar"
             artifactId = "kanary"
             version = "1.1"
 
