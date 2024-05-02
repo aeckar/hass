@@ -17,46 +17,50 @@ data class Data(
     val stringValue: String,
     val objValue: Message
 ) {
-    init {
-        protocol {
-            read {
-                Data(
-                    readBoolean(),
-                    readByte(),
-                    readChar(),
-                    readShort(),
-                    readInt(),
-                    readLong(),
-                    readFloat(),
-                    readDouble(),
-                    readString(),
-                    read()
-                )
-            }
-            write {
-                write(it.booleanValue)
-                write(it.byteValue)
-                write(it.charValue)
-                write(it.shortValue)
-                write(it.intValue)
-                write(it.longValue)
-                write(it.floatValue)
-                write(it.doubleValue)
-                write(it.stringValue)
-                write(it.objValue)
+    private companion object {
+        init {
+            protocol<Data> {
+                read {
+                    Data(
+                        readBoolean(),
+                        readByte(),
+                        readChar(),
+                        readShort(),
+                        readInt(),
+                        readLong(),
+                        readFloat(),
+                        readDouble(),
+                        readString(),
+                        read()
+                    )
+                }
+                write {
+                    write(it.booleanValue)
+                    write(it.byteValue)
+                    write(it.charValue)
+                    write(it.shortValue)
+                    write(it.intValue)
+                    write(it.longValue)
+                    write(it.floatValue)
+                    write(it.doubleValue)
+                    write(it.stringValue)
+                    write(it.objValue)
+                }
             }
         }
     }
 }
 
 data class Message(val message: String) {
-    init {
-        protocol<Message> {
-            read {
-                Message(readString())
-            }
-            write {
-                write(it.message)
+    private companion object {
+        init {
+            protocol<Message> {
+                read {
+                    Message(readString())
+                }
+                write {
+                    write(it.message)
+                }
             }
         }
     }

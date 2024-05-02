@@ -21,6 +21,7 @@ fun OutputStream.binary() = BinaryOutput(this)
 /**
  * A binary stream with functions for reading primitives or classes with a [protocol] in Kanary format.
  * Does not support marking.
+ * Calling [close] also closes the underlying stream.
  */
 @JvmInline
 value class BinaryInput internal constructor(private val stream: InputStream) : Closeable {
@@ -34,12 +35,16 @@ value class BinaryInput internal constructor(private val stream: InputStream) : 
     fun readDouble() = longBitsToDouble(readLong())
     fun readString() = String(stream.readNBytes(readInt())) // size, followed by literal
 
+    /**
+     * Reads an object of type [T] from binary according to the protocol of its type.
+     * @throws MissingProtocolException [T] is not a top-level class or does not have a defined protocol
+     */
     inline fun <reified T> read(): T {
-        val className = T::class.qualifiedName ?: throw IllegalArgumentException("Type is not a top-level class")
+        val className = T::class.qualifiedName ?: throw MissingProtocolException("Binary I/O only supported for top-level classes")
         return try {
             definedProtocols.getValue(className).first(this) as T
-        } catch (e: NoSuchElementException) {
-            throw IllegalArgumentException("Class '$className' does not have a binary I/O protocol", e)
+        } catch (_: NoSuchElementException) {
+            throw MissingProtocolException("Class '$className' does not have a Kanary I/O protocol")
         }
     }
 
@@ -60,6 +65,7 @@ value class BinaryInput internal constructor(private val stream: InputStream) : 
 /**
  * A binary stream with functions for writing primitives or classes with a [protocol] in Kanary format.
  * Does not support marking.
+ * Calling [close] also closes the underlying stream.
  */
 @JvmInline
 value class BinaryOutput internal constructor(private val stream: OutputStream) : Closeable {
@@ -72,19 +78,23 @@ value class BinaryOutput internal constructor(private val stream: OutputStream) 
     fun write(fp: Float) = write(floatToRawIntBits(fp))
     fun write(fp: Double) = write(doubleToRawLongBits(fp))
 
-    fun write(s: String) {
+    fun write(s: String) {  // size, followed by literal
         val bytes = s.toByteArray(Charsets.UTF_8)
         write(bytes.size)
         stream.write(bytes)
     }
 
+    /**
+     * Writes the object in binary format according to the protocol of its type.
+     * @throws MissingProtocolException the type of [obj] is not a top-level class or does not have a defined protocol
+     */
     @Suppress("UNCHECKED_CAST")
     fun write(obj: Any) {
-        val className = obj::class.qualifiedName ?: throw IllegalArgumentException("Type is not a top-level class")
+        val className = obj::class.qualifiedName ?: throw IllegalArgumentException("Binary I/O only supported for top-level classes")
         try {
             (definedProtocols.getValue(className).second as WriteOperation<Any>)(this, obj)
         } catch (e: NoSuchElementException) {
-            throw IllegalArgumentException("Class '$className' does not have a binary I/O protocol", e)
+            throw IllegalArgumentException("Class '$className' does not have a Kanary I/O protocol", e)
         }
     }
 

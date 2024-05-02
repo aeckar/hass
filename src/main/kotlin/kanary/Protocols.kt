@@ -9,19 +9,21 @@ internal val definedProtocols = mutableMapOf<String,Pair<ReadOperation<*>,WriteO
 /**
  * Provides a scope wherein a the binary [read][ProtocolBuilderScope.read] and [write][ProtocolBuilderScope.write]
  * operations of a top-level class can be defined.
- * @throws ReassignmentException either of the operations are defined twice
+ * @throws MissingProtocolException [T] is not a top-level class
+ * @throws ReassignmentException either of the operations are defined twice,
+ * or this is called more than once for type [T]
  */
-inline fun <reified T> T.protocol(builder: ProtocolBuilderScope<T>.() -> Unit) {
-    val className = T::class.qualifiedName ?: throw IllegalArgumentException("Only top-level classes can be assigned a protocol")
+inline fun <reified T> protocol(builder: ProtocolBuilderScope<T>.() -> Unit) {
+    val className = T::class.qualifiedName ?: throw MissingProtocolException("Only top-level classes can be assigned a protocol")
     if (className in definedProtocols) {
-        return
+        throw ReassignmentException("Protocol for class '$className' defined twice")
     }
     val builderScope = ProtocolBuilderScope<T>()
     builder(builderScope)
     try {
         definedProtocols[className] = with (builderScope) { onRead to onWrite }   // thread-safe
     } catch (_: NullPointerException) {
-        throw IllegalArgumentException("Binary I/O only supported for top-level classes")
+        throw MissingProtocolException("Binary I/O only supported for top-level classes")
     }
 }
 
