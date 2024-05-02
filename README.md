@@ -5,8 +5,8 @@
 
 The goal of this library is to offer a simple, yet efficient API for binary serialization.
 For information that does not need to be accessed directly, JSON is memory-inefficient and slow.
-There are alternative binary formats, however their implementations often require reflection and are generally
-more complicated than the task they are trying to accomplish.
+There are alternative binary formats, however their implementations often require reflection and
+(for simple projects) are generally more complicated than the task they are trying to accomplish.
 
 ## Concepts
 
@@ -31,16 +31,23 @@ type parameter `T` is correctly assigned. These calls are thread-safe and non-bl
 `BinaryInput` provides read functionality, while `BinaryOutput` provides write functionality.
 
 ```kotlin
+import java.io.Closeable
+import java.io.Flushable
+
 @JvmInline
 value class BinaryInput internal constructor(private val stream: InputStream) : Closeable {
-    fun read/* primitive */()    // primitives
-    fun read<T : Any>()          // classes with protocols
+    fun read/* primitive */() { /* ... */ }     // primitives
+    fun <T : Any> read() { /* ... */ }          // classes with protocols
+    
+    // ...
 }
 
 @JvmInline
 value class BinaryOutput internal constructor(private val stream: OutputStream) : Closeable, Flushable {
-    fun write(/* primitive */)    // primitives
-    fun write(obj: Any)           // classes with protocols
+    fun write(/* primitive */) { /* ... */ }    // primitives
+    fun write(obj: Any) { /* ... */ }           // classes with protocols
+    
+    // ...
 }
 ```
 
@@ -57,7 +64,7 @@ class Person(val name: String, val id: Int) {
 
 private fun defineProtocol() {
     protocolOf<Person> {  // Evaluated only once between constructors
-        read = {  // Used for read<Person>(/* Person instance */)
+        read = {  // Used for read<Person>()
             val name = readString()
             val id = readInt()
             Person(name, id)
