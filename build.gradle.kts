@@ -4,8 +4,8 @@ plugins {
     `maven-publish`
 }
 
-group = "com.github.eckar"
-version = "1.0"
+group = "com.github.aeckar"
+version = "1.1"
 
 repositories {
     mavenCentral()
@@ -20,9 +20,9 @@ dependencies {
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            groupId = "com.github.ladle-gh"
+            groupId = "com.github.aeckar"
             artifactId = "kanary"
-            version = "1.0"
+            version = "1.1"
 
             from(components["kotlin"])
         }
