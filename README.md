@@ -1,6 +1,8 @@
 # Kanary
 **Fast and memory-efficient binary serialization for Kotlin**
 
+[![](https://jitpack.io/v/aeckar/kanary.svg)](https://jitpack.io/#aeckar/kanary)
+
 ## Reasoning
 
 The goal of this library is to offer a simple, yet efficient API for binary serialization.
