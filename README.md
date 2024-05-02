@@ -62,13 +62,13 @@ class Person(val name: String, val id: Int) {
     }
 }
 
-private fun defineProtocol() = protocolOf<Person> {  // Evaluated only once between constructors
-    read = {  // Used for read<Person>()
+private fun defineProtocol() = protocolOf<Person> {
+    read = {
         val name = readString()
         val id = readInt()
         Person(name, id)
     }
-    write = { instance ->  // Used for write(/* Person instance */)
+    write = { instance ->
         write(instance.name)
         write(instance.id)
     }
