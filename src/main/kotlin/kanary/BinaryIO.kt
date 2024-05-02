@@ -40,14 +40,7 @@ value class BinaryInput internal constructor(private val stream: InputStream) : 
      * Reads an object of type [T] from binary according to the protocol of its type.
      * @throws MissingProtocolException [T] is not a top-level class or does not have a defined protocol
      */
-    inline fun <reified T> read(): T {
-        val className = T::class.qualifiedName ?: throw MissingProtocolException("Binary I/O only supported for top-level classes")
-        return try {
-            definedProtocols.getValue(className).first(this) as T
-        } catch (_: NoSuchElementException) {
-            throw MissingProtocolException("Class '$className' does not have a Kanary I/O protocol")
-        }
-    }
+    inline fun <reified T : Any> read() = resolveProtocol(T::class).onRead(this)
 
     override fun close() {
         stream.close()
@@ -89,15 +82,7 @@ value class BinaryOutput internal constructor(private val stream: OutputStream) 
      * Writes the object in binary format according to the protocol of its type.
      * @throws MissingProtocolException the type of [obj] is not a top-level class or does not have a defined protocol
      */
-    @Suppress("UNCHECKED_CAST")
-    fun write(obj: Any) {
-        val className = obj::class.qualifiedName ?: throw IllegalArgumentException("Binary I/O only supported for top-level classes")
-        try {
-            (definedProtocols.getValue(className).second as WriteOperation<Any>)(this, obj)
-        } catch (e: NoSuchElementException) {
-            throw IllegalArgumentException("Class '$className' does not have a Kanary I/O protocol", e)
-        }
-    }
+    fun <T : Any> write(obj: T) = resolveProtocol(obj::class).onWrite(this, obj)
 
     override fun flush() {
         stream.flush()

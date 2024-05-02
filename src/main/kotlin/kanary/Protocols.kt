@@ -1,10 +1,28 @@
 package kanary
 
+import kotlin.reflect.KClass
+
 internal typealias ReadOperation<T> = BinaryInput.() -> T
 internal typealias WriteOperation<T> = BinaryOutput.(T) -> Unit
 
 @PublishedApi
-internal val definedProtocols = mutableMapOf<String,Pair<ReadOperation<*>,WriteOperation<*>>>()
+internal val definedProtocols = mutableMapOf<String,Protocol<*>>()
+
+@Suppress("UNCHECKED_CAST")
+@PublishedApi
+internal fun <T : Any> resolveProtocol(classRef: KClass<out T>): Protocol<T> {
+    return definedProtocols.getOrDefault(protocolNameOf(classRef)) {
+        throw MissingProtocolException(classRef)
+    } as Protocol<T>
+}
+
+@PublishedApi
+internal fun <T : Any> protocolNameOf(classRef: KClass<out T>) : String {
+    if (classRef.isAbstract) {
+        throw InvalidProtocolException(classRef)
+    }
+    return classRef.qualifiedName ?: throw InvalidProtocolException(classRef)
+}
 
 /**
  * Provides a scope wherein a the binary [read][ProtocolBuilderScope.read] and [write][ProtocolBuilderScope.write]
@@ -13,20 +31,17 @@ internal val definedProtocols = mutableMapOf<String,Pair<ReadOperation<*>,WriteO
  * @throws ReassignmentException either of the operations are defined twice,
  * or this is called more than once for type [T]
  */
-inline fun <reified T> protocolOf(builder: ProtocolBuilderScope<T>.() -> Unit) {
-    val className = T::class.qualifiedName ?: throw MissingProtocolException("Only top-level classes can be assigned a protocol")
-    if (className in definedProtocols) {
-        throw ReassignmentException("Protocol for class '$className' defined twice")
+inline fun <reified T : Any> protocolOf(builder: ProtocolBuilderScope<T>.() -> Unit) {
+    val name = protocolNameOf(T::class)
+    if (name in definedProtocols) {
+        throw ReassignmentException("Protocol for class '$name' defined twice")
     }
     val builderScope = ProtocolBuilderScope<T>()
     builder(builderScope)
-    try {
-        definedProtocols[className] = with (builderScope) { read to write }   // thread-safe
-    } catch (_: NullPointerException) {
-        throw MissingProtocolException("Binary I/O only supported for top-level classes")
-    }
+    definedProtocols[name] = with (builderScope) { Protocol(read, write) }   // thread-safe
 }
 
+class Protocol<T : Any>(val onRead: ReadOperation<out T>, val onWrite: WriteOperation<T>)
 
 /**
  * The scope wherein a protocol's [read] and [write] operations are defined.

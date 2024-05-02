@@ -4,8 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Readded .idea">
+    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Fixed group ID">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/AssignOnce.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Delegates.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/BinaryIO.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/BinaryIO.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/MissingProtocolException.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/KanaryExceptions.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Protocols.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Protocols.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/ReassignmentException.kt" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -357,7 +364,23 @@
       <option name="project" value="LOCAL" />
       <updated>1714668466833</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="Incremented version number">
+      <option name="closed" value="true" />
+      <created>1714668576673</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1714668576673</updated>
+    </task>
+    <task id="LOCAL-00017" summary="Fixed group ID">
+      <option name="closed" value="true" />
+      <created>1714668603034</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1714668603034</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -374,6 +397,8 @@
     <MESSAGE value="Amended README.md" />
     <MESSAGE value="Added .idea to .gitignore and incremented version number" />
     <MESSAGE value="Readded .idea" />
-    <option name="LAST_COMMIT_MESSAGE" value="Readded .idea" />
+    <MESSAGE value="Incremented version number" />
+    <MESSAGE value="Fixed group ID" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed group ID" />
   </component>
 </project>
