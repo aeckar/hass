@@ -4,10 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Added Maven plugin">
+    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Readded .idea">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/kotlin/KanaryTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/KanaryTest.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,6 +47,7 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -334,7 +333,31 @@
       <option name="project" value="LOCAL" />
       <updated>1714633347729</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Amended README.md">
+      <option name="closed" value="true" />
+      <created>1714667307776</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1714667307776</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Added .idea to .gitignore and incremented version number">
+      <option name="closed" value="true" />
+      <created>1714667905434</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1714667905434</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Readded .idea">
+      <option name="closed" value="true" />
+      <created>1714668466833</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1714668466833</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -348,6 +371,9 @@
     <MESSAGE value="Inlined internal type aliases" />
     <MESSAGE value="Updated README.md" />
     <MESSAGE value="Added Maven plugin" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added Maven plugin" />
+    <MESSAGE value="Amended README.md" />
+    <MESSAGE value="Added .idea to .gitignore and incremented version number" />
+    <MESSAGE value="Readded .idea" />
+    <option name="LAST_COMMIT_MESSAGE" value="Readded .idea" />
   </component>
 </project>
