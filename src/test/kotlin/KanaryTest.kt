@@ -17,7 +17,8 @@ val dataProtocol = protocolOf<Data> {
             readFloat(),
             readDouble(),
             readString(),
-            read()
+            readObject(),
+            readPolymorphic()
         )
     }
     write = {
@@ -31,6 +32,7 @@ val dataProtocol = protocolOf<Data> {
         write(it.doubleValue)
         write(it.stringValue)
         write(it.objValue)
+        write(it.arbitraryObj)
     }
 }
 
@@ -53,7 +55,8 @@ data class Data(
     val floatValue: Float,
     val doubleValue: Double,
     val stringValue: String,
-    val objValue: Message
+    val objValue: Message,
+    val arbitraryObj: Any
 ) {
     private companion object {
         init { dataProtocol }
@@ -79,7 +82,8 @@ class KanaryTest {
             -3.14159f,
             2.71828,
             "Random string",
-            Message("Hello, Copilot!")
+            Message("Hello, Copilot!"),
+            mutableListOf("Hi!", "Hola!", "Bonjour!")
         )
         val writeMessage = Message("Goodbye, world!")
         FileOutputStream("src/test/resources/cache.bin").binary().use {
@@ -89,8 +93,8 @@ class KanaryTest {
         val readData: Data
         val readMessage: Message
         FileInputStream("src/test/resources/cache.bin").binary().use {
-            readData = it.read<Data>()
-            readMessage = it.read<Message>()
+            readData = it.readObject<Data>()
+            readMessage = it.readObject<Message>()
         }
         assertEquals(writeData, readData)
         assertEquals(writeMessage, readMessage)

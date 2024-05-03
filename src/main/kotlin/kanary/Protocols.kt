@@ -18,9 +18,6 @@ internal fun <T : Any> resolveProtocol(classRef: KClass<out T>): Protocol<T> {
 
 @PublishedApi
 internal fun <T : Any> protocolNameOf(classRef: KClass<out T>) : String {
-    if (classRef.isAbstract) {
-        throw InvalidProtocolException(classRef)
-    }
     return classRef.qualifiedName ?: throw InvalidProtocolException(classRef)
 }
 
@@ -48,7 +45,7 @@ class Protocol<T : Any>(val onRead: ReadOperation<out T>, val onWrite: WriteOper
  */
 class ProtocolBuilderScope<T> {
     /**
-     * The binary read operation when [BinaryInput.read] is called with an object of class [T].
+     * The binary read operation when [BinaryInput.readObject] is called with an object of class [T].
      * @throws ReassignmentException this is assigned to more than once in a single scope
      */
     var read: BinaryInput.() -> T by AssignOnce()
