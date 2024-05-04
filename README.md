@@ -58,7 +58,7 @@ value class BinaryInput internal constructor(internal val stream: InputStream) :
 
 @JvmInline
 value class BinaryOutput internal constructor(internal val stream: OutputStream) : Closeable, Flushable {
-    fun write(/* primitive | primitive array | string */) { /* ... */ }
+    fun write(/* primitive | primitive array | string */)
     fun writeAll/* Or */(/* array | list | iterable */)
     fun writeNullable(obj: Any)
     fun writeObject(obj: Any)
