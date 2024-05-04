@@ -19,7 +19,7 @@ with a defined serialization protocol.
 The primary entry-point of the API is `protocolOf`.
 
 ```kotlin
-inline fun <reified T> protocolOf(builder: ProtocolBuilderScope<T>.() -> Unit) { /* ... */ }
+inline fun <reified T> protocolOf(builder: ProtocolBuilderScope<T>.() -> Unit): ProtocolSpecification<T> { /* ... */ }
 ```
 
 Within the `ProtocolBuilderScope` provided, the user can provide the appropriate read and write operations.
@@ -31,9 +31,10 @@ class ProtocolBuilderScope<T> {
 }
 ```
 
-`protocolOf()` **must** be called from within the `init` block of the
-companion object of the class that is being defined protocol.
-This ensures thread-safety, since the protocol is only defined once the classes is loaded in (used).
+The function returns a `ProtocolSpecification`, which can be used to assign the defined protocol to the class
+wherever it is used within a program. The `assign()` function must be called **once** from within the `init` block of the
+companion object of the class that is being defined the protocol.
+This ensures thread-safety, since the protocol is assigned lazily whenever the class is used for the first time.
 
 `BinaryInput` provides read functionality, while `BinaryOutput` provides write functionality.
 
@@ -42,29 +43,65 @@ import java.io.Closeable
 import java.io.Flushable
 
 @JvmInline
-value class BinaryInput internal constructor(private val stream: InputStream) : Closeable {
-    fun read/* primitive */() { /* ... */ }     // primitives
-    fun <T : Any> read() { /* ... */ }          // classes with protocols
+value class BinaryInput internal constructor(internal val stream: InputStream) : Closeable {
+    fun read/* primitive */()
+    fun read/* primitive */Array()
+    fun readString()
+    fun read/* Nullables? */Array()
+    fun read/* Nullables? */List()
+    fun read/* Nullables? */Iterable()
+    fun readNullable()
+    fun readObject()
     
     // ...
 }
 
 @JvmInline
-value class BinaryOutput internal constructor(private val stream: OutputStream) : Closeable, Flushable {
-    fun write(/* primitive */) { /* ... */ }    // primitives
-    fun write(obj: Any) { /* ... */ }           // classes with protocols
+value class BinaryOutput internal constructor(internal val stream: OutputStream) : Closeable, Flushable {
+    fun write(/* primitive | primitive array | string */) { /* ... */ }
+    fun writeAll/* Or */(/* array | list | iterable */)
+    fun writeNullable(obj: Any)
+    fun writeObject(obj: Any)
     
     // ...
 }
 ```
 
-In the produced binary:
+## Kanary Format
 
-- Primitives and their wrapper types are serialized to their exact value
+The binary I/O specification is as follows:
 
-- Arrays and `Iterable<*>`s are serialized to their length, followed by each member
+- Primitives
+```
+[code][value]
+```
 
-- Classes are serialized to their [qualified class name](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/qualified-name.html), followed by the binary format specified by their protocol
+- Primitive arrays
+
+```
+[code][size][value1][value2]...[valueN]
+```
+
+- Object arrays & lists
+  - More efficient than serialization as an iterable due to the fact that the size of the buffer is predetermined
+
+```
+[code][size][typeName1][object1][typeName2][object2]...[typeNameN][objectN]
+```
+
+- Iterables
+
+```
+[code][typeName1][object1][typeName2][object2]...[typeNameN][objectN][sentinel]
+```
+
+- Objects
+  - Serialized/deserialized by their protocol
+  - Type determined by [qualified class name](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/qualified-name.html)
+
+```
+[code][typeName][object]
+```
 
 ## Example
 
@@ -75,13 +112,13 @@ The class:
 
 class Person(val name: String, val id: Int) {
     private companion object {
-        init { protocol }
+        init { protocol.assign() }
     }
 }
 
-private val protocol = protocolOf<Person> { // Evaluated once in companion initializer
+private val protocol = protocolOf<Person> {
     read = {
-        val name = readString()
+        val name = readString() // Ensure reads are in-order
         val id = readInt()
         Person(name, id)
     }
@@ -92,10 +129,14 @@ private val protocol = protocolOf<Person> { // Evaluated once in companion initi
 }
 ```
 
-produces the following binary file:
+produces the following binary file when serialized (name = "Bob", id = 7):
 
 ```
-TODO
+    | 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F  |
+----+--------------------------------------------------+--------------------
+ 00 | 17 00 00 00 OD 6B 61 6E 61 72 79 2E 50 65 72 73  |    /0  kanary.Pers
+ 10 | 6F 6E 15 00 00 00 03 42 6F 62 02 00 00 00 07     | on Bobo oO
+
 ```
 
 ## Benchmarks
@@ -110,16 +151,22 @@ TODO
 
 **v1.1**
 
-- Download from JitPack fixed
+- JitPack support fixed
 
 - Changed name of `protocol` to `protocolOf`.
 
 - `read` and `write` are now assigned as properties
 
-**v1.2**
+**v2.0**
 
-- Serialization by protocol prepends the class name to serialized data
+- All serialized values are now prefixed by a unique, 1-byte code, ensuring memory safety
+
+- For object types, serialization by protocol prepends the class name to serialized data
 
 - Superclasses can now be deserialized from a serialized subclass with a defined protocol
 
-- Added I/O protocols for primitive wrapper types, array types, and types implementing `Iterable<*>`
+- Added I/O protocols for primitive array types, object array types, lists, and types implementing `Iterable`
+
+- `protocolOf` now returns a `ProtocolSpecification`, allowing storage of protocol specifications
+
+- Nullable types can now be serialized with their respective functions

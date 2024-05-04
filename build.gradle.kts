@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.github.aeckar"
-version = "1.1"
+version = "2.0"
 
 repositories {
     mavenCentral()
@@ -23,7 +23,7 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "com.github.aeckar"
             artifactId = "kanary"
-            version = "1.1"
+            version = "2.0"
 
             from(components["kotlin"])
         }

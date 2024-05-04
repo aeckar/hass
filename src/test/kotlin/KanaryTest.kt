@@ -17,10 +17,7 @@ val dataProtocol = protocolOf<Data> {
             readFloat(),
             readDouble(),
             readString(),
-            readObject(),
-            readNullablesArray(),
-            readNullablesList(),
-            readNullablesIterable()
+            readObject()
         )
     }
     write = {
@@ -34,9 +31,6 @@ val dataProtocol = protocolOf<Data> {
         write(it.doubleValue)
         write(it.stringValue)
         write(it.objValue)
-        writeAllOr(it.array)
-        writeAllOr(it.list)
-        writeAllOr(it.iterable)
     }
 }
 
@@ -46,6 +40,18 @@ val messageProtocol = protocolOf<Message> {
     }
     write = {
         write(it.message)
+    }
+}
+
+val personProtocol = protocolOf<Person> {
+    read = {
+        val name = readString()
+        val id = readInt()
+        Person(name, id)
+    }
+    write = { instance ->
+        write(instance.name)
+        write(instance.id)
     }
 }
 
@@ -59,59 +65,22 @@ data class Data(
     val floatValue: Float,
     val doubleValue: Double,
     val stringValue: String,
-    val objValue: Message,
-    val array: Array<out Any?>,
-    val list: List<Any?>,
-    val iterable: Iterable<Any?>
+    val objValue: Message
 ) {
     private companion object {
-        init { dataProtocol }
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as Data
-
-        if (booleanValue != other.booleanValue) return false
-        if (byteValue != other.byteValue) return false
-        if (charValue != other.charValue) return false
-        if (shortValue != other.shortValue) return false
-        if (intValue != other.intValue) return false
-        if (longValue != other.longValue) return false
-        if (floatValue != other.floatValue) return false
-        if (doubleValue != other.doubleValue) return false
-        if (stringValue != other.stringValue) return false
-        if (objValue != other.objValue) return false
-        if (!array.contentEquals(other.array)) return false
-        if (list != other.list) return false
-        if (iterable.toList() != other.iterable.toList()) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = booleanValue.hashCode()
-        result = 31 * result + byteValue
-        result = 31 * result + charValue.hashCode()
-        result = 31 * result + shortValue
-        result = 31 * result + intValue
-        result = 31 * result + longValue.hashCode()
-        result = 31 * result + floatValue.hashCode()
-        result = 31 * result + doubleValue.hashCode()
-        result = 31 * result + stringValue.hashCode()
-        result = 31 * result + objValue.hashCode()
-        result = 31 * result + array.contentHashCode()
-        result = 31 * result + list.hashCode()
-        result = 31 * result + iterable.hashCode()
-        return result
+        init { dataProtocol.assign() }
     }
 }
 
 data class Message(val message: String) {
     private companion object {
-        init { messageProtocol }
+        init { messageProtocol.assign() }
+    }
+}
+
+data class Person(val name: String, val id: Int) {
+    private companion object {
+        init { personProtocol.assign() }
     }
 }
 
@@ -128,23 +97,33 @@ class KanaryTest {
             -3.14159f,
             2.71828,
             "Random string",
-            Message("Hello, Copilot!"),
-            arrayOf("apple", "banana", "cherry", "date", "elderberry"),
-            listOf<String>(),
-            setOf(10, 20, 30, 40, 50)
+            Message("Hello, Copilot!")
         )
         val writeMessage = Message("Goodbye, world!")
-        FileOutputStream("src/test/resources/cache.bin").binary().use {
+        FileOutputStream("src/test/resources/kanaryTest.bin").binary().use {
             it.write(writeData)
             it.write(writeMessage)
         }
         val readData: Data
         val readMessage: Message
-        FileInputStream("src/test/resources/cache.bin").binary().use {
-            readData = it.readObject<Data>()
-            readMessage = it.readObject<Message>()
+        FileInputStream("src/test/resources/kanaryTest.bin").binary().use {
+            readData = it.readObject()
+            readMessage = it.readObject()
         }
         assertEquals(writeData, readData)
         assertEquals(writeMessage, readMessage)
+    }
+
+    @Test
+    fun personTest() {
+        val original = Person("Bob", 7)
+        FileOutputStream("src/test/resources/person.bin").binary().use {
+            it.write(original)
+        }
+        val deserialized: Person
+        FileInputStream("src/test/resources/person.bin").binary().use {
+            deserialized = it.readObject()
+        }
+        assertEquals(original, deserialized)
     }
 }

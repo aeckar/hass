@@ -4,10 +4,71 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Suppressed warnings for unused functions">
+    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Added ProtocolSpecification so protocols can be shared">
+      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-binary-input/read-array.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-binary-input/read-boolean-array.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-binary-input/read-char-array.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-binary-input/read-double-array.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-binary-input/read-float-array.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-binary-input/read-int-array.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-binary-input/read-iterable.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-binary-input/read-list.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-binary-input/read-long-array.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-binary-input/read-nullable.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-binary-input/read-nullables-array.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-binary-input/read-nullables-iterable.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-binary-input/read-nullables-list.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-binary-input/read-object.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-binary-input/read-short-array.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-binary-output/write-all-or.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-binary-output/write-all.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-binary-output/write-or.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-invalid-protocol-exception/index.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-kanary-exception/index.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-protocol-specification/-protocol-specification.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-protocol-specification/assign.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-protocol-specification/index.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-reassignment-exception/-reassignment-exception.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-type-mismatch-exception/index.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/index.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-assign-once/-assign-once.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-assign-once/get-value.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-assign-once/index.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-assign-once/set-value.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-binary-input/close.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-binary-input/index.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-binary-input/read-boolean.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-binary-input/read-byte.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-binary-input/read-char.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-binary-input/read-double.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-binary-input/read-float.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-binary-input/read-int.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-binary-input/read-long.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-binary-input/read-short.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-binary-input/read-string.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-binary-input/read.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-binary-output/close.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-binary-output/flush.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-binary-output/index.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-binary-output/write.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-missing-protocol-exception/-missing-protocol-exception.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-missing-protocol-exception/index.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-protocol-builder-scope/-protocol-builder-scope.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-protocol-builder-scope/index.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-protocol-builder-scope/read.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-protocol-builder-scope/write.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-reassignment-exception/index.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/binary.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/index.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/protocol-of.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/kanary/package-list" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/BinaryIO.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/BinaryIO.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Protocols.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Protocols.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/kotlin/KanaryTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/KanaryTest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/resources/cache.bin" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -77,6 +138,7 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;Gradle.KanaryTest.executor&quot;: &quot;Run&quot;,
     &quot;Gradle.KanaryTest.kanaryTest.executor&quot;: &quot;Run&quot;,
     &quot;Gradle.KanaryTest.test (1).executor&quot;: &quot;Run&quot;,
     &quot;Gradle.KanaryTest.test.executor&quot;: &quot;Run&quot;,
@@ -102,7 +164,31 @@
       <recent name="kanary" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.KanaryTest.kanaryTest">
+  <component name="RunManager" selected="Gradle.KanaryTest">
+    <configuration name="KanaryTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;kanary.KanaryTest&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
     <configuration name="KanaryTest.kanaryTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -199,37 +285,13 @@
       <RunAsTest>true</RunAsTest>
       <method v="2" />
     </configuration>
-    <configuration name="Test.test" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" value="" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value=":test" />
-            <option value="--tests" />
-            <option value="&quot;Test.test&quot;" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <RunAsTest>true</RunAsTest>
-      <method v="2" />
-    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.KanaryTest" />
         <item itemvalue="Gradle.KanaryTest.kanaryTest" />
         <item itemvalue="Gradle.KanaryTest.test (1)" />
         <item itemvalue="Gradle.KanaryTest.test" />
         <item itemvalue="Gradle.Test" />
-        <item itemvalue="Gradle.Test.test" />
       </list>
     </recent_temporary>
   </component>
@@ -410,7 +472,15 @@
       <option name="project" value="LOCAL" />
       <updated>1714785761186</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="Added ProtocolSpecification so protocols can be shared">
+      <option name="closed" value="true" />
+      <created>1714786886412</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1714786886412</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -433,6 +503,7 @@
     <MESSAGE value="1.2" />
     <MESSAGE value="Improved semantics" />
     <MESSAGE value="Suppressed warnings for unused functions" />
-    <option name="LAST_COMMIT_MESSAGE" value="Suppressed warnings for unused functions" />
+    <MESSAGE value="Added ProtocolSpecification so protocols can be shared" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added ProtocolSpecification so protocols can be shared" />
   </component>
 </project>

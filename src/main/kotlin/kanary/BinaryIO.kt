@@ -167,11 +167,6 @@ value class BinaryInput internal constructor(@PublishedApi internal val stream: 
      */
     inline fun <T, reified N : T & Any> readNullablesArray(): Array<out T?> {
         shortCircuitValidate(OBJECT_ARRAY, NULLABLE_ARRAY) { return readArrayNoValidate<N>() }
-        val expect = protocolNameOf(N::class)
-        val actual = readStringNoValidate()
-        if (expect != actual) {
-            throw TypeCastException("Type '$actual' cannot be assigned to type '$expect'")
-        }
         val size = readIntNoValidate()
         return Array(size) {
             val code = stream.read()
@@ -306,11 +301,6 @@ value class BinaryInput internal constructor(@PublishedApi internal val stream: 
 
     @PublishedApi
     internal inline fun <reified T : Any> readArrayNoValidate(): Array<T> {
-        val expect = protocolNameOf(T::class)
-        val actual = readStringNoValidate()
-        if (expect != actual) {
-            throw TypeCastException("Type '$actual' cannot be assigned to type '$expect'")
-        }
         val size = readIntNoValidate()
         return Array(size) { readObjectNoValidate<T>() }
     }
@@ -458,8 +448,6 @@ value class BinaryOutput internal constructor(@PublishedApi internal val stream:
      */
     inline fun <T, reified N : T & Any> writeAllOr(nullablesArr: Array<out T>) {  // marker, type, size, (marker, member)...
         NULLABLE_ARRAY.mark(stream)
-        val classRef = N::class
-        writeNoMark(protocolNameOf(classRef))
         writeNoMark(nullablesArr.size)
         nullablesArr.forEach {
             if (it == null) {
@@ -477,8 +465,6 @@ value class BinaryOutput internal constructor(@PublishedApi internal val stream:
      */
     inline fun <reified T : Any> writeAll(objArr: Array<out T>) {  // marker, type, size, (marker, member)...
         OBJECT_ARRAY.mark(stream)
-        val classRef = T::class
-        writeNoMark(protocolNameOf(classRef))
         writeNoMark(objArr.size)
         objArr.forEach { write(it) }
     }

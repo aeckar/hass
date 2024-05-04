@@ -64,7 +64,9 @@ class ProtocolSpecification<T : Any>(
 ) {
     /**
      * Assigns the specified protocol to its class.
-     * This function should only be invoked ONCE and within the companion of the class the protocol is specific to.
+     * If it is to be used within a program,
+     * this function should be invoked **once** from within the `init`
+     * block of the companion of the class the protocol is specific to.
      */
     fun assign() {
         definedProtocols[className] = Protocol(onRead, onWrite)
@@ -75,5 +77,5 @@ class ProtocolSpecification<T : Any>(
  * A binary I/O protocol defining read and write operations when this object is
  * serialized using [BinaryOutput] or deserialized using [BinaryInput].
  */
+@PublishedApi
 internal class Protocol<T : Any>(val onRead: ReadOperation<out T>, val onWrite: WriteOperation<in T>)
-
