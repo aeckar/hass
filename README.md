@@ -1,9 +1,7 @@
 # Kanary
-**Fast and memory-efficient binary serialization for Kotlin**
+**Fast and memory-efficient binary serialization for Kotlin JVM**
 
-[![](https://jitpack.io/v/aeckar/kanary.svg)](https://jitpack.io/#aeckar/kanary)
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![](https://jitpack.io/v/aeckar/kanary.svg)](https://jitpack.io/#aeckar/kanary) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) ![](https://img.shields.io/badge/Maintained%3F-yes-green.svg)
 
 ## Reasoning
 
