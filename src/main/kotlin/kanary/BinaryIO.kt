@@ -21,99 +21,157 @@ fun OutputStream.binary() = BinaryOutput(this)
  * A binary stream with functions for reading primitives or classes with a [protocolOf] in Kanary format.
  * Does not support marking.
  * Calling [close] also closes the underlying stream.
+ * This object does not need to be closed so long as the underlying stream is closed.
  */
 @JvmInline
 value class BinaryInput internal constructor(@PublishedApi internal val stream: InputStream) : Closeable {
+    /**
+     * @throws TypeMismatchException the object was not serialized as a boolean
+     */
     fun readBoolean(): Boolean {
-        TypeCode.BOOLEAN.validate(stream)
+        BOOLEAN.validate(stream)
         return stream.read() == 1
     }
 
+    /**
+     * @throws TypeMismatchException the object was not serialized as a byte
+     */
     fun readByte(): Byte {
         BYTE.validate(stream)
         return stream.read().toByte()
     }
 
+    /**
+     * @throws TypeMismatchException the object was not serialized as a character
+     */
     fun readChar(): Char {
         CHAR.validate(stream)
-        return readBytesUnmarked(Char.SIZE_BYTES).char
+        return readBytesNoValidate(Char.SIZE_BYTES).char
     }
 
+    /**
+     * @throws TypeMismatchException the object was not serialized as a short
+     */
     fun readShort(): Short {
         SHORT.validate(stream)
-        return readBytesUnmarked(Short.SIZE_BYTES).short
+        return readBytesNoValidate(Short.SIZE_BYTES).short
     }
 
+    /**
+     * @throws TypeMismatchException the object was not serialized as an integer
+     */
     fun readInt(): Int {
         INT.validate(stream)
-        return readIntUnmarked()
+        return readIntNoValidate()
     }
 
+    /**
+     * @throws TypeMismatchException the object was not serialized as a long
+     */
     fun readLong(): Long {
         LONG.validate(stream)
-        return readBytesUnmarked(Long.SIZE_BYTES).long
+        return readBytesNoValidate(Long.SIZE_BYTES).long
     }
 
+    /**
+     * @throws TypeMismatchException the object was not serialized as a float
+     */
     fun readFloat(): Float {
         FLOAT.validate(stream)
-        return readBytesUnmarked(Float.SIZE_BYTES).float
+        return readBytesNoValidate(Float.SIZE_BYTES).float
     }
 
+    /**
+     * @throws TypeMismatchException the object was not serialized as a double
+     */
     fun readDouble(): Double {
         DOUBLE.validate(stream)
-        return readBytesUnmarked(Double.SIZE_BYTES).double
+        return readBytesNoValidate(Double.SIZE_BYTES).double
     }
 
+    /**
+     * @throws TypeMismatchException the object was not serialized as a boolean array
+     */
     fun readBooleanArray(): BooleanArray {
         BOOLEAN_ARRAY.validate(stream)
-        return BooleanArray(readIntUnmarked()) { stream.read() == 1 }
+        return BooleanArray(readIntNoValidate()) { stream.read() == 1 }
     }
 
+    /**
+     * @throws TypeMismatchException the object was not serialized as a character array
+     */
     fun readCharArray(): CharArray {
         CHAR_ARRAY.validate(stream)
-        val size = readIntUnmarked()
-        return readBytesUnmarked(size*Char.SIZE_BYTES).asCharBuffer().array()
+        val size = readIntNoValidate()
+        return readBytesNoValidate(size*Char.SIZE_BYTES).asCharBuffer().array()
     }
 
+    /**
+     * @throws TypeMismatchException the object was not serialized as a short array
+     */
     fun readShortArray(): ShortArray {
         SHORT_ARRAY.validate(stream)
-        val size = readIntUnmarked()
-        return readBytesUnmarked(size*Short.SIZE_BYTES).asShortBuffer().array()
+        val size = readIntNoValidate()
+        return readBytesNoValidate(size*Short.SIZE_BYTES).asShortBuffer().array()
     }
 
+    /**
+     * @throws TypeMismatchException the object was not serialized as an integer array
+     */
     fun readIntArray(): IntArray {
         INT_ARRAY.validate(stream)
-        val size = readIntUnmarked()
-        return readBytesUnmarked(size*Int.SIZE_BYTES).asIntBuffer().array()
+        val size = readIntNoValidate()
+        return readBytesNoValidate(size*Int.SIZE_BYTES).asIntBuffer().array()
     }
 
+    /**
+     * @throws TypeMismatchException the object was not serialized as a long array
+     */
     fun readLongArray(): LongArray {
         LONG_ARRAY.validate(stream)
-        val size = readIntUnmarked()
-        return readBytesUnmarked(size*Long.SIZE_BYTES).asLongBuffer().array()
+        val size = readIntNoValidate()
+        return readBytesNoValidate(size*Long.SIZE_BYTES).asLongBuffer().array()
     }
 
+    /**
+     * @throws TypeMismatchException the object was not serialized as a float array
+     */
     fun readFloatArray(): FloatArray {
         FLOAT_ARRAY.validate(stream)
-        val size = readIntUnmarked()
-        return readBytesUnmarked(size*Float.SIZE_BYTES).asFloatBuffer().array()
+        val size = readIntNoValidate()
+        return readBytesNoValidate(size*Float.SIZE_BYTES).asFloatBuffer().array()
     }
 
+    /**
+     * @throws TypeMismatchException the object was not serialized as a double array
+     */
     fun readDoubleArray(): DoubleArray {
         DOUBLE_ARRAY.validate(stream)
-        val size = readIntUnmarked()
-        return readBytesUnmarked(size*Double.SIZE_BYTES).asDoubleBuffer().array()
+        val size = readIntNoValidate()
+        return readBytesNoValidate(size*Double.SIZE_BYTES).asDoubleBuffer().array()
     }
 
+    /**
+     * @throws TypeMismatchException the object was not serialized as a string
+     */
     fun readString(): String {  // size, followed by literal
         STRING.validate(stream)
-        val size = readInt()
-        return String(stream.readNBytes(size))
+        return readStringNoValidate()
     }
 
-    inline fun <T, reified N : T & Any> readNullableArray(): Array<out T?> {
-        shortCircuit(OBJECT_ARRAY, NULLABLE_ARRAY) { return readArrayUnmarked<N>() }
-        val size = readIntUnmarked()
+    /**
+     * Reads an object array from binary with each member deserialized according to its protocol, or null respectively.
+     * @throws TypeMismatchException the object was not serialized as an object array
+     * @throws TypeCastException a member is not null or an instance of type [T]
+     */
+    inline fun <T, reified N : T & Any> readNullablesArray(): Array<out T?> {
+        shortCircuitValidate(OBJECT_ARRAY, NULLABLE_ARRAY) { return readArrayNoValidate<N>() }
+        val expect = protocolNameOf(N::class)
+        val actual = readStringNoValidate()
+        if (expect != actual) {
+            throw TypeCastException("Type '$actual' cannot be assigned to type '$expect'")
+        }
+        val size = readIntNoValidate()
         return Array(size) {
             val code = stream.read()
             if (code == NULL.ordinal) {
@@ -122,30 +180,51 @@ value class BinaryInput internal constructor(@PublishedApi internal val stream: 
             if (code != OBJECT.ordinal) {
                 throw TypeMismatchException(NULL, OBJECT, code)
             }
-            readObject<N>()
+            readObjectNoValidate<N>()
         }
     }
 
+    /**
+     * Reads an object array with each member deserialized according to its protocol.
+     * @throws TypeMismatchException the object was not serialized as an object array
+     * @throws TypeCastException a member is not null or an instance of type [T]
+     */
     inline fun <reified T : Any> readArray(): Array<out T> {
         OBJECT_ARRAY.validate(stream)
-        return readArrayUnmarked()
+        return readArrayNoValidate()
     }
 
-    inline fun <reified T, reified N : T & Any> readNullableList(): List<T?> {
-        shortCircuit(LIST, NULLABLE_LIST) { return readListUnmarked<N>() }
-        return readNullableListUnmarked()
+    /**
+     * Reads a list from binary with each member deserialized according to its protocol, or null respectively.
+     * @throws TypeMismatchException the object was not serialized as a list
+     * @throws TypeCastException a member is not null or an instance of type [T]
+     */
+    inline fun <reified T, reified N : T & Any> readNullablesList(): List<T?> {
+        shortCircuitValidate(LIST, NULLABLE_LIST) { return readListNoValidate<N>() }
+        return readNullablesListNoValidate()
     }
 
+    /**
+     * Reads a [List] from binary with each member deserialized according to its protocol.
+     * @throws TypeMismatchException the object was not serialized as a list
+     * @throws TypeCastException a member is not an instance of type [T]
+     */
     inline fun <reified T : Any> readList(): List<T> {
         LIST.validate(stream)
-        return readListUnmarked()
+        return readListNoValidate()
     }
 
-    inline fun <T, reified N : T & Any> readNullableIterable(): List<T?> {
+    /**
+     * Reads an [Iterable] from binary with each member deserialized according to its protocol, or null respectively.
+     * Although [readNullablesList] is more efficient, this function may also parse lists.
+     * @throws TypeMismatchException the object was not serialized as an iterable or list
+     * @throws TypeCastException a member is not null or an instance of type [T]
+     */
+    inline fun <T, reified N : T & Any> readNullablesIterable(): List<T?> {
         when (val code = stream.read()) {
-            LIST.ordinal -> readListUnmarked<N>()
-            NULLABLE_LIST.ordinal -> readNullableListUnmarked<T, N>()
-            ITERABLE_BEGIN.ordinal -> readIterableUnmarked<N>()
+            LIST.ordinal -> readListNoValidate<N>()
+            NULLABLE_LIST.ordinal -> readNullablesListNoValidate<T, N>()
+            ITERABLE_BEGIN.ordinal -> readIterableNoValidate<N>()
             NULLABLE_BEGIN.ordinal -> Unit
             else -> throw TypeMismatchException(LIST, NULLABLE_LIST, ITERABLE_BEGIN, NULLABLE_BEGIN, code)
         }
@@ -154,19 +233,29 @@ value class BinaryInput internal constructor(@PublishedApi internal val stream: 
             list += when (val code = stream.read()) {
                 SENTINEL.ordinal -> break
                 NULL.ordinal -> null
-                OBJECT.ordinal -> readObjectUnmarked<N>()
+                OBJECT.ordinal -> readObjectNoValidate<N>()
                 else -> throw TypeMismatchException(NULL, OBJECT, code)
             }
         } while (true)
         return list
     }
 
+    /**
+     * Reads an [Iterable] from binary with each member deserialized according to its protocol.
+     * Although [readList] is more efficient, this function may also parse lists.
+     * @throws TypeMismatchException the object was not serialized as an iterable or list
+     * @throws TypeCastException a member is not an instance of type [T]
+     */
     inline fun <reified T : Any> readIterable(): List<T> {
-        shortCircuit(LIST, ITERABLE_BEGIN) { return readListUnmarked() }
-        return readIterableUnmarked()
+        shortCircuitValidate(LIST, ITERABLE_BEGIN) { return readListNoValidate() }
+        return readIterableNoValidate()
     }
 
-
+    /**
+     * Reads an object of the specified type from binary according to the protocol of its type, or null respectively.
+     * @throws TypeMismatchException the value was not serialized as a singular object or null
+     * @throws TypeCastException the object is not an instance of type [T]
+     */
     inline fun <T, reified N : T & Any> readNullable(): T? {
         val code = stream.read()
         if (code == NULL.ordinal) {
@@ -175,22 +264,23 @@ value class BinaryInput internal constructor(@PublishedApi internal val stream: 
         if (code != OBJECT.ordinal) {
             throw TypeMismatchException(OBJECT, NULL, code)
         }
-        return readObjectUnmarked<N>()
+        return readObjectNoValidate<N>()
     }
 
     /**
-     * Reads an object of type [T] from binary according to the protocol of its type.
-     * @throws MissingProtocolException [T] is not a top-level class or does not have a defined protocol
+     * Reads an object of the specified type from binary according to the protocol of its type.
+     * @throws TypeMismatchException the object was not serialized as a singular object
+     * @throws TypeCastException the object is not an instance of type [T]
      */
     inline fun <reified T : Any> readObject(): T {
         OBJECT.validate(stream)
-        return readObjectUnmarked()
+        return readObjectNoValidate()
     }
 
     override fun close() = stream.close()
 
     @PublishedApi
-    internal inline fun shortCircuit(
+    internal inline fun shortCircuitValidate(
         short: TypeCode,
         expect: TypeCode,
         onNotNullable: () -> Unit
@@ -205,17 +295,28 @@ value class BinaryInput internal constructor(@PublishedApi internal val stream: 
     }
 
     @PublishedApi
-    internal fun readIntUnmarked() = readBytesUnmarked(Int.SIZE_BYTES).int
+    internal fun readIntNoValidate() = readBytesNoValidate(Int.SIZE_BYTES).int
 
     @PublishedApi
-    internal inline fun <reified T : Any> readArrayUnmarked(): Array<T> {
-        val size = readIntUnmarked()
-        return Array(size) { readObject<T>() }
+    internal fun readStringNoValidate(): String {
+        val size = readIntNoValidate()
+        return String(stream.readNBytes(size))
     }
 
     @PublishedApi
-    internal inline fun <reified T : Any> readListUnmarked(): List<T> {
-        val size = readIntUnmarked()
+    internal inline fun <reified T : Any> readArrayNoValidate(): Array<T> {
+        val expect = protocolNameOf(T::class)
+        val actual = readStringNoValidate()
+        if (expect != actual) {
+            throw TypeCastException("Type '$actual' cannot be assigned to type '$expect'")
+        }
+        val size = readIntNoValidate()
+        return Array(size) { readObjectNoValidate<T>() }
+    }
+
+    @PublishedApi
+    internal inline fun <reified T : Any> readListNoValidate(): List<T> {
+        val size = readIntNoValidate()
         val list = ArrayList<T>(size)
         repeat (size) {
             list += readObject<T>()
@@ -224,13 +325,13 @@ value class BinaryInput internal constructor(@PublishedApi internal val stream: 
     }
 
     @PublishedApi
-    internal inline fun <T, reified N : T & Any> readNullableListUnmarked(): List<T?> {
-        val size = readIntUnmarked()
+    internal inline fun <T, reified N : T & Any> readNullablesListNoValidate(): List<T?> {
+        val size = readIntNoValidate()
         val list = ArrayList<T?>(size)
         repeat(size) {
             list += when (val memberCode = stream.read()) {
                 NULL.ordinal -> null
-                OBJECT.ordinal -> readObjectUnmarked<N>()
+                OBJECT.ordinal -> readObject<N>()
                 else -> throw TypeMismatchException(NULL, OBJECT, memberCode)
             }
         }
@@ -238,8 +339,8 @@ value class BinaryInput internal constructor(@PublishedApi internal val stream: 
     }
 
     @PublishedApi
-    internal inline fun <reified T : Any> readIterableUnmarked(): List<T> {
-        val size = readIntUnmarked()
+    internal inline fun <reified T : Any> readIterableNoValidate(): List<T> {
+        val size = readIntNoValidate()
         val list = ArrayList<T>(size)
         repeat (size) {
             list += readObject<T>()
@@ -248,17 +349,18 @@ value class BinaryInput internal constructor(@PublishedApi internal val stream: 
     }
 
     @PublishedApi
-    internal inline fun <reified T : Any> readObjectUnmarked(): T {
-        return resolveProtocol(Class.forName(readString()).kotlin).onRead(this) as T
+    internal inline fun <reified T : Any> readObjectNoValidate(): T {
+        return resolveProtocol(Class.forName(readStringNoValidate()).kotlin).onRead(this) as T
     }
 
-    private fun readBytesUnmarked(count: Int) = ByteBuffer.wrap(stream.readNBytes(count))
+    private fun readBytesNoValidate(count: Int) = ByteBuffer.wrap(stream.readNBytes(count))
 }
 
 /**
  * A binary stream with functions for writing primitives or classes with a [protocolOf] in Kanary format.
  * Does not support marking.
  * Calling [close] also closes the underlying stream.
+ * This object does not need to be closed so long as the underlying stream is closed.
  */
 @JvmInline
 value class BinaryOutput internal constructor(@PublishedApi internal val stream: OutputStream) : Closeable, Flushable {
@@ -274,32 +376,32 @@ value class BinaryOutput internal constructor(@PublishedApi internal val stream:
 
     fun write(c: Char) {
         CHAR.mark(stream)
-        writeBytesUnmarked(Char.SIZE_BYTES) { putChar(c) }
+        writeBytesNoMark(Char.SIZE_BYTES) { putChar(c) }
     }
 
     fun write(n: Short) {
         SHORT.mark(stream)
-        writeBytesUnmarked(Short.SIZE_BYTES) { putShort(n) }
+        writeBytesNoMark(Short.SIZE_BYTES) { putShort(n) }
     }
 
     fun write(n: Int) {
         INT.mark(stream)
-        writeUnmarked(n)
+        writeNoMark(n)
     }
 
     fun write(n: Long) {
         LONG.mark(stream)
-        writeBytesUnmarked(Long.SIZE_BYTES) { putLong(n) }
+        writeBytesNoMark(Long.SIZE_BYTES) { putLong(n) }
     }
 
     fun write(fp: Float) {
         FLOAT.mark(stream)
-        writeBytesUnmarked(Float.SIZE_BYTES) { putFloat(fp) }
+        writeBytesNoMark(Float.SIZE_BYTES) { putFloat(fp) }
     }
 
     fun write(fp: Double) {
         DOUBLE.mark(stream)
-        writeBytesUnmarked(Double.SIZE_BYTES) { putDouble(fp) }
+        writeBytesNoMark(Double.SIZE_BYTES) { putDouble(fp) }
     }
 
     fun write(condArr: BooleanArray) {
@@ -309,56 +411,56 @@ value class BinaryOutput internal constructor(@PublishedApi internal val stream:
 
     fun write(bArr: ByteArray) {
         BYTE_ARRAY.mark(stream)
-        writeBytesUnmarked(Int.SIZE_BYTES) { putInt(bArr.size) }
+        writeBytesNoMark(Int.SIZE_BYTES) { putInt(bArr.size) }
         stream.write(bArr)
     }
 
     fun write(cArr: CharArray) {
         CHAR_ARRAY.mark(stream)
-        writeArrayUnmarked(Char.SIZE_BYTES, cArr.size) { cArr.forEach { putChar(it) } }
+        writeArrayNoMark(Char.SIZE_BYTES, cArr.size) { cArr.forEach { putChar(it) } }
     }
 
     fun write(nArr: ShortArray) {
         SHORT_ARRAY.mark(stream)
-        writeArrayUnmarked(Short.SIZE_BYTES, nArr.size) { nArr.forEach { putShort(it) } }
+        writeArrayNoMark(Short.SIZE_BYTES, nArr.size) { nArr.forEach { putShort(it) } }
     }
 
     fun write(nArr: IntArray) {
         INT_ARRAY.mark(stream)
-        writeArrayUnmarked(Int.SIZE_BYTES, nArr.size) { nArr.forEach { putInt(it) } }
+        writeArrayNoMark(Int.SIZE_BYTES, nArr.size) { nArr.forEach { putInt(it) } }
     }
 
     fun write(nArr: LongArray) {
         LONG_ARRAY.mark(stream)
-        writeArrayUnmarked(Long.SIZE_BYTES, nArr.size) { nArr.forEach { putLong(it) } }
+        writeArrayNoMark(Long.SIZE_BYTES, nArr.size) { nArr.forEach { putLong(it) } }
     }
 
     fun write(nArr: FloatArray) {
         FLOAT_ARRAY.mark(stream)
-        writeArrayUnmarked(Float.SIZE_BYTES, nArr.size) { nArr.forEach { putFloat(it) } }
+        writeArrayNoMark(Float.SIZE_BYTES, nArr.size) { nArr.forEach { putFloat(it) } }
     }
 
     fun write(nArr: DoubleArray) {
         DOUBLE_ARRAY.mark(stream)
-        writeArrayUnmarked(Double.SIZE_BYTES, nArr.size) { nArr.forEach { putDouble(it) } }
+        writeArrayNoMark(Double.SIZE_BYTES, nArr.size) { nArr.forEach { putDouble(it) } }
     }
 
     fun write(s: String) {  // marker, size, char...
         STRING.mark(stream)
-        writeUnmarked(s)
+        writeNoMark(s)
     }
 
     /**
      * Writes all members in array according to the protocol of each instance.
-     * @throws MissingProtocolException the type of any member of [nullableArr] is not null, and
+     * @throws MissingProtocolException the type of any member of [nullablesArr] is not null, and
      * is not a top-level class or does not have a defined protocol
      */
-    inline fun <T, reified N : T & Any> write(nullableArr: Array<out T>) {  // marker, size, (marker, member)...
+    inline fun <T, reified N : T & Any> writeAllOr(nullablesArr: Array<out T>) {  // marker, type, size, (marker, member)...
         NULLABLE_ARRAY.mark(stream)
         val classRef = N::class
-        writeUnmarked(protocolNameOf(classRef))
-        writeUnmarked(nullableArr.size)
-        nullableArr.forEach {
+        writeNoMark(protocolNameOf(classRef))
+        writeNoMark(nullablesArr.size)
+        nullablesArr.forEach {
             if (it == null) {
                 NULL.mark(stream)
                 return@forEach
@@ -372,23 +474,23 @@ value class BinaryOutput internal constructor(@PublishedApi internal val stream:
      * @throws MissingProtocolException the type of any member of [objArr]
      * is not a top-level class or does not have a defined protocol
      */
-    inline fun <reified T : Any> write(objArr: Array<out T>) {  // marker, size, (marker, member)...
+    inline fun <reified T : Any> writeAll(objArr: Array<out T>) {  // marker, type, size, (marker, member)...
         OBJECT_ARRAY.mark(stream)
         val classRef = T::class
-        writeUnmarked(protocolNameOf(classRef))
-        writeUnmarked(objArr.size)
+        writeNoMark(protocolNameOf(classRef))
+        writeNoMark(objArr.size)
         objArr.forEach { write(it) }
     }
 
     /**
      * Writes all members in the list according the protocol of each.
-     * @throws MissingProtocolException any member of [nullableList] is not null, and
+     * @throws MissingProtocolException any member of [nullablesList] is not null, and
      * its type is not top-level class or does not have a defined protocol
      */
-    inline fun <reified T> write(nullableList: List<T>) {   // marker, size, (marker, member)...
+    inline fun <reified T> writeAllOr(nullablesList: List<T>) {   // marker, size, (marker, member)...
         NULLABLE_LIST.mark(stream)
-        writeUnmarked(nullableList.size)
-        nullableList.forEach {
+        writeNoMark(nullablesList.size)
+        nullablesList.forEach {
             if (it == null) {
                 NULL.mark(stream)
                 return@forEach
@@ -401,21 +503,21 @@ value class BinaryOutput internal constructor(@PublishedApi internal val stream:
      * Writes all members in the list according the protocol of each.
      * @throws MissingProtocolException any member of [list] is not a top-level class or does not have a defined protocol
      */
-    inline fun <reified T : Any> write(list: List<T>) { // marker, size, (marker, member)...
+    inline fun <reified T : Any> writeAll(list: List<T>) { // marker, size, (marker, member)...
         LIST.mark(stream)
-        writeUnmarked(list.size)
+        writeNoMark(list.size)
         list.forEach { write(it) }
     }
 
     /**
      * Writes all members in the iterable object according the protocol of each instance as a list.
      * The caller must ensure that the object has a finite number of members.
-     * @throws MissingProtocolException any member of [nullableIter] is not null, and
+     * @throws MissingProtocolException any member of [nullablesIter] is not null, and
      * its type is not top-level class or does not have a defined protocol
      */
-    inline fun <reified T> write(nullableIter: Iterable<T>) {  // begin, (marker, member)..., end
+    inline fun <reified T> writeAllOr(nullablesIter: Iterable<T>) {  // begin, (marker, member)..., end
         NULLABLE_BEGIN.mark(stream)
-        nullableIter.forEach {
+        nullablesIter.forEach {
             if (it == null) {
                 NULL.mark(stream)
                 return@forEach
@@ -430,7 +532,7 @@ value class BinaryOutput internal constructor(@PublishedApi internal val stream:
      * The caller must ensure that the object has a finite number of members.
      * @throws MissingProtocolException any member of [iter] is not a top-level class or does not have a defined protocol
      */
-    inline fun <reified T : Any> write(iter: Iterable<T>) { // begin, (marker, member)..., end
+    inline fun <reified T : Any> writeAll(iter: Iterable<T>) { // begin, (marker, member)..., end
         ITERABLE_BEGIN.mark(stream)
         iter.forEach { write(it) }
         SENTINEL.mark(stream)
@@ -441,7 +543,7 @@ value class BinaryOutput internal constructor(@PublishedApi internal val stream:
      * @throws MissingProtocolException if [nullable] is not null, and
      * its type is not a top-level class or does not have a defined protocol
      */
-    fun write(nullable: Any?) {
+    fun writeOr(nullable: Any?) {
         if (nullable == null) {
             NULL.mark(stream)
             return
@@ -453,10 +555,10 @@ value class BinaryOutput internal constructor(@PublishedApi internal val stream:
      * Writes the object according to the protocol of its type.
      * @throws MissingProtocolException the type of [obj] is not a top-level class or does not have a defined protocol
      */
-    fun write(obj: Any) {
+    fun <T : Any> write(obj: T) {
         OBJECT.mark(stream)
         val classRef = obj::class
-        writeUnmarked(protocolNameOf(classRef))
+        writeNoMark(protocolNameOf(classRef))
         resolveProtocol(classRef).onWrite(this, obj)
     }
 
@@ -464,24 +566,24 @@ value class BinaryOutput internal constructor(@PublishedApi internal val stream:
     override fun close() = stream.close()
 
     @PublishedApi
-    internal fun writeUnmarked(n: Int) = writeBytesUnmarked(Int.SIZE_BYTES) { putInt(n) }
+    internal fun writeNoMark(n: Int) = writeBytesNoMark(Int.SIZE_BYTES) { putInt(n) }
 
     @PublishedApi
-    internal fun writeUnmarked(s: String) {
+    internal fun writeNoMark(s: String) {
         val bytes = s.toByteArray(Charsets.UTF_8)
-        write(bytes.size)
+        writeNoMark(bytes.size)
         stream.write(bytes)
     }
 
     @PublishedApi
-    internal inline fun writeBytesUnmarked(count: Int, write: ByteBuffer.() -> Unit) {
+    internal inline fun writeBytesNoMark(count: Int, write: ByteBuffer.() -> Unit) {
         val buffer = ByteBuffer.allocate(count)
         write(buffer)
         stream.write(buffer.array())
     }
 
     // marker, size, member...
-    private inline fun writeArrayUnmarked(memberBytes: Int, size: Int, bulkWrite: ByteBuffer.() -> Unit) {
+    private inline fun writeArrayNoMark(memberBytes: Int, size: Int, bulkWrite: ByteBuffer.() -> Unit) {
         val buffer = ByteBuffer.allocate(1*Int.SIZE_BYTES + size*memberBytes)
         buffer.putInt(size)
         bulkWrite(buffer)

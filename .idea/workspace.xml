@@ -4,13 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Protocols are now resolved as an instance of their own class.">
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/TypeCode.kt" afterDir="false" />
+    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="1.2">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/BinaryIO.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/BinaryIO.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Delegates.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Delegates.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/KanaryExceptions.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/KanaryExceptions.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/KanaryExceptions.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Exceptions.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Protocols.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Protocols.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/TypeCode.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/TypeCode.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/kotlin/KanaryTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/KanaryTest.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/resources/cache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/resources/cache.bin" afterDir="false" />
     </list>
@@ -391,7 +390,15 @@
       <option name="project" value="LOCAL" />
       <updated>1714678642366</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="1.2">
+      <option name="closed" value="true" />
+      <created>1714769460332</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1714769460332</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -411,6 +418,7 @@
     <MESSAGE value="Incremented version number" />
     <MESSAGE value="Fixed group ID" />
     <MESSAGE value="Protocols are now resolved as an instance of their own class." />
-    <option name="LAST_COMMIT_MESSAGE" value="Protocols are now resolved as an instance of their own class." />
+    <MESSAGE value="1.2" />
+    <option name="LAST_COMMIT_MESSAGE" value="1.2" />
   </component>
 </project>

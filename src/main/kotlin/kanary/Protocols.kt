@@ -11,9 +11,8 @@ internal val definedProtocols = mutableMapOf<String,Protocol<*>>()
 @Suppress("UNCHECKED_CAST")
 @PublishedApi
 internal fun <T : Any> resolveProtocol(classRef: KClass<out T>): Protocol<T> {
-    return definedProtocols.getOrDefault(protocolNameOf(classRef)) {
-        throw MissingProtocolException(classRef)
-    } as Protocol<T>
+    return definedProtocols[protocolNameOf(classRef)]?.let { it as Protocol<T> }
+            ?: throw MissingProtocolException(classRef)
 }
 
 @PublishedApi
@@ -38,7 +37,7 @@ inline fun <reified T : Any> protocolOf(builder: ProtocolBuilderScope<T>.() -> U
     definedProtocols[name] = with (builderScope) { Protocol(read, write) }   // thread-safe
 }
 
-class Protocol<T : Any>(val onRead: ReadOperation<out T>, val onWrite: WriteOperation<T>)
+class Protocol<T : Any>(val onRead: ReadOperation<out T>, val onWrite: WriteOperation<in T>)
 
 /**
  * The scope wherein a protocol's [read] and [write] operations are defined.
@@ -51,7 +50,7 @@ class ProtocolBuilderScope<T> {
     var read: BinaryInput.() -> T by AssignOnce()
 
     /**
-     * The binary write operation when [BinaryOutput.write] is called with an object of class [T]
+     * The binary write operation when [BinaryOutput.writeOr] is called with an object of class [T]
      * @throws ReassignmentException this is assigned to more than once in a single scope
      */
     var write: BinaryOutput.(T) -> Unit by AssignOnce()

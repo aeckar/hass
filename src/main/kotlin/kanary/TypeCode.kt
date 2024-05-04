@@ -21,7 +21,8 @@ internal enum class TypeCode {
     SENTINEL,
     OBJECT,
     NULL,
-    STRING;
+    STRING,
+    UNKNOWN;
 
     fun validate(stream: InputStream) {
         val code = stream.read()
@@ -32,5 +33,9 @@ internal enum class TypeCode {
 
     fun mark(stream: OutputStream) {
         stream.write(ordinal)
+    }
+
+    companion object {
+        fun nameOf(code: Int) = entries.find { it.ordinal == code }?.name ?: "UNKNOWN"
     }
 }

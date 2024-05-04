@@ -9,16 +9,16 @@ sealed class KanaryException(message: String) : Exception(message)
 
 class TypeMismatchException : KanaryException {
         internal constructor(expected: TypeCode, actual: Int) : super(
-                "Type '${expected.name}' expected, but found '${TypeCode.entries.find { it.ordinal == actual }}'")
+                "Type '${expected.name}' expected, but found '${TypeCode.nameOf(actual)}'")
 
         @PublishedApi
         internal constructor(expected: TypeCode, or: TypeCode, actual: Int) : super(
-                "Types '${expected.name}' or ${or.name} expected, but found '${TypeCode.entries.find { it.ordinal == actual }}'")
+                "Types '${expected.name}' or '${or.name}' expected, but found '${TypeCode.nameOf(actual)}'")
 
         @PublishedApi
         internal constructor(expected: TypeCode, or1: TypeCode, or2: TypeCode, or3: TypeCode, actual: Int) : super(
                 "Types '${expected.name}' or '${or1.name}' or '${or2.name}' or '${or3.name}'" +
-                "expected, found '${TypeCode.entries.find { it.ordinal == actual }}'")
+                "expected, found '${TypeCode.nameOf(actual)}'")
 }
 
 /**
