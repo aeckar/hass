@@ -21,8 +21,7 @@ internal enum class TypeCode {
     SENTINEL,
     OBJECT,
     NULL,
-    STRING,
-    UNKNOWN;
+    STRING;
 
     fun validate(stream: InputStream) {
         val code = stream.read()
