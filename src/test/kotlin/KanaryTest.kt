@@ -3,6 +3,7 @@ package kanary
 import org.junit.jupiter.api.Test
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.io.Serializable
 import kotlin.test.assertEquals
 
 val dataProtocol = protocolOf<Data> {
@@ -78,7 +79,8 @@ data class Message(val message: String) {
     }
 }
 
-data class Person(val name: String, val id: Int) {
+
+data class Person(val name: String, val id: Int) : Serializable {
     private companion object {
         init { personProtocol.assign() }
     }
