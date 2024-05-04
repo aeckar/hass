@@ -9,7 +9,7 @@
 
 The goal of this library is to offer a simple, yet efficient API for binary serialization.
 For information that does not need to be accessed directly, JSON is memory-inefficient and slow.
-There are alternative binary formats, however their implementations often require annotation and
+There are alternative binary formats, however their implementations often require reflection and
 (for simple projects) are generally more complicated than the task they are trying to accomplish.
 
 ## Overview

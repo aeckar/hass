@@ -4,14 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="1.2">
+    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Suppressed warnings for unused functions">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/BinaryIO.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/BinaryIO.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/KanaryExceptions.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Exceptions.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Protocols.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Protocols.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/TypeCode.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/TypeCode.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/kotlin/KanaryTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/KanaryTest.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/resources/cache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/resources/cache.bin" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -398,7 +394,23 @@
       <option name="project" value="LOCAL" />
       <updated>1714769460332</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="Improved semantics">
+      <option name="closed" value="true" />
+      <created>1714785690691</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1714785690691</updated>
+    </task>
+    <task id="LOCAL-00021" summary="Suppressed warnings for unused functions">
+      <option name="closed" value="true" />
+      <created>1714785761186</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1714785761186</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -419,6 +431,8 @@
     <MESSAGE value="Fixed group ID" />
     <MESSAGE value="Protocols are now resolved as an instance of their own class." />
     <MESSAGE value="1.2" />
-    <option name="LAST_COMMIT_MESSAGE" value="1.2" />
+    <MESSAGE value="Improved semantics" />
+    <MESSAGE value="Suppressed warnings for unused functions" />
+    <option name="LAST_COMMIT_MESSAGE" value="Suppressed warnings for unused functions" />
   </component>
 </project>
