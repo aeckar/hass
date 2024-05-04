@@ -1,3 +1,4 @@
+@file:Suppress("UNUSED")
 package kanary
 
 import kanary.TypeCode.*
