@@ -66,38 +66,23 @@ Both are true for members of generic arrays, lists, and iterables as well.
 
 ## Kanary Format
 
-The binary I/O specification is as follows:
-
-- Primitives
-```
-[code][value]
-```
-
-- Primitive arrays
+The binary I/O specification in [EBNF](https://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_form) is as follows:
 
 ```
-[code][size][value1][value2]...[valueN]
-```
+primitive : marker value
 
-- Object arrays & lists
-  - More efficient than serialization as an iterable due to the fact that the size of the buffer is predetermined
+primitiveArray : marker size value*
 
-```
-[code][size][typeName1][object1][typeName2][object2]...[typeNameN][objectN]
-```
+objectArray : marker size (typeName object)*
 
-- Iterables
+list : objectArray
+    // More efficient than serialization as an iterable due to the fact that the size of the buffer is predetermined
 
-```
-[code][typeName1][object1][typeName2][object2]...[typeNameN][objectN][sentinel]
-```
+iterable: marker (typeName object)* sentinel
 
-- Objects
-  - Serialized/deserialized by their protocol
-  - Type determined by [qualified class name](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/qualified-name.html)
-
-```
-[code][typeName][object]
+object: marker typeName object
+    // Serialized/deserialized by defined protocol
+    // Type determined by [qualified class name](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/qualified-name.html)
 ```
 
 ## Example
