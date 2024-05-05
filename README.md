@@ -82,7 +82,7 @@ iterable: marker (typeName object)* sentinel
 
 object: marker typeName object
     // Serialized/deserialized by defined protocol
-    // Type determined by [qualified class name](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/qualified-name.html)
+    // Type name determined by KClass<*>.qualifiedName
 ```
 
 ## Example
