@@ -5,7 +5,7 @@
 [jvm]\
 class [MissingProtocolException](index.md) : [KanaryException](../-kanary-exception/index.md)
 
-Thrown when a class is expected to have a Kanary I/O protocol, but one has not been defined.
+Thrown when a class is expected to have a Kanary I/O protocol, but one has not been defined. Can be thrown during serialization or deserialization.
 
 ## Properties
 

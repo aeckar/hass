@@ -3,9 +3,9 @@
 # write
 
 [jvm]\
-var [write](write.md): [BinaryOutput](../-binary-output/index.md).([T](index.md)) -&gt; [Unit](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)
+var [write](write.md): [Serializer](../-serializer/index.md).([T](index.md)) -&gt; [Unit](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)
 
-The binary write operation when [BinaryOutput.writeOr](../-binary-output/write-or.md) is called with an object of class [T](index.md)
+The binary write operation when [Serializer.write](../-serializer/write.md) is called with an object of class [T](index.md)
 
 #### Throws
 

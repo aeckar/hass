@@ -3,9 +3,9 @@
 # read
 
 [jvm]\
-var [read](read.md): [BinaryInput](../-binary-input/index.md).() -&gt; [T](index.md)
+var [read](read.md): [Deserializer](../-deserializer/index.md).() -&gt; [T](index.md)
 
-The binary read operation when [BinaryInput.readObject](../-binary-input/read-object.md) is called with an object of class [T](index.md).
+The binary read operation when [Deserializer.readObject](../-deserializer/read-object.md) is called with an object of class [T](index.md).
 
 #### Throws
 
