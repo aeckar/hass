@@ -7,9 +7,9 @@
 
 The goal of this library is to offer a simple, yet efficient API for binary serialization.
 For information that does not need to be accessed directly, JSON is memory-inefficient and slow.
-There are other serialization libraries such as
-(kotlinx.serialization)[https://github.com/Kotlin/kotlinx.serialization], however their implementations often
-require code generation, which adds unnecessary complexity for small projects. Kanary aims to avoid these issues.
+Furthermore, libraries such as 
+[kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization) require the use of plugins and
+code generation, which adds unnecessary complexity for small projects. Kanary aims to avoid these issues.
 
 ## Overview
 
