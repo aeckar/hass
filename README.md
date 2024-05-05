@@ -78,9 +78,9 @@ objectArray : marker size (typeName object)*
 list : objectArray
     // More efficient than serialization as an iterable due to the fact that the size of the buffer is predetermined
 
-iterable: marker (typeName object)* sentinel
+iterable : marker (typeName object)* sentinel
 
-object: marker typeName object
+object : marker typeName object
     // Serialized/deserialized by defined protocol
     // Type name determined by KClass<*>.qualifiedName
 ```
