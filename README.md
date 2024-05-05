@@ -174,9 +174,7 @@ TODO
 - Now restricts reference type read/write to result of qualified `deserializer`/`serializer`
 - Reference types can now be written to binary with the protocol of one of their superclasses or interfaces
 - Failure to define either `read` or `write` once now throws a more detailed exception
-- Renamed the following functions:
-  - `InputStream.binary` -> `InputStream.deserializer`
-  - `OutputStream.binary` -> `OutputStream.serializer`
-- Renamed the following classes:
-  - `BinaryInput` -> `Deserializer`
-  - `BinaryOutput` -> `Serializer`
+- Renamed `InputStream.binary` to `InputStream.deserializer`
+- Renamed `OutputStream.binary` to `OutputStream.serializer`
+- Renamed `BinaryInput` to `Deserializer`
+- Renamed `BinaryOutput` to `Serializer`
