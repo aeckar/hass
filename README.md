@@ -1,69 +1,68 @@
 # Kanary
 **Fast and memory-efficient binary serialization for Kotlin JVM**
 
-[![](https://jitpack.io/v/aeckar/kanary.svg)](https://jitpack.io/#aeckar/kanary) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) ![](https://img.shields.io/badge/Maintained%3F-yes-green.svg)
+[![JitPack: v2.1](https://jitpack.io/v/aeckar/kanary.svg)](https://jitpack.io/#aeckar/kanary) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) ![Maintained?: yes](https://img.shields.io/badge/Maintained%3F-yes-green.svg)
 
 ## Reasoning
 
 The goal of this library is to offer a simple, yet efficient API for binary serialization.
 For information that does not need to be accessed directly, JSON is memory-inefficient and slow.
-There are alternative binary formats, however their implementations often require reflection and
-(for simple projects) are generally more complicated than the task they are trying to accomplish.
+There are other serialization libraries such as
+(kotlinx.serialization)[https://github.com/Kotlin/kotlinx.serialization], however their implementations often
+require code generation, which adds unnecessary complexity for small projects. Kanary aims to avoid these issues.
 
 ## Overview
 
 Kanary supports serialization of all primitive types, as well as any top-level (excluding local and unnamed) classes
 with a defined serialization protocol.
-The primary entry-point of the API is `protocolOf`.
+The primary entry-point of the API is `protocolSet`.
 
 ```kotlin
-inline fun <reified T> protocolOf(builder: ProtocolBuilderScope<T>.() -> Unit): ProtocolSpecification<T> { /* ... */ }
+fun protocolSet(builder: ProtocolSetBuilderScope.() -> Unit): ProtocolSet
 ```
 
-Within the `ProtocolBuilderScope` provided, the user can provide the appropriate read and write operations.
+Within the scope provided, binary I/O protocols can be defined (0 definitions are allowed).
+Protocols for primitive types, primitive arrays, or `String` are disallowed
+and will throw an exception when definition is attempted. This is by design to promote correct use of the API.
+Instead, the user should use the appropriate primitive `read`/`write` function within a
+`PrimitiveSerializer`/`PrimitiveDeserializer`. As a result of this restriction, instances of these types within
+generic arrays, lists, and iterable cannot be serialized unless the protocol of an
+enclosing class does so manually with their respective `write` function.
+
+```kotlin
+fun <reified T> ProtocolSetBuilderScope.protocolOf(
+  builder: ProtocolBuilderScope<T>.() -> Unit
+): ProtocolSpecification<T>
+```
+
+Within the nested scope provided, the user can provide the appropriate
+read and write operations for objects of the specified type.
 
 ```kotlin
 class ProtocolBuilderScope<T> {
-    var read: BinaryInput.() -> T by AssignOnce()
-    var write: BinaryOutput.(T) -> Unit by AssignOnce()
+    var read: Deserializer.() -> T by AssignOnce()
+    var write: Serializer.(T) -> Unit by AssignOnce()
 }
 ```
 
-The function returns a `ProtocolSpecification`, which can be used to assign the defined protocol to the class
-wherever it is used within a program. The `assign()` function must be called **once** from within the `init` block of the
-companion object of the class that is being defined the protocol.
-This ensures thread-safety, since the protocol is assigned lazily whenever the class is used for the first time.
+The outer function returns a `ProtocolSet`, which can be passed to a serializer or deserializer to provide
+read/write functionality for reference types with the defined protocols. They can also be combined using
+the `+` operator. Because such sets are immutable, they are inherently thread-safe.
 
-`BinaryInput` provides read functionality, while `BinaryOutput` provides write functionality.
+To actually serialize/deserialize data, invoke the appropriate function from an `InputStream` or `OutputStream`.
 
 ```kotlin
-import java.io.Closeable
-import java.io.Flushable
+fun InputStream.deserializer(): PrimitiveDeserializer
+fun InputStream.deserializer(protocols: ProtocolSet): Deserializer  // Implements PrimitiveDeserializer
 
-@JvmInline
-value class BinaryInput internal constructor(internal val stream: InputStream) : Closeable {
-    fun read/* primitive */()
-    fun read/* primitive */Array()
-    fun readString()
-    fun read/* Nullables? */Array()
-    fun read/* Nullables? */List()
-    fun read/* Nullables? */Iterable()
-    fun readNullable()
-    fun readObject()
-    
-    // ...
-}
-
-@JvmInline
-value class BinaryOutput internal constructor(internal val stream: OutputStream) : Closeable, Flushable {
-    fun write(/* primitive | primitive array | string */)
-    fun writeAll/* Or */(/* array | list | iterable */)
-    fun writeNullable(obj: Any)
-    fun writeObject(obj: Any)
-    
-    // ...
-}
+fun OutputStream.serializer(): PrimitiveSerializer
+fun OutputStream.serializer(protocols: ProtocolSet): Serializer     // Implements PrimitiveSerializer
 ```
+
+If a reference type is serialized and does not have a defined protocol,
+Kanary reflection to find a suitable protocol from one of its superclasses or interfaces.
+However, for deserialization, there must exist a protocol for the exact class or interface written in binary.
+Both are true for members of generic arrays, lists, and iterables as well.
 
 ## Kanary Format
 
@@ -108,26 +107,32 @@ The class:
 ```kotlin
 // Person.kt
 
-class Person(val name: String, val id: Int) {
-    private companion object {
-        init { protocol.assign() }
+import java.io.FileOutputStream
+
+class Person(val name: String, val id: Int)
+
+private val protocol = protocolSet {
+    protocolOf<Person> {
+        read = {
+            val name = readString() // Ensure reads are in-order
+            val id = readInt()
+            Person(name, id)
+        }
+        write = { instance ->
+            write(instance.name)
+            write(instance.id)
+        }
     }
 }
 
-private val protocol = protocolOf<Person> {
-    read = {
-        val name = readString() // Ensure reads are in-order
-        val id = readInt()
-        Person(name, id)
-    }
-    write = { instance ->
-        write(instance.name)
-        write(instance.id)
+fun main() {
+    FileOutputStream("myFile.bin").serializer(protocol).use {
+        it.write(Person("Bob", 7))
     }
 }
 ```
 
-produces the following binary file when serialized (name = "Bob", id = 7):
+produces the following binary:
 
 ```
     | 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F  |
@@ -150,21 +155,28 @@ TODO
 **v1.1**
 
 - JitPack support fixed
-
 - Changed name of `protocol` to `protocolOf`.
-
 - `read` and `write` are now assigned as properties
 
 **v2.0**
 
 - All serialized values are now prefixed by a unique, 1-byte code, ensuring memory safety
-
 - For object types, serialization by protocol prepends the class name to serialized data
-
 - Superclasses can now be deserialized from a serialized subclass with a defined protocol
-
 - Added I/O protocols for primitive array types, object array types, lists, and types implementing `Iterable`
-
 - `protocolOf` now returns a `ProtocolSpecification`, allowing storage of protocol specifications
-
 - Nullable types can now be serialized with their respective functions
+
+**v2.1**
+
+- Protocols are no longer defined to the global scope, but to a `ProtocolSet`
+- Protocols for primitive types, primitive arrays, and `String`s can no longer be defined
+- Now restricts reference type read/write to result of qualified `deserializer`/`serializer`
+- Reference types can now be written to binary with the protocol of one of their superclasses or interfaces
+- Failure to define either `read` or `write` once now throws a more detailed exception
+- Renamed the following functions:
+  - `InputStream.binary` -> `InputStream.deserializer`
+  - `OutputStream.binary` -> `OutputStream.serializer`
+- Renamed the following classes:
+  - `BinaryInput` -> `Deserializer`
+  - `BinaryOutput` -> `Serializer`

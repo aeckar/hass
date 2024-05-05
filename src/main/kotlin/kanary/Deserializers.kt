@@ -3,29 +3,27 @@ package kanary
 
 import kanary.TypeCode.*
 import java.io.Closeable
-import java.io.Flushable
 import java.io.InputStream
-import java.io.OutputStream
 import java.nio.ByteBuffer
 
 /**
- * @return a new binary input stream associated with this stream
+ * @return a new deserializer capable of reading primitives, primitive arrays, and strings from Kanary format
  */
-fun InputStream.binary() = BinaryInput(this)
+fun InputStream.deserializer() = PrimitiveDeserializer(this)
 
 /**
- * @return a new binary output stream associated with this stream
+ * @return a new deserializer capable of reading primitives, primitive arrays, strings, and
+ * instances of any type with a defined protocol from Kanary format
  */
-fun OutputStream.binary() = BinaryOutput(this)
+fun InputStream.deserializer(protocols: ProtocolSet) = Deserializer(this, protocols)
 
 /**
- * A binary stream with functions for reading primitives or classes with a [protocolOf] in Kanary format.
- * Does not support marking.
+ * Reads serialized data from a stream in Kanary format.
+ * Does not need to be closed so long as the underlying stream is closed.
+ * Because no protocols are defined, no instances of any reference types may be read.
  * Calling [close] also closes the underlying stream.
- * This object does not need to be closed so long as the underlying stream is closed.
  */
-@JvmInline
-value class BinaryInput internal constructor(@PublishedApi internal val stream: InputStream) : Closeable {
+open class PrimitiveDeserializer internal constructor(@PublishedApi internal val stream: InputStream) : Closeable {
     /**
      * @throws TypeMismatchException the object was not serialized as a boolean
      */
@@ -160,6 +158,27 @@ value class BinaryInput internal constructor(@PublishedApi internal val stream: 
         return readStringNoValidate()
     }
 
+    override fun close() = stream.close()
+
+    @PublishedApi
+    internal fun readIntNoValidate() = readBytesNoValidate(Int.SIZE_BYTES).int
+
+    @PublishedApi
+    internal fun readStringNoValidate(): String {
+        val size = readIntNoValidate()
+        return String(stream.readNBytes(size))
+    }
+
+    private fun readBytesNoValidate(count: Int) = ByteBuffer.wrap(stream.readNBytes(count))
+}
+
+/**
+ * A [PrimitiveDeserializer] that allows the reading of objects whose types have a defined protocol.
+ */
+class Deserializer internal constructor(
+    stream: InputStream,
+    private val protocols: ProtocolSet
+) : PrimitiveDeserializer(stream) {
     /**
      * Reads an object array from binary with each member deserialized according to its protocol, or null respectively.
      * @throws TypeMismatchException the object was not serialized as an object array
@@ -222,7 +241,8 @@ value class BinaryInput internal constructor(@PublishedApi internal val stream: 
             NULLABLE_LIST.ordinal -> readNullablesListNoValidate<T, N>()
             ITERABLE_BEGIN.ordinal -> readIterableNoValidate<N>()
             NULLABLE_BEGIN.ordinal -> Unit
-            else -> throw TypeMismatchException(LIST, NULLABLE_LIST, ITERABLE_BEGIN, NULLABLE_BEGIN, code)
+            else -> throw TypeMismatchException("Types 'LIST' or 'NULLABLE_LIST' or 'ITERABLE_BEGIN' or " +
+                    "'NULLABLE_BEGIN' expected, found '${TypeCode.nameOf(code)}'")
         }
         val list = mutableListOf<T?>()
         do {
@@ -273,8 +293,6 @@ value class BinaryInput internal constructor(@PublishedApi internal val stream: 
         return readObjectNoValidate()
     }
 
-    override fun close() = stream.close()
-
     @PublishedApi
     internal inline fun shortCircuitValidate(
         short: TypeCode,
@@ -291,18 +309,9 @@ value class BinaryInput internal constructor(@PublishedApi internal val stream: 
     }
 
     @PublishedApi
-    internal fun readIntNoValidate() = readBytesNoValidate(Int.SIZE_BYTES).int
-
-    @PublishedApi
-    internal fun readStringNoValidate(): String {
-        val size = readIntNoValidate()
-        return String(stream.readNBytes(size))
-    }
-
-    @PublishedApi
     internal inline fun <reified T : Any> readArrayNoValidate(): Array<T> {
         val size = readIntNoValidate()
-        return Array(size) { readObjectNoValidate<T>() }
+        return Array(size) { readObjectNoValidate() }
     }
 
     @PublishedApi
@@ -340,240 +349,10 @@ value class BinaryInput internal constructor(@PublishedApi internal val stream: 
     }
 
     @PublishedApi
-    internal inline fun <reified T : Any> readObjectNoValidate(): T {
-        return resolveProtocol(Class.forName(readStringNoValidate()).kotlin).onRead(this) as T
-    }
-
-    private fun readBytesNoValidate(count: Int) = ByteBuffer.wrap(stream.readNBytes(count))
-}
-
-/**
- * A binary stream with functions for writing primitives or classes with a [protocolOf] in Kanary format.
- * Does not support marking.
- * Calling [close] also closes the underlying stream.
- * This object does not need to be closed so long as the underlying stream is closed.
- */
-@JvmInline
-value class BinaryOutput internal constructor(@PublishedApi internal val stream: OutputStream) : Closeable, Flushable {
-    fun write(cond: Boolean) {
-        BOOLEAN.mark(stream)
-        stream.write(if (cond) 1 else 0)
-    }
-
-    fun write(b: Byte) {
-        BYTE.mark(stream)
-        stream.write(b.toInt())
-    }
-
-    fun write(c: Char) {
-        CHAR.mark(stream)
-        writeBytesNoMark(Char.SIZE_BYTES) { putChar(c) }
-    }
-
-    fun write(n: Short) {
-        SHORT.mark(stream)
-        writeBytesNoMark(Short.SIZE_BYTES) { putShort(n) }
-    }
-
-    fun write(n: Int) {
-        INT.mark(stream)
-        writeNoMark(n)
-    }
-
-    fun write(n: Long) {
-        LONG.mark(stream)
-        writeBytesNoMark(Long.SIZE_BYTES) { putLong(n) }
-    }
-
-    fun write(fp: Float) {
-        FLOAT.mark(stream)
-        writeBytesNoMark(Float.SIZE_BYTES) { putFloat(fp) }
-    }
-
-    fun write(fp: Double) {
-        DOUBLE.mark(stream)
-        writeBytesNoMark(Double.SIZE_BYTES) { putDouble(fp) }
-    }
-
-    fun write(condArr: BooleanArray) {
-        BOOLEAN_ARRAY.mark(stream)
-        condArr.forEach { stream.write(if (it) 1 else 0) }
-    }
-
-    fun write(bArr: ByteArray) {
-        BYTE_ARRAY.mark(stream)
-        writeBytesNoMark(Int.SIZE_BYTES) { putInt(bArr.size) }
-        stream.write(bArr)
-    }
-
-    fun write(cArr: CharArray) {
-        CHAR_ARRAY.mark(stream)
-        writeArrayNoMark(Char.SIZE_BYTES, cArr.size) { cArr.forEach { putChar(it) } }
-    }
-
-    fun write(nArr: ShortArray) {
-        SHORT_ARRAY.mark(stream)
-        writeArrayNoMark(Short.SIZE_BYTES, nArr.size) { nArr.forEach { putShort(it) } }
-    }
-
-    fun write(nArr: IntArray) {
-        INT_ARRAY.mark(stream)
-        writeArrayNoMark(Int.SIZE_BYTES, nArr.size) { nArr.forEach { putInt(it) } }
-    }
-
-    fun write(nArr: LongArray) {
-        LONG_ARRAY.mark(stream)
-        writeArrayNoMark(Long.SIZE_BYTES, nArr.size) { nArr.forEach { putLong(it) } }
-    }
-
-    fun write(nArr: FloatArray) {
-        FLOAT_ARRAY.mark(stream)
-        writeArrayNoMark(Float.SIZE_BYTES, nArr.size) { nArr.forEach { putFloat(it) } }
-    }
-
-    fun write(nArr: DoubleArray) {
-        DOUBLE_ARRAY.mark(stream)
-        writeArrayNoMark(Double.SIZE_BYTES, nArr.size) { nArr.forEach { putDouble(it) } }
-    }
-
-    fun write(s: String) {  // marker, size, char...
-        STRING.mark(stream)
-        writeNoMark(s)
-    }
-
-    /**
-     * Writes all members in array according to the protocol of each instance.
-     * @throws MissingProtocolException the type of any member of [nullablesArr] is not null, and
-     * is not a top-level class or does not have a defined protocol
-     */
-    inline fun <T, reified N : T & Any> writeAllOr(nullablesArr: Array<out T>) {  // marker, type, size, (marker, member)...
-        NULLABLE_ARRAY.mark(stream)
-        writeNoMark(nullablesArr.size)
-        nullablesArr.forEach {
-            if (it == null) {
-                NULL.mark(stream)
-                return@forEach
-            }
-            write(it)
-        }
-    }
-
-    /**
-     * Writes all members in array according to the protocol of each instance.
-     * @throws MissingProtocolException the type of any member of [objArr]
-     * is not a top-level class or does not have a defined protocol
-     */
-    inline fun <reified T : Any> writeAll(objArr: Array<out T>) {  // marker, type, size, (marker, member)...
-        OBJECT_ARRAY.mark(stream)
-        writeNoMark(objArr.size)
-        objArr.forEach { write(it) }
-    }
-
-    /**
-     * Writes all members in the list according the protocol of each.
-     * @throws MissingProtocolException any member of [nullablesList] is not null, and
-     * its type is not top-level class or does not have a defined protocol
-     */
-    inline fun <reified T> writeAllOr(nullablesList: List<T>) {   // marker, size, (marker, member)...
-        NULLABLE_LIST.mark(stream)
-        writeNoMark(nullablesList.size)
-        nullablesList.forEach {
-            if (it == null) {
-                NULL.mark(stream)
-                return@forEach
-            }
-            write(it)
-        }
-    }
-
-    /**
-     * Writes all members in the list according the protocol of each.
-     * @throws MissingProtocolException any member of [list] is not a top-level class or does not have a defined protocol
-     */
-    inline fun <reified T : Any> writeAll(list: List<T>) { // marker, size, (marker, member)...
-        LIST.mark(stream)
-        writeNoMark(list.size)
-        list.forEach { write(it) }
-    }
-
-    /**
-     * Writes all members in the iterable object according the protocol of each instance as a list.
-     * The caller must ensure that the object has a finite number of members.
-     * @throws MissingProtocolException any member of [nullablesIter] is not null, and
-     * its type is not top-level class or does not have a defined protocol
-     */
-    inline fun <reified T> writeAllOr(nullablesIter: Iterable<T>) {  // begin, (marker, member)..., end
-        NULLABLE_BEGIN.mark(stream)
-        nullablesIter.forEach {
-            if (it == null) {
-                NULL.mark(stream)
-                return@forEach
-            }
-            write(it)
-        }
-        SENTINEL.mark(stream)
-    }
-
-    /**
-     * Writes all members in the iterable object according the protocol of each as a list.
-     * The caller must ensure that the object has a finite number of members.
-     * @throws MissingProtocolException any member of [iter] is not a top-level class or does not have a defined protocol
-     */
-    inline fun <reified T : Any> writeAll(iter: Iterable<T>) { // begin, (marker, member)..., end
-        ITERABLE_BEGIN.mark(stream)
-        iter.forEach { write(it) }
-        SENTINEL.mark(stream)
-    }
-
-    /**
-     * Writes the object in binary format according to the protocol of its type, or null.
-     * @throws MissingProtocolException if [nullable] is not null, and
-     * its type is not a top-level class or does not have a defined protocol
-     */
-    fun writeOr(nullable: Any?) {
-        if (nullable == null) {
-            NULL.mark(stream)
-            return
-        }
-        write(nullable)
-    }
-
-    /**
-     * Writes the object according to the protocol of its type.
-     * @throws MissingProtocolException the type of [obj] is not a top-level class or does not have a defined protocol
-     */
-    fun <T : Any> write(obj: T) {
-        OBJECT.mark(stream)
-        val classRef = obj::class
-        writeNoMark(protocolNameOf(classRef))
-        resolveProtocol(classRef).onWrite(this, obj)
-    }
-
-    override fun flush() = stream.flush()
-    override fun close() = stream.close()
-
-    @PublishedApi
-    internal fun writeNoMark(n: Int) = writeBytesNoMark(Int.SIZE_BYTES) { putInt(n) }
-
-    @PublishedApi
-    internal fun writeNoMark(s: String) {
-        val bytes = s.toByteArray(Charsets.UTF_8)
-        writeNoMark(bytes.size)
-        stream.write(bytes)
-    }
-
-    @PublishedApi
-    internal inline fun writeBytesNoMark(count: Int, write: ByteBuffer.() -> Unit) {
-        val buffer = ByteBuffer.allocate(count)
-        write(buffer)
-        stream.write(buffer.array())
-    }
-
-    // marker, size, member...
-    private inline fun writeArrayNoMark(memberBytes: Int, size: Int, bulkWrite: ByteBuffer.() -> Unit) {
-        val buffer = ByteBuffer.allocate(1*Int.SIZE_BYTES + size*memberBytes)
-        buffer.putInt(size)
-        bulkWrite(buffer)
-        stream.write(buffer.array())
+    internal fun <T : Any> readObjectNoValidate(): T {
+        val className = readStringNoValidate()
+        println(protocols)
+        return protocols.resolve<T>(className)?.read?.invoke(this)
+            ?: throw MissingProtocolException("Binary I/O protocol for class '$className' expected but not found")
     }
 }

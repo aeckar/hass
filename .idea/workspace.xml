@@ -4,11 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Added docs for release 2.0">
-      <change afterPath="$PROJECT_DIR$/src/test/resources/personJava.bin" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/resources/personKanary.bin" afterDir="false" />
+    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Removed unused imports">
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Deserializers.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/kotlin/kanary/KanaryTest.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/resources/polymorphic.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/kotlin/KanaryTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/KanaryTest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/BinaryIO.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Serializers.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Exceptions.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Exceptions.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Protocols.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Protocols.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/TypeCode.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/TypeCode.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/kotlin/KanaryTest.kt" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -64,6 +71,9 @@
     &quot;accountId&quot;: &quot;6cba976d-76a2-45c0-97e8-f33b9f7c8fa6&quot;
   }
 }</component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="DEPENDENCY_CHECKER_PROBLEMS_TAB" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 1
 }</component>
@@ -88,7 +98,7 @@
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.sourceCode.Kotlin&quot;
   },
   &quot;keyToStringList&quot;: {
     &quot;kotlin-gradle-user-dirs&quot;: [
@@ -428,7 +438,15 @@
       <option name="project" value="LOCAL" />
       <updated>1714791249028</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="Removed unused imports">
+      <option name="closed" value="true" />
+      <created>1714797225062</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1714797225062</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -453,6 +471,7 @@
     <MESSAGE value="Suppressed warnings for unused functions" />
     <MESSAGE value="Added ProtocolSpecification so protocols can be shared" />
     <MESSAGE value="Added docs for release 2.0" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added docs for release 2.0" />
+    <MESSAGE value="Removed unused imports" />
+    <option name="LAST_COMMIT_MESSAGE" value="Removed unused imports" />
   </component>
 </project>

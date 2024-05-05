@@ -26,7 +26,7 @@ internal enum class TypeCode {
     fun validate(stream: InputStream) {
         val code = stream.read()
         if (ordinal != code) {
-            throw TypeMismatchException(this, code)
+            throw TypeMismatchException("Type '$name' expected, but found '${TypeCode.nameOf(code)}'")
         }
     }
 
