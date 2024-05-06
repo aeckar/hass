@@ -80,7 +80,7 @@ list : objectArray
 
 iterable : marker (typeName object)* sentinel
 
-object : marker typeName object
+singleObject : marker typeName object
     // Serialized/deserialized by defined protocol
     // Type name determined by KClass<*>.qualifiedName
 ```
@@ -133,26 +133,28 @@ TODO
 
 ## Changelog
 
-**v1.0**
+### v1.0
 
 - Release
 
-**v1.1**
+### v1.1
 
 - JitPack support fixed
 - Changed name of `protocol` to `protocolOf`.
 - `read` and `write` are now assigned as properties
 
-**v2.0**
+### v2.0
 
-- All serialized values are now prefixed by a unique, 1-byte code, ensuring memory safety
-- For object types, serialization by protocol prepends the class name to serialized data
 - Superclasses can now be deserialized from a serialized subclass with a defined protocol
 - Added I/O protocols for primitive array types, object array types, lists, and types implementing `Iterable`
 - `protocolOf` now returns a `ProtocolSpecification`, allowing storage of protocol specifications
 - Nullable types can now be serialized with their respective functions
 
-**v2.1**
+*Breaking changes:*
+- All serialized values are now prefixed by a unique, 1-byte code, ensuring memory safety
+- For object types, serialization by protocol prepends the class name to serialized data
+
+### v2.1
 
 - Protocols are no longer defined to the global scope, but to a `ProtocolSet`
 - Protocols for primitive types, primitive arrays, and `String`s can no longer be defined
