@@ -53,6 +53,10 @@ class ProtocolBuilderScope<T> {
 class ProtocolSet @PublishedApi internal constructor(
     private val protocols: Map<String,Protocol<*>>
 ) {
+    init {
+
+    }
+
     internal val superclassProtocolCache = ConcurrentHashMap<String, Pair<String,Protocol<*>>>()
 
     @Suppress("UNCHECKED_CAST")
@@ -93,8 +97,8 @@ class ProtocolSetBuilderScope @PublishedApi internal constructor() {
     inline fun <reified T : Any> protocolOf(builder: ProtocolBuilderScope<T>.() -> Unit) {
         val t = T::class
         val className = protocolNameOf(t)
-        if (className in illegalProtocols) {
-            throw InvalidProtocolException(t, "primitive, primitive array, or String")
+        if (className in defaultProtocolNames) {
+            throw InvalidProtocolException(t, "default protocol already defined")
         }
         if (className in protocols) {
             throw ReassignmentException("Binary I/O protocol for class '$className' defined more than once")
@@ -112,7 +116,7 @@ class ProtocolSetBuilderScope @PublishedApi internal constructor() {
 
     @PublishedApi
     internal companion object {
-        val illegalProtocols = hashSetOf(
+        val defaultProtocolNames = hashSetOf(
             "kotlin.Boolean",
             "kotlin.Byte",
             "kotlin.Char",
@@ -131,7 +135,11 @@ class ProtocolSetBuilderScope @PublishedApi internal constructor() {
             "kotlin.FloatArray",
             "kotlin.DoubleArray",
 
-            "kotlin.String"
+            "kotlin.String",
+
+            "kotlin.Pair",
+            "kotlin.Triple",
+            "kotlin.collections.Map.Entry"
         )
     }
 }

@@ -154,7 +154,7 @@ class Serializer internal constructor(
      * @throws MissingProtocolException the type of any member of [nullablesArr] is not null, and
      * is not a top-level class or does not have a defined protocol
      */
-    inline fun <T, reified N : T & Any> writeAllOr(nullablesArr: Array<out T>) {  // marker, type, size, (marker, member)...
+    inline fun <T, reified N : T & Any> writeAllNullables(nullablesArr: Array<out T>) {  // marker, type, size, (marker, member)...
         NULLABLE_ARRAY.mark(stream)
         writeNoMark(nullablesArr.size)
         nullablesArr.forEach {
@@ -182,7 +182,7 @@ class Serializer internal constructor(
      * @throws MissingProtocolException any member of [nullablesList] is not null, and
      * its type is not top-level class or does not have a defined protocol
      */
-    inline fun <reified T> writeAllOr(nullablesList: List<T>) {   // marker, size, (marker, member)...
+    inline fun <reified T> writeAllNullables(nullablesList: List<T>) {   // marker, size, (marker, member)...
         NULLABLE_LIST.mark(stream)
         writeNoMark(nullablesList.size)
         nullablesList.forEach {
@@ -210,7 +210,7 @@ class Serializer internal constructor(
      * @throws MissingProtocolException any member of [nullablesIter] is not null, and
      * its type is not top-level class or does not have a defined protocol
      */
-    inline fun <reified T> writeAllOr(nullablesIter: Iterable<T>) {  // begin, (marker, member)..., end
+    inline fun <reified T> writeAllNullables(nullablesIter: Iterable<T>) {  // begin, (marker, member)..., end
         NULLABLE_BEGIN.mark(stream)
         nullablesIter.forEach {
             if (it == null) {
@@ -240,7 +240,7 @@ class Serializer internal constructor(
      * @throws MissingProtocolException if [nullable] is not null, and
      * its type is not a top-level class or does not have a defined protocol
      */
-    fun writeOr(nullable: Any?) {
+    fun writeNullable(nullable: Any?) {
         if (nullable == null) {
             NULL.mark(stream)
             return
