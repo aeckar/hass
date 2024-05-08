@@ -2,9 +2,18 @@ package kanary
 
 import com.github.eckar.ReassignmentException
 import kotlin.reflect.KClass
+import kotlin.reflect.KType
+import kotlin.reflect.jvm.jvmErasure
 
 internal typealias ReadOperation<T> = Deserializer.() -> T
 internal typealias WriteOperation<T> = Serializer.(T) -> Unit
+internal typealias JvmType = KClass<*>
+
+@Suppress("UNCHECKED_CAST")
+internal fun ReadOperation<*>.eraseType() = this as ReadOperation<Any>
+
+@Suppress("UNCHECKED_CAST")
+internal fun WriteOperation<*>.generic(stream: Serializer, obj: Any) = (this as WriteOperation<Any>)(stream, obj)
 
 /**
  * Provides a scope wherein protocols for various classes may be defined.
@@ -18,7 +27,7 @@ internal typealias WriteOperation<T> = Serializer.(T) -> Unit
 inline fun protocolSet(builder: ProtocolSetBuilderScope.() -> Unit): ProtocolSet {
     val builderScope = ProtocolSetBuilderScope()
     builder(builderScope)
-    return ProtocolSet(builderScope.protocols, builderScope.supertypes)
+    return ProtocolSet(builderScope.protocols)
 }
 
 /**
@@ -26,10 +35,7 @@ inline fun protocolSet(builder: ProtocolSetBuilderScope.() -> Unit): ProtocolSet
  */
 class ProtocolSetBuilderScope @PublishedApi internal constructor() {
     @PublishedApi
-    internal val supertypes = mutableMapOf<String,MutableList<String>>()
-
-    @PublishedApi
-    internal val protocols = mutableMapOf<String,Protocol<*>>()
+    internal val protocols = mutableMapOf<JvmType,Protocol<*>>()
 
     /**
      * Provides a scope wherein a the binary [read][ProtocolBuilderScope.read] and [write][ProtocolBuilderScope.write]
@@ -38,67 +44,70 @@ class ProtocolSetBuilderScope @PublishedApi internal constructor() {
      * @throws ReassignmentException either of the operations are defined twice,
      * or this is called more than once for type [T]
      */
-    inline fun <reified T : Any> protocolOf(builder: ProtocolBuilderScope<T>.() -> Unit): String {
+    inline fun <reified T : Any> protocolOf(builder: ProtocolBuilderScope<T>.() -> Unit) {
         val classRef = T::class
-        val className = classRef.nameIfExists()
+        when (classRef) {
+            Any::class, Nothing::class, Unit::class -> throw InvalidProtocolException(classRef, "fundamental type");
+        }
+        val className = classRef.nameIfExists() // Ensures eligible protocol
         if (className in Serializer.defaultWriteOperations) {
             throw InvalidProtocolException(classRef, "default protocol already defined")
         }
-        if (className in protocols) {
+        if (classRef in protocols) {
             throw ReassignmentException("Binary I/O protocol for class '$className' defined more than once")
         }
         val builderScope = ProtocolBuilderScope<T>(classRef)
         builder(builderScope)
-        protocols[className] = try {
+        protocols[classRef] = try {
             Protocol(builderScope.read, builderScope.write) // TODO
         } catch (_: NoSuchElementException) {
             throw NoSuchElementException("Read or write operation undefined")
         } catch (_: ReassignmentException) {
             throw ReassignmentException("Read or write operation defined more than once")
         }
-        return className
-    }
-
-    /**
-     * Declares that the class name (receiver) inherits from the supertype of
-     * the specified [qualified name][KClass.qualifiedName].
-     * Doing so permits polymorphic serialization through the creation of packets.
-     * Can be chained to the end of [protocolOf].
-     * @see and
-     */
-    infix fun String.implements(supertype: String): SupertypeSet {
-        supertypes.getOrPut(this) { mutableListOf() } += supertype
-        return SupertypeSet(this)
-    }
-
-    /**
-     * Declares that the class name (receiver) inherits from the supertype of
-     * the specified [qualified name][KClass.qualifiedName].
-     * Can be chained.
-     * @see implements
-     */
-    infix fun SupertypeSet.and(otherSupertype: String): SupertypeSet {
-        className implements otherSupertype
-        return this
     }
 }
 
-class ProtocolSet @PublishedApi internal constructor(
-    internal val protocols: Map<String, Protocol<*>>,
-    internal val supertypes: Map<String, List<String>>
-) {
+class ProtocolSet {
+    internal val definedProtocols: Map<JvmType, Protocol<*>>
+    internal val supertypes: Map<JvmType, List<JvmType>>
+
+    @PublishedApi
+    internal constructor(definedProtocols: Map<JvmType, Protocol<*>>) {
+        this.definedProtocols = definedProtocols
+        this.supertypes = mutableMapOf<JvmType, MutableList<JvmType>>().apply {
+            definedProtocols.keys.forEach { it.supertypes.findSupertypes(subClass = it, this) }
+        }
+    }
+
+    internal constructor(definedProtocols: Map<JvmType, Protocol<*>>, supertypes: Map<JvmType, List<JvmType>>) {
+        this.definedProtocols = definedProtocols
+        this.supertypes = supertypes
+    }
+
     /**
      * @return a new protocol set containing the protocols of each
      * @throws ReassignmentException the sets contain conflicting declarations of a given protocol
      */
     operator fun plus(other: ProtocolSet): ProtocolSet {
-        val otherClassNames = other.protocols.keys
-        for (className in protocols.keys) {
+        val otherClassNames = other.definedProtocols.keys
+        for (className in definedProtocols.keys) {
             if (className in otherClassNames) {
                 throw ReassignmentException("Conflicting declarations for binary I/O protocol of class '$className'")
             }
         }
-        return ProtocolSet(protocols + other.protocols, supertypes + other.supertypes)
+        return ProtocolSet(definedProtocols + other.definedProtocols, supertypes + other.supertypes)
+    }
+
+    private fun List<KType>.findSupertypes(subClass: JvmType, supertypes: MutableMap<JvmType,MutableList<JvmType>>) {
+        asSequence().map { it.jvmErasure }.forEach {
+            if (it != Any::class) {
+                if (it in definedProtocols && it !in supertypes.getOrPut(subClass) { mutableListOf() }) {
+                    supertypes.getValue(subClass).apply { this += it }
+                }
+                it.supertypes.findSupertypes(subClass, supertypes)
+            }
+        }
     }
 
     internal companion object {

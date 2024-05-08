@@ -2,12 +2,11 @@ package kanary
 
 import com.github.eckar.ReassignmentException
 import com.github.eckar.once
-import kotlin.reflect.KClass
 
 /**
  * The scope wherein a protocol's [read] and [write] operations are defined.
  */
-class ProtocolBuilderScope<T>(private val classRef: KClass<*>) {
+class ProtocolBuilderScope<T>(private val classRef: JvmType) {
     /**
      * The binary read operation when [Deserializer.readObject] is called with an object of class [T].
      * For types that implement

@@ -22,8 +22,8 @@ fun OutputStream.serializer(protocols: ProtocolSet = ProtocolSet.DEFAULT) = Seri
  */
 class Serializer internal constructor(
     @PublishedApi internal val stream: OutputStream,
-    private val protocolSet: ProtocolSet
-) : Closeable, Flushable {
+    private val protocols: ProtocolSet
+) : Closeable by stream, Flushable by stream {
     fun writeBoolean(cond: Boolean) {
         BOOLEAN.mark(stream)
         stream.write(if (cond) 1 else 0)
@@ -71,10 +71,10 @@ class Serializer internal constructor(
      * @throws MissingProtocolException the type of any member of [array]
      * is not a top-level class or does not have a defined protocol
      */
-    inline fun <reified T : Any> write(array: Array<out T>) {  // code size (code member)*
+    fun <T : Any> write(array: Array<out T>) {  // code size (code member)*
         OBJECT_ARRAY.mark(stream)
         writeIntNoMark(array.size)
-        array.forEach { write(it) }
+        array.forEach { writeNonNull(it) }
     }
 
     /**
@@ -82,10 +82,10 @@ class Serializer internal constructor(
      * Avoids null check for members, unlike generic `write`.
      * @throws MissingProtocolException any member of [list] is not a top-level class or does not have a defined protocol
      */
-    inline fun <reified T : Any> write(list: List<T>) { // code size (code member)*
+    fun <T : Any> write(list: List<T>) { // code size (code member)*
         LIST.mark(stream)
         writeIntNoMark(list.size)
-        list.forEach { write(it) }
+        list.forEach { writeNonNull(it) }
     }
 
     /**
@@ -94,10 +94,44 @@ class Serializer internal constructor(
      * Avoids null check for members, unlike generic `write`.
      * @throws MissingProtocolException any member of [iter] is not a top-level class or does not have a defined protocol
      */
-    inline fun <reified T : Any> write(iter: Iterable<T>) { // code (code member)* sentinel
+    fun <T : Any> write(iter: Iterable<T>) { // code (code member)* sentinel
         ITERABLE.mark(stream)
-        iter.forEach { write(it) }
+        iter.forEach { writeNonNull(it) }
         SENTINEL.mark(stream)
+    }
+
+    /**
+     * Writes the given pair according to the protocols of its members.
+     * Avoids null check for members, unlike generic `write`.
+     * @throws MissingProtocolException any member of [pair] is not a top-level class or does not have a defined protocol
+     */
+    fun <T : Any> write(pair: Pair<T,T>) {
+        PAIR.mark(stream)
+        writeNonNull(pair.first)
+        writeNonNull(pair.second)
+    }
+
+    /**
+     * Writes the given triple according to the protocols of its members.
+     * Avoids null check for members, unlike generic `write`.
+     * @throws MissingProtocolException any member of [triple] is not a top-level class or does not have a defined protocol
+     */
+    fun <T : Any> write(triple: Triple<T,T,T>) {
+        TRIPLE.mark(stream)
+        writeNonNull(triple.first)
+        writeNonNull(triple.second)
+        writeNonNull(triple.third)
+    }
+
+    /**
+     * Writes the given map entry according to the protocols of its key and value.
+     * Avoids null check for members, unlike generic `write`.
+     * @throws MissingProtocolException any member of [entry] is not a top-level class or does not have a defined protocol
+     */
+    fun <K : Any, V : Any> write(entry: Map.Entry<K,V>) {
+        MAP_ENTRY.mark(stream)
+        writeNonNull(entry.key)
+        writeNonNull(entry.value)
     }
 
     /**
@@ -107,37 +141,62 @@ class Serializer internal constructor(
      * @throws MissingProtocolException if [obj] is not null, and
      * its type is not a top-level class or does not have a defined protocol
      */
-    @Suppress("UNCHECKED_CAST")
     fun write(obj: Any?) {
         if (obj == null) {
             NULL.mark(stream)
             return
         }
-        val classRef = obj::class
-        var className = classRef.nameIfExists()
-        defaultWriteOperations[className]?.let {
-            this.it(obj)
-            return
-        }
-        OBJECT.mark(stream)
-        var protocol = protocolSet.protocols[className]
-        if (protocol == null) {
-            val cache = protocolSet.superclassProtocolCache
-            val cachedProtocol = cache[className]
-                ?: classRef.findWriteProtocol()?.also { cache[className] = it }
-                ?: throw MissingProtocolException("No binary I/O protocols found for any superclass of type '$className'")
-            className = cachedProtocol.first
-            protocol = cachedProtocol.second as Protocol<Any>
-        }
-        writeStringNoMark(className)
-        (protocol.write as WriteOperation<Any>)(this, obj)
+        writeNonNull(obj)
+    }
+
+    private inline fun writeBytesNoMark(count: Int, write: ByteBuffer.() -> Unit) {
+        val buffer = ByteBuffer.allocate(count)
+        write(buffer)
+        stream.write(buffer.array())
+    }
+
+    private fun writeIntNoMark(n: Int) = writeBytesNoMark(Int.SIZE_BYTES) { putInt(n) }
+
+    // code size member*
+    private inline fun writeArrayNoMark(memberBytes: Int, size: Int, bulkWrite: ByteBuffer.() -> Unit) {
+        val buffer = ByteBuffer.allocate(1 * Int.SIZE_BYTES + size * memberBytes)
+        buffer.putInt(size)
+        bulkWrite(buffer)
+        stream.write(buffer.array())
+    }
+
+    private fun writeStringNoMark(s: String) {
+        val bytes = s.toByteArray(Charsets.UTF_8)
+        writeIntNoMark(bytes.size)
+        stream.write(bytes)
     }
 
     private fun writeIterableNoMark(iter: Iterable<*>) {
         iter.forEach { it?.let { write(it) } ?: NULL.mark(stream) }
     }
 
-    companion object {
+    private fun writeNonNull(obj: Any) {
+        val classRef = obj::class
+        val className = classRef.nameIfExists() // Ensures eligible protocol
+        defaultWriteOperations[className]?.let {
+            this.it(obj)    // Marks stream
+            return
+        }
+        OBJECT.mark(stream)
+        val supertypes = protocols.supertypes.getOrDefault(classRef, listOf())
+        stream.write(supertypes.size)   // There is no way someone's going to inherit more than 255 classes...
+        supertypes.forEach {    // packets := (type object)*
+            writeStringNoMark(it.qualifiedName!!)
+            protocols.definedProtocols[it]?.write?.generic(this, obj)
+                ?: throw MissingProtocolException("No write operation found for supertype '$it' of type '$className'")
+        }
+        val protocol = protocols.definedProtocols[classRef]
+            ?: throw MissingProtocolException("No write operation found for protocol of type '$className'")
+        writeStringNoMark(className)
+        protocol.write.generic(this, obj)
+    }
+
+    private companion object {
         val defaultWriteOperations = mapOf(
             write<Boolean> {
                 writeBoolean(it)
@@ -215,54 +274,26 @@ class Serializer internal constructor(
                 writeIterableNoMark(instance)
                 SENTINEL.mark(stream)
             },
-            write<Pair<*,*>> {
-                PAIR.mark(stream)
+            write<Pair<*, *>> {
+                NULLABLES_PAIR.mark(stream)
                 write(it.first)
                 write(it.second)
             },
-            write<Triple<*,*,*>> {
-                TRIPLE.mark(stream)
+            write<Triple<*, *, *>> {
+                NULLABLES_TRIPLE.mark(stream)
                 write(it.first)
                 write(it.second)
                 write(it.third)
             },
-            write<Map.Entry<*,*>> {
-                MAP_ENTRY.mark(stream)
+            write<Map.Entry<*, *>> {
+                NULLABLES_MAP_ENTRY.mark(stream)
                 write(it.key)
                 write(it.value)
             }
         )
-    }
 
-    override fun flush() = stream.flush()
-    override fun close() = stream.close()
-
-    @PublishedApi
-    internal fun writeIntNoMark(n: Int) = writeBytesNoMark(Int.SIZE_BYTES) { putInt(n) }
-
-    @PublishedApi
-    internal fun writeStringNoMark(s: String) {
-        val bytes = s.toByteArray(Charsets.UTF_8)
-        writeIntNoMark(bytes.size)
-        stream.write(bytes)
-    }
-
-    @PublishedApi
-    internal inline fun writeBytesNoMark(count: Int, write: ByteBuffer.() -> Unit) {
-        val buffer = ByteBuffer.allocate(count)
-        write(buffer)
-        stream.write(buffer.array())
-    }
-
-    // marker, size, member...
-    private inline fun writeArrayNoMark(memberBytes: Int, size: Int, bulkWrite: ByteBuffer.() -> Unit) {
-        val buffer = ByteBuffer.allocate(1*Int.SIZE_BYTES + size*memberBytes)
-        buffer.putInt(size)
-        bulkWrite(buffer)
-        stream.write(buffer.array())
+        @Suppress("UNCHECKED_CAST")
+        inline fun <reified T : Any> write(noinline write: WriteOperation<T>) =
+            T::class.qualifiedName!! to write as WriteOperation<Any>
     }
 }
-
-@Suppress("UNCHECKED_CAST")
-inline fun <reified T : Any> write(noinline write: WriteOperation<T>) =
-        T::class.qualifiedName!! to write as WriteOperation<Any>
