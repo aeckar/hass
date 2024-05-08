@@ -185,7 +185,7 @@ class Deserializer internal constructor(
      * @throws TypeCastException a member is not null or an instance of type [T]
      */
     inline fun <T, reified N : T & Any> readNullablesArray(): Array<out T?> {
-        shortCircuitValidate(OBJECT_ARRAY, NULLABLE_ARRAY) { return readArrayNoValidate<N>() }
+        shortCircuitValidate(OBJECT_ARRAY, NULLABLES_ARRAY) { return readArrayNoValidate<N>() }
         val size = readIntNoValidate()
         return Array(size) {
             val code = stream.read()
@@ -215,7 +215,7 @@ class Deserializer internal constructor(
      * @throws TypeCastException a member is not null or an instance of type [T]
      */
     inline fun <reified T, reified N : T & Any> readNullablesList(): List<T?> {
-        shortCircuitValidate(LIST, NULLABLE_LIST) { return readListNoValidate<N>() }
+        shortCircuitValidate(LIST, NULLABLES_LIST) { return readListNoValidate<N>() }
         return readNullablesListNoValidate()
     }
 
@@ -238,11 +238,11 @@ class Deserializer internal constructor(
     inline fun <T, reified N : T & Any> readNullablesIterable(): List<T?> {
         when (val code = stream.read()) {
             LIST.ordinal -> readListNoValidate<N>()
-            NULLABLE_LIST.ordinal -> readNullablesListNoValidate<T, N>()
-            ITERABLE_BEGIN.ordinal -> readIterableNoValidate<N>()
-            NULLABLE_BEGIN.ordinal -> Unit
-            else -> throw TypeMismatchException("Types 'LIST' or 'NULLABLE_LIST' or 'ITERABLE_BEGIN' or " +
-                    "'NULLABLE_BEGIN' expected, found '${TypeCode.nameOf(code)}'")
+            NULLABLES_LIST.ordinal -> readNullablesListNoValidate<T, N>()
+            ITERABLE.ordinal -> readIterableNoValidate<N>()
+            NULLABLES_ITERABLE.ordinal -> Unit
+            else -> throw TypeMismatchException("Types 'LIST' or 'NULLABLES_LIST' or 'ITERABLE' or " +
+                    "'NULLABLES_ITERABLE' expected, found '${TypeCode.nameOf(code)}'")
         }
         val list = mutableListOf<T?>()
         do {
@@ -263,7 +263,7 @@ class Deserializer internal constructor(
      * @throws TypeCastException a member is not an instance of type [T]
      */
     inline fun <reified T : Any> readIterable(): List<T> {
-        shortCircuitValidate(LIST, ITERABLE_BEGIN) { return readListNoValidate() }
+        shortCircuitValidate(LIST, ITERABLE) { return readListNoValidate() }
         return readIterableNoValidate()
     }
 
@@ -356,3 +356,6 @@ class Deserializer internal constructor(
             ?: throw MissingProtocolException("Binary I/O protocol for class '$className' expected but not found")
     }
 }
+
+@JvmInline
+value class PolymorphicDeserializer() // wrap

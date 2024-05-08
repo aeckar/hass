@@ -7,15 +7,12 @@ plugins {
 group = "com.github.aeckar"
 version = "2.1"
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     testImplementation(kotlin("test"))
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     implementation(kotlin("reflect"))
+    implementation("com.github.aeckar:once:1.0")
 }
 
 publishing {

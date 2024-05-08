@@ -24,14 +24,14 @@ val dataProtocol = protocolSet {
             )
         }
         write = {
-            write(it.booleanValue)
-            write(it.byteValue)
-            write(it.charValue)
-            write(it.shortValue)
-            write(it.intValue)
-            write(it.longValue)
-            write(it.floatValue)
-            write(it.doubleValue)
+            writeBoolean(it.booleanValue)
+            writeByte(it.byteValue)
+            writeChar(it.charValue)
+            writeShort(it.shortValue)
+            writeInt(it.intValue)
+            writeLong(it.longValue)
+            writeFloat(it.floatValue)
+            writeDouble(it.doubleValue)
             write(it.stringValue)
             write(it.objValue)
         }
@@ -56,7 +56,7 @@ val personAndMessageProtocols = protocolSet {
         }
         write = { instance ->
             write(instance.name)
-            write(instance.id)
+            writeInt(instance.id)
         }
     }
 }
@@ -73,8 +73,8 @@ val charSequenceWrapperProtocol = protocolSet {
             StringWrapper(chars)
         }
         write = {
-            write(it.chars.length)
-            it.chars.forEach { c -> write(c) }
+            writeInt(it.chars.length)
+            it.chars.forEach { c -> writeChar(c) }
         }
     }
 }

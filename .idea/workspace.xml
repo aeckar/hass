@@ -4,10 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Removed unused imports">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Renamed &quot;writeAllOr&quot; to &quot;writeAllNullables&quot;.&#10;Renamed &quot;writeOr&quot; to &quot;writeNullable&quot;.">
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Protocol.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/SupertypeSet.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Protocols.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Protocols.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/settings.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Delegates.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Deserializers.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Deserializer.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Exceptions.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Exceptions.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Protocols.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/ProtocolSet.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Serializers.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Serializer.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/TypeCode.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/TypeCode.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/kotlin/kanary/KanaryTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/kanary/KanaryTest.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,6 +41,11 @@
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="kanary" type="f1a62948:ProjectNode" />
               </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="kanary" type="f1a62948:ProjectNode" />
+                <item name="Dependencies" type="6de06a37:ExternalSystemViewDefaultContributor$MyDependenciesNode" />
+              </path>
             </expand>
             <select />
           </tree_state>
@@ -42,8 +56,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Kotlin Class" />
         <option value="Kotlin File" />
+        <option value="Kotlin Class" />
       </list>
     </option>
   </component>
@@ -100,6 +114,7 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\eckar\IdeaProjects\kanary\src\main\kotlin\kanary\assign" />
       <recent name="C:\Users\eckar\IdeaProjects\kanary\src\main\kotlin\kanary" />
     </key>
     <key name="MoveKotlinTopLevelDeclarationsDialog.RECENTS_KEY">

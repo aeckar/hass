@@ -14,14 +14,19 @@ internal enum class TypeCode {
     FLOAT,      FLOAT_ARRAY,
     DOUBLE,     DOUBLE_ARRAY,
 
-    OBJECT_ARRAY,   NULLABLE_ARRAY,
-    LIST,           NULLABLE_LIST,
-    ITERABLE_BEGIN, NULLABLE_BEGIN,
+    STRING,
+
+    OBJECT_ARRAY,   NULLABLES_ARRAY,
+    LIST,           NULLABLES_LIST,
+    ITERABLE,       NULLABLES_ITERABLE,
+    MAP_ENTRY,      NULLABLES_MAP_ENTRY,
+    PAIR,           NULLABLES_PAIR,
+    TRIPLE,         NULLABLES_TRIPLE,
 
     SENTINEL,
     OBJECT,
     NULL,
-    STRING;
+    PACKET;
 
     fun validate(stream: InputStream) {
         val code = stream.read()
