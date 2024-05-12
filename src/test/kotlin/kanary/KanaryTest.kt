@@ -64,7 +64,6 @@ val personAndMessageProtocols = protocolSet {
 val charSequenceWrapperProtocol = protocolSet {
     protocolOf<CharSequenceWrapper> {
         read = {
-            superClass<Any>()
             val chars = buildString {
                 val size = readInt()
                 repeat(size) {
