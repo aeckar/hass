@@ -1,13 +1,9 @@
 package kanary
 
-import kotlin.reflect.KClass
-
-/**
- * @throws InvalidProtocolException the class is local or anonymous
- */
+// Throws MalformedProtocolException if class is local or anonymous
 @PublishedApi
-internal fun <T : Any> KClass<out T>.nameIfExists(): String {
-    return qualifiedName ?: throw InvalidProtocolException(this, "local or anonymous")
+internal fun JvmClass.nameIfExists(): String {
+    return qualifiedName ?: throw MalformedProtocolException(this, "local or anonymous")
 }
 
 /**
@@ -15,21 +11,17 @@ internal fun <T : Any> KClass<out T>.nameIfExists(): String {
  */
 sealed class KanaryException(message: String) : Exception(message)
 
-class TypeMismatchException @PublishedApi internal constructor(message: String) : KanaryException(message) {
-    @PublishedApi
-    internal constructor(expected: TypeCode, or: TypeCode, actual: Int) : this(
-            "Types '${expected.name}' or '${or.name}' expected, but found '${TypeCode.nameOf(actual)}'")
-}
+class TypeMismatchException @PublishedApi internal constructor(message: String) : KanaryException(message)
 
 /**
  * Thrown when an attempt is made to define a protocol for a class that is not top-level.
  */
-class InvalidProtocolException @PublishedApi internal constructor(classRef: KClass<*>, reason: String) : KanaryException(
-        "Class '${classRef.qualifiedName}' cannot be defined a binary I/O protocol ($reason)")
+class MalformedProtocolException @PublishedApi internal constructor(classRef: JvmClass, reason: String)
+        : KanaryException("Protocol for type '${classRef.qualifiedName}' is malformed ($reason)")
 
 /**
- * Thrown when a class is expected to have a Kanary I/O protocol, but one has not been defined.
- * Can be thrown during serialization or deserialization.
+ * Thrown during serialization or deserialization when a type is expected
+ * to have been defined a protocol, but one was not found.
  */
-class MissingProtocolException @PublishedApi internal constructor(message: String) : KanaryException(message)
-
+class MissingProtocolException @PublishedApi internal constructor(classRef: JvmClass)
+        : KanaryException("Protocol for type '${classRef.qualifiedName}' expected but not found")

@@ -1,19 +1,16 @@
 package kanary
 
 import com.github.eckar.ReassignmentException
-import kotlin.reflect.KClass
-import kotlin.reflect.KType
 import kotlin.reflect.jvm.jvmErasure
 
-internal typealias ReadOperation<T> = Deserializer.() -> T
-internal typealias WriteOperation<T> = Serializer.(T) -> Unit
-internal typealias JvmType = KClass<*>
+internal typealias JvmClass = kotlin.reflect.KClass<*>
+internal typealias JvmType = kotlin.reflect.KType
+internal typealias ProtocolSequence = List<ProtocolSpecifier>
 
-@Suppress("UNCHECKED_CAST")
-internal fun ReadOperation<*>.eraseType() = this as ReadOperation<Any>
+private typealias ProtocolSpecifier = Pair<String,Protocol<*>>
+private typealias MutableProtocolSequence = MutableList<ProtocolSpecifier>
 
-@Suppress("UNCHECKED_CAST")
-internal fun WriteOperation<*>.generic(stream: Serializer, obj: Any) = (this as WriteOperation<Any>)(stream, obj)
+// TODO look into caching already instantiated protocol sets
 
 /**
  * Provides a scope wherein protocols for various classes may be defined.
@@ -24,93 +21,115 @@ internal fun WriteOperation<*>.generic(stream: Serializer, obj: Any) = (this as 
  * [serializer][java.io.OutputStream.serializer] or [deserializer][java.io.InputStream.deserializer]
  * to provide reference type serialization functionality
  */
-inline fun protocolSet(builder: ProtocolSetBuilderScope.() -> Unit): ProtocolSet {
-    val builderScope = ProtocolSetBuilderScope()
+inline fun protocolSet(builder: ProtocolSetBuilder.() -> Unit): ProtocolSet {
+    val builderScope = ProtocolSetBuilder()
     builder(builderScope)
-    return ProtocolSet(builderScope.protocols)
+    return ProtocolSet(builderScope)
 }
 
+// No intent to add versioning support
 /**
  * The scope wherein binary I/O [protocols][protocolOf] may be defined.
  */
-class ProtocolSetBuilderScope @PublishedApi internal constructor() {
+class ProtocolSetBuilder @PublishedApi internal constructor() {
     @PublishedApi
-    internal val protocols = mutableMapOf<JvmType,Protocol<*>>()
+    internal val protocols = mutableMapOf<JvmClass,Protocol<*>>()
 
     /**
-     * Provides a scope wherein a the binary [read][ProtocolBuilderScope.read] and [write][ProtocolBuilderScope.write]
+     * Provides a scope wherein a the binary [read][ProtocolBuilder.read] and [write][ProtocolBuilder.write]
      * operations of a top-level class can be defined.
-     * @throws MissingProtocolException [T] is not a top-level class
+     * @throws MalformedProtocolException [T] is not a top-level class or has already been defined a protocol
      * @throws ReassignmentException either of the operations are defined twice,
      * or this is called more than once for type [T]
      */
-    inline fun <reified T : Any> protocolOf(builder: ProtocolBuilderScope<T>.() -> Unit) {
+    inline fun <reified T : Any> protocolOf(builder: ProtocolBuilder<T>.() -> Unit) {
         val classRef = T::class
-        when (classRef) {
-            Any::class, Nothing::class, Unit::class -> throw InvalidProtocolException(classRef, "fundamental type");
-        }
-        val className = classRef.nameIfExists() // Ensures eligible protocol
-        if (className in Serializer.defaultWriteOperations) {
-            throw InvalidProtocolException(classRef, "default protocol already defined")
+        if (classRef in TypeCode.jvmTypes) {
+            throw MalformedProtocolException(classRef, "defined by default")
         }
         if (classRef in protocols) {
-            throw ReassignmentException("Binary I/O protocol for class '$className' defined more than once")
+            throw MalformedProtocolException(classRef, "defined more than once")
         }
-        val builderScope = ProtocolBuilderScope<T>(classRef)
-        builder(builderScope)
-        protocols[classRef] = try {
-            Protocol(builderScope.read, builderScope.write) // TODO
-        } catch (_: NoSuchElementException) {
-            throw NoSuchElementException("Read or write operation undefined")
+        val builderScope = ProtocolBuilder<T>(classRef)
+        try {
+            builder(builderScope)
         } catch (_: ReassignmentException) {
             throw ReassignmentException("Read or write operation defined more than once")
         }
+        protocols[classRef] = Protocol(builderScope)
+    }
+
+    internal fun specifierOf(type: JvmClass): ProtocolSpecifier {
+        return type.qualifiedName!! to protocols.getValue(type)
     }
 }
 
+/**
+ * TODO document
+ */
 class ProtocolSet {
-    internal val definedProtocols: Map<JvmType, Protocol<*>>
-    internal val supertypes: Map<JvmType, List<JvmType>>
+    // Protocols used during deserialization
+    internal val allProtocols: Map<JvmClass, Protocol<*>>
+
+    /* Protocols for each type serialized, organized in the order they are written
+     * Last member of protocol hierarchy is protocol of key
+     */
+    internal val writeSequences: Map<JvmClass, ProtocolSequence>
 
     @PublishedApi
-    internal constructor(definedProtocols: Map<JvmType, Protocol<*>>) {
-        this.definedProtocols = definedProtocols
-        this.supertypes = mutableMapOf<JvmType, MutableList<JvmType>>().apply {
-            definedProtocols.keys.forEach { it.supertypes.findSupertypes(subClass = it, this) }
+    internal constructor(builder: ProtocolSetBuilder) {
+        fun MutableProtocolSequence.build(supertypes: List<JvmType>): ProtocolSequence {
+            supertypes
+                .asSequence()
+                .map { it.jvmErasure }
+                .filter { jvmType ->
+                    builder.protocols[jvmType]?.let { protocol ->   // Has protocol
+                        protocol.write?.let {                       // Has write operation
+                            none { it.second == protocol }          // Not already in sequence
+                        }
+                    } ?: false
+                }
+                .forEach { this += builder.specifierOf(it) }
+            supertypes
+                .asSequence()
+                .map { it.jvmErasure.supertypes }
+                .forEach { build(it) }
+            return this
+        }
+
+        allProtocols = builder.protocols
+        writeSequences = mutableMapOf<JvmClass, ProtocolSequence>().apply {
+            builder.protocols.keys.forEach { jvmType ->
+                val hierarchy = mutableListOf<ProtocolSpecifier>()  // Can be empty
+                put(jvmType, hierarchy.build(jvmType.supertypes) /* stateful */)
+                builder.protocols.getValue(jvmType).write?.let {
+                    hierarchy += builder.specifierOf(jvmType)
+                }
+            }
         }
     }
 
-    internal constructor(definedProtocols: Map<JvmType, Protocol<*>>, supertypes: Map<JvmType, List<JvmType>>) {
-        this.definedProtocols = definedProtocols
-        this.supertypes = supertypes
+    private constructor(allProtocols: Map<JvmClass, Protocol<*>>, writeProtocols: Map<JvmClass, ProtocolSequence>) {
+        this.allProtocols = allProtocols
+        this.writeSequences = writeProtocols
     }
 
     /**
+     * Useful as a utility, but slower than simply declaring all protocols within the same set.
      * @return a new protocol set containing the protocols of each
      * @throws ReassignmentException the sets contain conflicting declarations of a given protocol
      */
     operator fun plus(other: ProtocolSet): ProtocolSet {
-        val otherClassNames = other.definedProtocols.keys
-        for (className in definedProtocols.keys) {
-            if (className in otherClassNames) {
-                throw ReassignmentException("Conflicting declarations for binary I/O protocol of class '$className'")
+        val otherTypes = other.allProtocols.keys
+        for (jvmType in allProtocols.keys) {
+            if (jvmType in otherTypes) {
+                throw ReassignmentException("Conflicting declarations for protocol of class '${jvmType.qualifiedName!!}'")
             }
         }
-        return ProtocolSet(definedProtocols + other.definedProtocols, supertypes + other.supertypes)
-    }
-
-    private fun List<KType>.findSupertypes(subClass: JvmType, supertypes: MutableMap<JvmType,MutableList<JvmType>>) {
-        asSequence().map { it.jvmErasure }.forEach {
-            if (it != Any::class) {
-                if (it in definedProtocols && it !in supertypes.getOrPut(subClass) { mutableListOf() }) {
-                    supertypes.getValue(subClass).apply { this += it }
-                }
-                it.supertypes.findSupertypes(subClass, supertypes)
-            }
-        }
+        return ProtocolSet(allProtocols + other.allProtocols, writeSequences + other.writeSequences)
     }
 
     internal companion object {
-        val DEFAULT = ProtocolSet(mapOf(), mapOf())
+        val EMPTY = ProtocolSet(emptyMap(), emptyMap())
     }
 }

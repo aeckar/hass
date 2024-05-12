@@ -19,8 +19,8 @@ val dataProtocol = protocolSet {
                 readLong(),
                 readFloat(),
                 readDouble(),
-                readString(),
-                readObject()
+                read(),
+                read()
             )
         }
         write = {
@@ -40,8 +40,8 @@ val dataProtocol = protocolSet {
 
 val personAndMessageProtocols = protocolSet {
     protocolOf<Message> {
-        read = {
-            Message(readString())
+        read = default {
+            Message(read())
         }
         write = {
             write(it.message)
@@ -50,11 +50,11 @@ val personAndMessageProtocols = protocolSet {
 
     protocolOf<Person> {
         read = {
-            val name = readString()
+            val name = read<String>()
             val id = readInt()
             Person(name, id)
         }
-        write = { instance ->
+        write = static { instance ->
             write(instance.name)
             writeInt(instance.id)
         }
@@ -64,6 +64,7 @@ val personAndMessageProtocols = protocolSet {
 val charSequenceWrapperProtocol = protocolSet {
     protocolOf<CharSequenceWrapper> {
         read = {
+            superClass<Any>()
             val chars = buildString {
                 val size = readInt()
                 repeat(size) {
@@ -72,7 +73,7 @@ val charSequenceWrapperProtocol = protocolSet {
             }
             StringWrapper(chars)
         }
-        write = {
+        write = static {
             writeInt(it.chars.length)
             it.chars.forEach { c -> writeChar(c) }
         }
@@ -121,8 +122,8 @@ class KanaryTest {
         val readData: Data
         val readMessage: Message
         FileInputStream("src/test/resources/inputOutput.bin").deserializer(combinedProtocol).use {
-            readData = it.readObject()
-            readMessage = it.readObject()
+            readData = it.read()
+            readMessage = it.read()
         }
         assertEquals(writeData, readData)
         assertEquals(writeMessage, readMessage)
@@ -136,7 +137,7 @@ class KanaryTest {
         }
         val deserialized: Person
         FileInputStream("src/test/resources/readmeExample.bin").deserializer(personAndMessageProtocols).use {
-            deserialized = it.readObject()
+            deserialized = it.read()
         }
         assertEquals(original, deserialized)
     }
@@ -149,7 +150,7 @@ class KanaryTest {
         }
         val deserialized: CharSequenceWrapper
         FileInputStream("src/test/resources/polymorphicWrite.bin").deserializer(charSequenceWrapperProtocol).use {
-            deserialized = it.readObject()
+            deserialized = it.read()
         }
         assertEquals(original.chars, deserialized.chars)
     }

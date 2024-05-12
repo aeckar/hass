@@ -1,20 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AnalysisUIOptions">
+    <option name="ANALYZE_TEST_SOURCES" value="false" />
+    <option name="ANALYZE_INJECTED_CODE" value="false" />
+    <option name="SCOPE_TYPE" value="3" />
+  </component>
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Renamed &quot;writeAllOr&quot; to &quot;writeAllNullables&quot;.&#10;Renamed &quot;writeOr&quot; to &quot;writeNullable&quot;.">
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Protocol.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/SupertypeSet.kt" afterDir="false" />
+    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Updated Serializer.kt">
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/ArrayStreams.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Deserializers.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Serializers.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/settings.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Delegates.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Deserializers.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Deserializer.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/kanary/package-list" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/package-list" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Deserializer.kt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Exceptions.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Exceptions.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Protocols.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/ProtocolSet.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Serializers.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Serializer.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Protocol.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Protocol.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/ProtocolSet.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/ProtocolSet.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Serializer.kt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/TypeCode.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/TypeCode.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/kotlin/kanary/KanaryTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/kanary/KanaryTest.kt" afterDir="false" />
     </list>
@@ -57,6 +62,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Kotlin File" />
+        <option value="Kotlin Object" />
         <option value="Kotlin Class" />
       </list>
     </option>
@@ -78,7 +84,7 @@
   }
 }</component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="DEPENDENCY_CHECKER_PROBLEMS_TAB" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 1
@@ -91,27 +97,29 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;Gradle.KanaryTest.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.KanaryTest.kanaryTest.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.KanaryTest.test (1).executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.KanaryTest.test.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.Test.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.Test.test.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.sourceCode.Kotlin&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "Gradle.Download Sources.executor": "Run",
+    "Gradle.KanaryTest.executor": "Run",
+    "Gradle.KanaryTest.kanaryTest.executor": "Run",
+    "Gradle.KanaryTest.test (1).executor": "Run",
+    "Gradle.KanaryTest.test.executor": "Run",
+    "Gradle.Test.executor": "Run",
+    "Gradle.Test.test.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "master",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "preferences.lookFeel"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;kotlin-gradle-user-dirs&quot;: [
-      &quot;C:\\Users\\eckar\\.gradle&quot;
+  "keyToStringList": {
+    "kotlin-gradle-user-dirs": [
+      "C:\\Users\\eckar\\.gradle"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\eckar\IdeaProjects\kanary\src\main\kotlin\kanary\assign" />
@@ -244,11 +252,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.KanaryTest" />
-        <item itemvalue="Gradle.KanaryTest.kanaryTest" />
-        <item itemvalue="Gradle.KanaryTest.test (1)" />
-        <item itemvalue="Gradle.KanaryTest.test" />
         <item itemvalue="Gradle.Test" />
+        <item itemvalue="Gradle.KanaryTest.test" />
+        <item itemvalue="Gradle.KanaryTest.test (1)" />
+        <item itemvalue="Gradle.KanaryTest.kanaryTest" />
+        <item itemvalue="Gradle.KanaryTest" />
       </list>
     </recent_temporary>
   </component>
@@ -453,7 +461,23 @@
       <option name="project" value="LOCAL" />
       <updated>1714797225062</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="Continued development I">
+      <option name="closed" value="true" />
+      <created>1715139047159</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1715139047159</updated>
+    </task>
+    <task id="LOCAL-00026" summary="Updated Serializer.kt">
+      <option name="closed" value="true" />
+      <created>1715147266603</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1715147266603</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -479,6 +503,8 @@
     <MESSAGE value="Added ProtocolSpecification so protocols can be shared" />
     <MESSAGE value="Added docs for release 2.0" />
     <MESSAGE value="Removed unused imports" />
-    <option name="LAST_COMMIT_MESSAGE" value="Removed unused imports" />
+    <MESSAGE value="Continued development I" />
+    <MESSAGE value="Updated Serializer.kt" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated Serializer.kt" />
   </component>
 </project>
