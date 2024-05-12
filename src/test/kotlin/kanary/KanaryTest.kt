@@ -7,8 +7,8 @@ import java.io.FileOutputStream
 import java.io.Serializable
 import kotlin.test.assertEquals
 
-val dataProtocol = protocolSet {
-    protocolOf<Data> {
+val dataProtocol = schema {
+    define<Data> {
         read = {
             Data(
                 readBoolean(),
@@ -38,9 +38,9 @@ val dataProtocol = protocolSet {
     }
 }
 
-val personAndMessageProtocols = protocolSet {
-    protocolOf<Message> {
-        read = default {
+val personAndMessageProtocols = schema {
+    define<Message> {
+        read = {
             Message(read())
         }
         write = {
@@ -48,7 +48,7 @@ val personAndMessageProtocols = protocolSet {
         }
     }
 
-    protocolOf<Person> {
+    define<Person> {
         read = {
             val name = read<String>()
             val id = readInt()
@@ -61,8 +61,8 @@ val personAndMessageProtocols = protocolSet {
     }
 }
 
-val charSequenceWrapperProtocol = protocolSet {
-    protocolOf<CharSequenceWrapper> {
+val stringWrapperProtocol = schema {
+    define<StringWrapper> {
         read = {
             val chars = buildString {
                 val size = readInt()
@@ -144,12 +144,12 @@ class KanaryTest {
     @Test
     fun polymorphicWrite() {
         val original = StringWrapper("Hello, world!")
-        FileOutputStream("src/test/resources/polymorphicWrite.bin").serializer(charSequenceWrapperProtocol).use {
+        FileOutputStream("src/test/resources/polymorphicWrite.bin").serializer(stringWrapperProtocol).use {
             it.write(original)
         }
         val deserialized: CharSequenceWrapper
-        FileInputStream("src/test/resources/polymorphicWrite.bin").deserializer(charSequenceWrapperProtocol).use {
-            deserialized = it.read()
+        FileInputStream("src/test/resources/polymorphicWrite.bin").deserializer(stringWrapperProtocol).use {
+            deserialized = it.read()    // FIXME
         }
         assertEquals(original.chars, deserialized.chars)
     }
@@ -158,7 +158,7 @@ class KanaryTest {
     fun missingProtocol() {
         val original = Person("Jim", 15)
         assertThrows<MissingProtocolException> {
-            FileOutputStream("src/test/resources/missingProtocol.bin").serializer(charSequenceWrapperProtocol).use {
+            FileOutputStream("src/test/resources/missingProtocol.bin").serializer(stringWrapperProtocol).use {
                 it.write(original)
             }
         }

@@ -9,19 +9,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Updated Serializer.kt">
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/ArrayStreams.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Deserializers.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Serializers.kt" afterDir="false" />
+    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Documented PolymorphicDeserializer and updated serialized composite types in companion of StaticDeserializer.">
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/ArrayOutputStream.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docs/kanary/package-list" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/package-list" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Deserializer.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/ArrayStreams.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Deserializers.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Deserializers.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Exceptions.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Exceptions.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Protocol.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Protocol.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/ProtocolSet.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/ProtocolSet.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Serializer.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/TypeCode.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/TypeCode.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/ProtocolSet.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Schema.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Serializers.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Serializer.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/kotlin/kanary/KanaryTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/kanary/KanaryTest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/resources/inputOutput.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/resources/missingProtocol.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/resources/polymorphicWrite.bin" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/resources/polymorphicWrite.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/resources/readmeExample.bin" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -135,7 +137,7 @@
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" value="" />
+        <option name="scriptParameters" value="--stacktrace" />
         <option name="taskDescriptions">
           <list />
         </option>
@@ -252,11 +254,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.KanaryTest" />
         <item itemvalue="Gradle.Test" />
         <item itemvalue="Gradle.KanaryTest.test" />
         <item itemvalue="Gradle.KanaryTest.test (1)" />
         <item itemvalue="Gradle.KanaryTest.kanaryTest" />
-        <item itemvalue="Gradle.KanaryTest" />
       </list>
     </recent_temporary>
   </component>
@@ -477,7 +479,23 @@
       <option name="project" value="LOCAL" />
       <updated>1715147266603</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="Reworked entire API">
+      <option name="closed" value="true" />
+      <created>1715474752895</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1715474752895</updated>
+    </task>
+    <task id="LOCAL-00028" summary="Documented PolymorphicDeserializer and updated serialized composite types in companion of StaticDeserializer.">
+      <option name="closed" value="true" />
+      <created>1715475242195</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1715475242195</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -505,6 +523,19 @@
     <MESSAGE value="Removed unused imports" />
     <MESSAGE value="Continued development I" />
     <MESSAGE value="Updated Serializer.kt" />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated Serializer.kt" />
+    <MESSAGE value="Reworked entire API" />
+    <MESSAGE value="Documented PolymorphicDeserializer and updated serialized composite types in companion of StaticDeserializer." />
+    <option name="LAST_COMMIT_MESSAGE" value="Documented PolymorphicDeserializer and updated serialized composite types in companion of StaticDeserializer." />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/src/main/kotlin/kanary/Deserializers.kt</url>
+          <line>129</line>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

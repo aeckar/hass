@@ -6,8 +6,13 @@ import com.github.eckar.once
 internal typealias ReadOperation<T> = PolymorphicDeserializer.() -> T
 internal typealias WriteOperation<T> = Serializer.(T) -> Unit
 
-@Suppress("UNCHECKED_CAST")
-internal fun WriteOperation<*>.accept(stream: Serializer, obj: Any) = (this as WriteOperation<Any>)(stream, obj)
+@PublishedApi
+internal class Protocol<T : Any>(builder: ProtocolBuilder<T>) {
+    val isReadDefault = builder.isReadDefault
+    val isWriteStatic = builder.isWriteStatic
+    val read: ReadOperation<out T>? = builder.takeIf { it.isReadDefined }?.read
+    val write: WriteOperation<in T>? = builder.takeIf { it.isWriteDefined }?.write
+}
 
 /**
  * The scope wherein a protocol's [read] and [write] operations are defined.
@@ -107,12 +112,4 @@ class ProtocolBuilder<T : Any>(private val classRef: JvmClass) {
         isWriteStatic = true
         return write
     }
-}
-
-@PublishedApi
-internal class Protocol<T : Any>(builder: ProtocolBuilder<T>) {
-    val isReadDefault = builder.isReadDefault
-    val isWriteStatic = builder.isWriteStatic
-    val read: ReadOperation<out T>? = builder.takeIf { it.isReadDefined }?.read
-    val write: WriteOperation<in T>? = builder.takeIf { it.isWriteDefined }?.write
 }

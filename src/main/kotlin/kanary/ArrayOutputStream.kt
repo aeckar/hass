@@ -6,25 +6,17 @@ import java.io.OutputStream
 
 private const val DEFAULT_SIZE = 32
 
-internal sealed interface ArrayStream {
-    val size: Int
-    val bytes: ByteArray
-
-    companion object {
-        val EMPTY_BYTES = ByteArray(0)
-    }
-}
-
-internal class ArrayOutputStream(initialCapacity: Int = DEFAULT_SIZE) : OutputStream(), ArrayStream {
-    override var size = 0
-    override var bytes = ByteArray(initialCapacity)
+internal class ArrayOutputStream(initialCapacity: Int = DEFAULT_SIZE) : OutputStream() {
+    var size = 0
+    var bytes = ByteArray(initialCapacity)
 
     // Does not perform bounds checking
     fun acceptNBytes(from: InputStream, len: Int) {
         repeat(len) { write(from.read().toByte()) }
     }
 
-    fun asInputStream() = ArrayInputStream(size, bytes)
+    fun asInputStream(): InputStream = ArrayInputStream(this.bytes)
+
     override fun write(p0: Int) {
         ensureCapacity(size + 1)
         write(p0.toByte())
@@ -50,33 +42,23 @@ internal class ArrayOutputStream(initialCapacity: Int = DEFAULT_SIZE) : OutputSt
         bytes[size] = b
         ++size
     }
-
-    object EMPTY : OutputStream(), ArrayStream {
-        override val size = 0
-        override val bytes get() = ArrayStream.EMPTY_BYTES
-
-        override fun write(p0: Int) = throw UnsupportedOperationException("Cannot write to empty array stream")
-    }
 }
 
-internal open class ArrayInputStream(
-    override var size: Int,
-    override var bytes: ByteArray
-) : InputStream(), ArrayStream {
-
-    override fun read(): Int {
-        return try {
-            bytes[size - 1].toInt()
-            --size
-        } catch (_: IndexOutOfBoundsException) {
-            -1
-        }
-    }
+private class ArrayInputStream(private val bytes: ByteArray) : InputStream() {
+    private var cursor = 0
 
     override fun read(b: ByteArray) = read(b, 0, b.size)    // Uphold contract
     override fun read(b: ByteArray, off: Int, len: Int) = readNBytes(b, off, len)
     override fun readAllBytes(): ByteArray = readNBytes(available())
     override fun readNBytes(len: Int): ByteArray = ByteArray(len).apply { readNBytes(this, 0, size) }
+
+    override fun read(): Int {
+        return try {
+            bytes[cursor].toInt().also { ++cursor }
+        } catch (_: IndexOutOfBoundsException) {
+            -1
+        }
+    }
 
     override fun readNBytes(b: ByteArray, off: Int, len: Int): Int {
         repeat(len) { b[off + it] = read().toByte() }
@@ -87,9 +69,9 @@ internal open class ArrayInputStream(
         if (n < 0) {
             return 0L
         }
-        val start = size
-        size = (size.toLong() - n).coerceAtLeast(0).toInt()
-        return (start - size).toLong()
+        val startPosition = cursor
+        cursor = (cursor.toLong() - n).coerceAtLeast(0).toInt()
+        return (startPosition - cursor).toLong()
     }
 
     override fun skipNBytes(n: Long) {
@@ -102,13 +84,6 @@ internal open class ArrayInputStream(
         }
     }
 
-    override fun available() = bytes.size - size
+    override fun available() = bytes.size - cursor
     override fun markSupported() = false
-
-    object EMPTY : InputStream(), ArrayStream {
-        override val size = 0
-        override val bytes get() = ArrayStream.EMPTY_BYTES
-
-        override fun read() = throw UnsupportedOperationException("Cannot read from empty array stream")
-    }
 }

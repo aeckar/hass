@@ -2,10 +2,10 @@ $dokka.format:gfm-v1
 $dokka.linkExtension:md
 $dokka.location:kanary////PointingToDeclaration/kanary/kanary/index.md
 $dokka.location:kanary//deserializer/java.io.InputStream#/PointingToDeclaration/kanary/kanary/deserializer.md
-$dokka.location:kanary//deserializer/java.io.InputStream#kanary.ProtocolSet/PointingToDeclaration/kanary/kanary/deserializer.md
-$dokka.location:kanary//protocolSet/#kotlin.Function1[kanary.ProtocolSetBuilderScope,kotlin.Unit]/PointingToDeclaration/kanary/kanary/protocol-set.md
+$dokka.location:kanary//deserializer/java.io.InputStream#kanary.Schema/PointingToDeclaration/kanary/kanary/deserializer.md
+$dokka.location:kanary//protocolSet/#kotlin.Function1[kanary.SchemaBuilder,kotlin.Unit]/PointingToDeclaration/kanary/kanary/protocol-set.md
 $dokka.location:kanary//serializer/java.io.OutputStream#/PointingToDeclaration/kanary/kanary/serializer.md
-$dokka.location:kanary//serializer/java.io.OutputStream#kanary.ProtocolSet/PointingToDeclaration/kanary/kanary/serializer.md
+$dokka.location:kanary//serializer/java.io.OutputStream#kanary.Schema/PointingToDeclaration/kanary/kanary/serializer.md
 $dokka.location:kanary/AssignOnce///PointingToDeclaration/kanary/kanary/-assign-once/index.md
 $dokka.location:kanary/AssignOnce/AssignOnce/#/PointingToDeclaration/kanary/kanary/-assign-once/-assign-once.md
 $dokka.location:kanary/AssignOnce/getValue/#kotlin.Any?#kotlin.reflect.KProperty[*]/PointingToDeclaration/kanary/kanary/-assign-once/get-value.md
@@ -65,9 +65,9 @@ $dokka.location:kanary/ProtocolBuilderScope/ProtocolBuilderScope/#/PointingToDec
 $dokka.location:kanary/ProtocolBuilderScope/read/#/PointingToDeclaration/kanary/kanary/-protocol-builder-scope/read.md
 $dokka.location:kanary/ProtocolBuilderScope/write/#/PointingToDeclaration/kanary/kanary/-protocol-builder-scope/write.md
 $dokka.location:kanary/ProtocolSet///PointingToDeclaration/kanary/kanary/-protocol-set/index.md
-$dokka.location:kanary/ProtocolSet/plus/#kanary.ProtocolSet/PointingToDeclaration/kanary/kanary/-protocol-set/plus.md
+$dokka.location:kanary/ProtocolSet/plus/#kanary.Schema/PointingToDeclaration/kanary/kanary/-protocol-set/plus.md
 $dokka.location:kanary/ProtocolSetBuilderScope///PointingToDeclaration/kanary/kanary/-protocol-set-builder-scope/index.md
-$dokka.location:kanary/ProtocolSetBuilderScope/protocolOf/#kotlin.Function1[kanary.ProtocolBuilderScope[TypeParam(bounds=[kotlin.Any])],kotlin.Unit]/PointingToDeclaration/kanary/kanary/-protocol-set-builder-scope/protocol-of.md
+$dokka.location:kanary/ProtocolSetBuilderScope/protocolOf/#kotlin.Function1[kanary.ProtocolBuilder[TypeParam(bounds=[kotlin.Any])],kotlin.Unit]/PointingToDeclaration/kanary/kanary/-protocol-set-builder-scope/protocol-of.md
 $dokka.location:kanary/ReassignmentException///PointingToDeclaration/kanary/kanary/-reassignment-exception/index.md
 $dokka.location:kanary/ReassignmentException/ReassignmentException/#kotlin.String/PointingToDeclaration/kanary/kanary/-reassignment-exception/-reassignment-exception.md
 $dokka.location:kanary/Serializer///PointingToDeclaration/kanary/kanary/-serializer/index.md

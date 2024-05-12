@@ -1,11 +1,5 @@
 package kanary
 
-// Throws MalformedProtocolException if class is local or anonymous
-@PublishedApi
-internal fun JvmClass.nameIfExists(): String {
-    return qualifiedName ?: throw MalformedProtocolException(this, "local or anonymous")
-}
-
 /**
  * An exception originating from the Kanary serialization API.
  */

@@ -1,16 +1,16 @@
 package kanary
 
 import com.github.eckar.ReassignmentException
+import kotlin.reflect.KClass
+import kotlin.reflect.KType
 import kotlin.reflect.jvm.jvmErasure
 
-internal typealias JvmClass = kotlin.reflect.KClass<*>
-internal typealias JvmType = kotlin.reflect.KType
+internal typealias JvmClass = KClass<*>
+internal typealias JvmType = KType
 internal typealias ProtocolSequence = List<ProtocolSpecifier>
 
 private typealias ProtocolSpecifier = Pair<String,Protocol<*>>
 private typealias MutableProtocolSequence = MutableList<ProtocolSpecifier>
-
-// TODO look into caching already instantiated protocol sets
 
 /**
  * Provides a scope wherein protocols for various classes may be defined.
@@ -21,53 +21,16 @@ private typealias MutableProtocolSequence = MutableList<ProtocolSpecifier>
  * [serializer][java.io.OutputStream.serializer] or [deserializer][java.io.InputStream.deserializer]
  * to provide reference type serialization functionality
  */
-inline fun protocolSet(builder: ProtocolSetBuilder.() -> Unit): ProtocolSet {
-    val builderScope = ProtocolSetBuilder()
+inline fun schema(builder: SchemaBuilder.() -> Unit): Schema {
+    val builderScope = SchemaBuilder()
     builder(builderScope)
-    return ProtocolSet(builderScope)
-}
-
-// No intent to add versioning support
-/**
- * The scope wherein binary I/O [protocols][protocolOf] may be defined.
- */
-class ProtocolSetBuilder @PublishedApi internal constructor() {
-    @PublishedApi
-    internal val protocols = mutableMapOf<JvmClass,Protocol<*>>()
-
-    /**
-     * Provides a scope wherein a the binary [read][ProtocolBuilder.read] and [write][ProtocolBuilder.write]
-     * operations of a top-level class can be defined.
-     * @throws MalformedProtocolException [T] is not a top-level class or has already been defined a protocol
-     * @throws ReassignmentException either of the operations are defined twice,
-     * or this is called more than once for type [T]
-     */
-    inline fun <reified T : Any> protocolOf(builder: ProtocolBuilder<T>.() -> Unit) {
-        val classRef = T::class
-        if (classRef in TypeCode.jvmTypes) {
-            throw MalformedProtocolException(classRef, "defined by default")
-        }
-        if (classRef in protocols) {
-            throw MalformedProtocolException(classRef, "defined more than once")
-        }
-        val builderScope = ProtocolBuilder<T>(classRef)
-        try {
-            builder(builderScope)
-        } catch (_: ReassignmentException) {
-            throw ReassignmentException("Read or write operation defined more than once")
-        }
-        protocols[classRef] = Protocol(builderScope)
-    }
-
-    internal fun specifierOf(type: JvmClass): ProtocolSpecifier {
-        return type.qualifiedName!! to protocols.getValue(type)
-    }
+    return Schema(builderScope)
 }
 
 /**
- * TODO document
+ * Defines a set of protocols corresponding to how certain types should be written to and read from binary.
  */
-class ProtocolSet {
+class Schema {
     // Protocols used during deserialization
     internal val allProtocols: Map<JvmClass, Protocol<*>>
 
@@ -77,7 +40,7 @@ class ProtocolSet {
     internal val writeSequences: Map<JvmClass, ProtocolSequence>
 
     @PublishedApi
-    internal constructor(builder: ProtocolSetBuilder) {
+    internal constructor(builder: SchemaBuilder) {
         fun MutableProtocolSequence.build(supertypes: List<JvmType>): ProtocolSequence {
             supertypes
                 .asSequence()
@@ -119,17 +82,53 @@ class ProtocolSet {
      * @return a new protocol set containing the protocols of each
      * @throws ReassignmentException the sets contain conflicting declarations of a given protocol
      */
-    operator fun plus(other: ProtocolSet): ProtocolSet {
+    operator fun plus(other: Schema): Schema {
         val otherTypes = other.allProtocols.keys
         for (jvmType in allProtocols.keys) {
             if (jvmType in otherTypes) {
                 throw ReassignmentException("Conflicting declarations for protocol of class '${jvmType.qualifiedName!!}'")
             }
         }
-        return ProtocolSet(allProtocols + other.allProtocols, writeSequences + other.writeSequences)
+        return Schema(allProtocols + other.allProtocols, writeSequences + other.writeSequences)
     }
 
     internal companion object {
-        val EMPTY = ProtocolSet(emptyMap(), emptyMap())
+        val EMPTY = Schema(emptyMap(), emptyMap())
+    }
+}
+
+/**
+ * The scope wherein binary I/O [protocols][define] may be defined.
+ */
+class SchemaBuilder @PublishedApi internal constructor() {  // No intent to add versioning support
+    @PublishedApi
+    internal val protocols = mutableMapOf<JvmClass,Protocol<*>>()
+
+    /**
+     * Provides a scope wherein a the binary [read][ProtocolBuilder.read] and [write][ProtocolBuilder.write]
+     * operations of a top-level class can be defined.
+     * @throws MalformedProtocolException [T] is not a top-level class or has already been defined a protocol
+     * @throws ReassignmentException either of the operations are defined twice,
+     * or this is called more than once for type [T]
+     */
+    inline fun <reified T : Any> define(builder: ProtocolBuilder<T>.() -> Unit) {
+        val classRef = T::class
+        if (classRef in TypeCode.jvmTypes) {
+            throw MalformedProtocolException(classRef, "defined by default")
+        }
+        if (classRef in protocols) {
+            throw MalformedProtocolException(classRef, "defined more than once")
+        }
+        val builderScope = ProtocolBuilder<T>(classRef)
+        try {
+            builder(builderScope)
+        } catch (_: ReassignmentException) {
+            throw ReassignmentException("Read or write operation defined more than once")
+        }
+        protocols[classRef] = Protocol(builderScope)
+    }
+
+    internal fun specifierOf(type: JvmClass): ProtocolSpecifier {
+        return type.qualifiedName!! to protocols.getValue(type)
     }
 }

@@ -2,17 +2,22 @@
 package kanary
 
 import kanary.TypeCode.*
+import java.io.Closeable
+import java.io.Flushable
 import java.io.OutputStream
 import java.nio.ByteBuffer
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.jvmErasure
 
 /**
- * See [ProtocolSet] for the types with pre-defined binary I/O protocols.
+ * See [Schema] for the types with pre-defined binary I/O protocols.
  * @return a new serializer capable of writing primitives, primitive arrays,
  * and instances of any type with a defined protocol to Kanary format
  */
-fun OutputStream.serializer(protocols: ProtocolSet = ProtocolSet.EMPTY) = Serializer(this, protocols)
+fun OutputStream.serializer(protocols: Schema = Schema.EMPTY) = Serializer(this, protocols)
+
+@Suppress("UNCHECKED_CAST")
+private fun WriteOperation<*>.accept(stream: Serializer, obj: Any) = (this as WriteOperation<Any>)(stream, obj)
 
 /**
  * Writes serialized data to a stream in Kanary format.
@@ -20,10 +25,12 @@ fun OutputStream.serializer(protocols: ProtocolSet = ProtocolSet.EMPTY) = Serial
  * Because no protocols are defined, no instances of any reference types may be written.
  * Calling [close] also closes the underlying stream.
  */
-open class Serializer internal constructor(
-    protected open val stream: OutputStream,
-    protected open val protocols: ProtocolSet
-) : java.io.Closeable by stream, java.io.Flushable by stream {
+class Serializer internal constructor(
+    private var stream: OutputStream,
+    private val protocols: Schema
+) : Closeable, Flushable {
+    fun wrap(stream: OutputStream) = this.also { this.stream = stream }
+
     fun writeBoolean(cond: Boolean) {
         BOOLEAN.mark(stream)
         writeBooleanNoMark(cond)
@@ -76,7 +83,7 @@ open class Serializer internal constructor(
             NULL.mark(stream)
             return
         }
-        writeNonNull(obj)
+        writeAny(obj)
     }
 
     // Optimizations for built-in composite types with non-nullable members...
@@ -88,14 +95,14 @@ open class Serializer internal constructor(
      * @throws MissingProtocolException the type of any member of [array]
      * is not a top-level class or does not have a defined protocol
      */
-    fun <T : Any> write(array: Array<out T>) = writeNonNull(array, nonNullComposite = true)
+    fun <T : Any> write(array: Array<out T>) = writeAny(array, nonNullMembers = true)
 
     /**
      * Writes all members in the list according the protocol of each.
      * Avoids null check for members, unlike generic `write`.
      * @throws MissingProtocolException any member of [list] is not a top-level class or does not have a defined protocol
      */
-    fun <T : Any> write(list: List<T>) = writeNonNull(list, nonNullComposite = true)
+    fun <T : Any> write(list: List<T>) = writeAny(list, nonNullMembers = true)
 
     /**
      * Writes all members in the iterable object according the protocol of each as a list.
@@ -103,35 +110,38 @@ open class Serializer internal constructor(
      * Avoids null check for members, unlike generic `write`.
      * @throws MissingProtocolException any member of [iter] is not a top-level class or does not have a defined protocol
      */
-    fun <T : Any> write(iter: Iterable<T>) = writeNonNull(iter, nonNullComposite = true)
+    fun <T : Any> write(iter: Iterable<T>) = writeAny(iter, nonNullMembers = true)
 
     /**
      * Writes the given pair according to the protocols of its members.
      * Avoids null check for members, unlike generic `write`.
      * @throws MissingProtocolException any member of [pair] is not a top-level class or does not have a defined protocol
      */
-    fun <T : Any> write(pair: Pair<T,T>) = writeNonNull(pair, nonNullComposite = true)
+    fun <T : Any> write(pair: Pair<T,T>) = writeAny(pair, nonNullMembers = true)
 
     /**
      * Writes the given triple according to the protocols of its members.
      * Avoids null check for members, unlike generic `write`.
      * @throws MissingProtocolException any member of [triple] is not a top-level class or does not have a defined protocol
      */
-    fun <T : Any> write(triple: Triple<T,T,T>) = writeNonNull(triple, nonNullComposite = true)
+    fun <T : Any> write(triple: Triple<T,T,T>) = writeAny(triple, nonNullMembers = true)
 
     /**
      * Writes the given map entry according to the protocols of its key and value.
      * Avoids null check for members, unlike generic `write`.
      * @throws MissingProtocolException any member of [entry] is not a top-level class or does not have a defined protocol
      */
-    fun <K : Any, V : Any> write(entry: Map.Entry<K,V>) = writeNonNull(entry, nonNullComposite = true)
+    fun <K : Any, V : Any> write(entry: Map.Entry<K,V>) = writeAny(entry, nonNullMembers = true)
 
     /**
      * Writes the given map according to the protocols of its keys and values.
      * Avoids null check for entries, unlike generic `write`.
      * @throws MissingProtocolException any entry in [map] is not a top-level class or does not have a defined protocol
      */
-    fun <K : Any, V : Any> write(map: Map<K,V>) = writeNonNull(map, nonNullComposite = true)
+    fun <K : Any, V : Any> write(map: Map<K,V>) = writeAny(map, nonNullMembers = true)
+
+    override fun close() = stream.close()
+    override fun flush() = stream.flush()
 
     // Non-marking functions...
 
@@ -176,7 +186,7 @@ open class Serializer internal constructor(
      *  builtInCode object
      *  | code packetCount customPacket* builtInPacket? information sentinel
      */
-    private fun writeNonNull(obj: Any, nonNullComposite: Boolean = false) {
+    private fun writeAny(obj: Any, nonNullMembers: Boolean = false) {
         fun List<JvmType>.writeSequence(allSequences: Map<JvmClass, ProtocolSequence>): ProtocolSequence {
             asSequence()
                 .map { it.jvmErasure }
@@ -192,7 +202,8 @@ open class Serializer internal constructor(
             return listOf()
         }
 
-        fun writeBuiltIn(obj: Any, builtInType: JvmClass, builtIns: Map<JvmClass, Pair<TypeCode,WriteOperation<Any>>>) {
+        fun writeBuiltIn(obj: Any, builtInType: JvmClass,
+            builtIns: Map<JvmClass, Pair<TypeCode, WriteOperation<Any>>>) {
             builtIns.getValue(builtInType).let { (code, write) ->
                 code.mark(stream)
                 write.accept(this, obj)
@@ -204,9 +215,10 @@ open class Serializer internal constructor(
             return
         }
         val classRef = obj::class
-        val className = classRef.nameIfExists() // Ensures eligible protocol
+        val className = classRef.qualifiedName ?: throw MalformedProtocolException(classRef,
+            "local or anonymous") // Ensures eligible protocol
         var writeSequence = protocols.writeSequences.getOrDefault(classRef, emptyList())
-        val builtIns = if (nonNullComposite) builtInNonNullWrites else builtInWrites
+        val builtIns = if (nonNullMembers) builtInNonNullWrites else builtInWrites
         val builtInSupertype = builtIns.keys.find { classRef.isSubclassOf(it) }
         if (writeSequence.isEmpty()) {
             builtInSupertype?.let { jvmType ->  // Serialize object as built-in type
@@ -221,8 +233,10 @@ open class Serializer internal constructor(
         val objProtocol = writeSequence.lastOrNull()?.second
         if (objProtocol?.isWriteStatic != false) {  // Necessary because static write overrides regular write sequence
             stream.write(0) // packet count
-            writeStringNoMark(className)
-            objProtocol?.write?.accept(this, obj)
+            writeWithLength {
+                writeStringNoMark(className)
+                objProtocol?.write?.accept(this, obj)
+            }
             return  // No information serialized if writeSequence.isEmpty()
         }
         val customPacketCount = writeSequence.size - 1
@@ -262,35 +276,35 @@ open class Serializer internal constructor(
         private val builtInNonNullWrites = mapOf(
             write(OBJECT_ARRAY) { objArray: Array<Any> ->
                 writeIntNoMark(objArray.size)
-                objArray.forEach { writeNonNull(it) }
+                objArray.forEach { writeAny(it) }
             },
             write(LIST) { list: List<Any> ->
                 writeIntNoMark(list.size)
-                list.forEach { writeNonNull(it) }
+                list.forEach { writeAny(it) }
             },
             write(ITERABLE) { iter: Iterable<Any> ->
                 writeWithLength {
-                    iter.forEach { writeNonNull(it) }
+                    iter.forEach { writeAny(it) }
                 }
             },
             write(PAIR) { pair: Pair<Any,Any> ->
-                writeNonNull(pair.first)
-                writeNonNull(pair.second)
+                writeAny(pair.first)
+                writeAny(pair.second)
             },
             write(TRIPLE) { triple: Triple<Any,Any,Any> ->
-                writeNonNull(triple.first)
-                writeNonNull(triple.second)
-                writeNonNull(triple.third)
+                writeAny(triple.first)
+                writeAny(triple.second)
+                writeAny(triple.third)
             },
             write(MAP_ENTRY) { entry: Map.Entry<Any,Any> ->
-                writeNonNull(entry.key)
-                writeNonNull(entry.value)
+                writeAny(entry.key)
+                writeAny(entry.value)
             },
             write(MAP) { map: Map<Any,Any> ->   // Multi-maps not supported by default
                 writeIntNoMark(map.size)
                 map.forEach { (key, value) ->
-                    writeNonNull(key)
-                    writeNonNull(value)
+                    writeAny(key)
+                    writeAny(value)
                 }
             }
         )

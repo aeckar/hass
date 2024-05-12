@@ -9,11 +9,14 @@ import java.nio.ByteBuffer
 import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.jvm.jvmErasure
 
+private val EMPTY_ISTREAM = InputStream.nullInputStream()
+private val EMPTY_OSTREAM = OutputStream.nullOutputStream()
+
 /**
  * @return a new deserializer capable of reading primitives, primitive arrays, strings, and
  * instances of any type with a defined protocol from Kanary format
  */
-fun InputStream.deserializer(protocols: ProtocolSet = ProtocolSet.EMPTY): Deserializer {
+fun InputStream.deserializer(protocols: Schema = Schema.EMPTY): Deserializer {
     return StaticDeserializer(this, protocols)
 }
 
@@ -39,47 +42,14 @@ sealed interface Deserializer : Closeable {
     fun <T> read(): T
 
     companion object {
-        internal val EMPTY: Deserializer = StaticDeserializer(ArrayInputStream.EMPTY, ProtocolSet.EMPTY)
+        internal val EMPTY = StaticDeserializer(EMPTY_ISTREAM, Schema.EMPTY)
     }
 }
 
-internal open class StaticDeserializer(
-    protected open val stream: InputStream,
-    internal open val protocols: ProtocolSet
-) : Deserializer, Closeable by stream {
-
-    // Reusable mutable instances...
-
-    private val serializer = object : Serializer(ArrayOutputStream.EMPTY, ProtocolSet.EMPTY) {
-        override var stream = super.stream
-        override var protocols = super.protocols
-
-        operator fun invoke(stream: OutputStream, protocols: ProtocolSet): Serializer {
-            this.stream = stream
-            this.protocols = protocols
-            return this
-        }
-    }
-
-    private val staticDeserializer = object : StaticDeserializer(ArrayInputStream.EMPTY, ProtocolSet.EMPTY) {
-        override var stream = super.stream
-        override var protocols = super.protocols
-
-        operator fun invoke(stream: InputStream, protocols: ProtocolSet): StaticDeserializer {
-            this.stream = stream
-            this.protocols = protocols
-            return this
-        }
-    }
-
-    private val inputStream = object : ArrayInputStream(0, ArrayStream.EMPTY_BYTES) {
-        operator fun invoke(from: ArrayOutputStream): InputStream {
-            size = from.size
-            bytes = from.bytes
-            return this
-        }
-    }
-
+internal class StaticDeserializer(
+    private var stream: InputStream,
+    internal val protocols: Schema
+) : Deserializer, Closeable {
     override fun isExhausted() = stream.available() == 0
     override fun isNotExhausted() = stream.available() != 0
 
@@ -131,6 +101,8 @@ internal open class StaticDeserializer(
     @Suppress("UNCHECKED_CAST")
     override fun <T> read() = readAny() as T
 
+    override fun close() = stream.close()
+
     internal fun readStringNoValidate(): String {
         val size = readIntNoValidate()
         return String(stream.readNBytes(size))
@@ -153,12 +125,13 @@ internal open class StaticDeserializer(
         val code = readTypeCode()
         builtInReads[code]?.let { return it(this) }
         assert(code === OBJECT)
-        val packetCount = readIntNoValidate()
+        val packetCount = stream.read()
         val obj: OutputStream
         if (packetCount == 0) {
             obj = ArrayOutputStream(readIntNoValidate()).apply { acceptNBytes(stream, bytes.size) }
-            return PolymorphicDeserializer(staticDeserializer(inputStream(obj), protocols), emptyMap()).readObject()
+            return PolymorphicDeserializer(StaticDeserializer(obj.asInputStream(), protocols), emptyMap()).readObject()
         }
+        val serializer = Serializer(EMPTY_OSTREAM, protocols)
         val packets = HashMap<JvmClass, Deserializer>(packetCount)
         repeat(packetCount) {
             val packetSize = readIntNoValidate()
@@ -172,13 +145,13 @@ internal open class StaticDeserializer(
                 assert(packetCode === OBJECT)
                 val className = readStringNoValidate()
                 jvmClass = Class.forName(className).kotlin
-                serializer(packet, protocols).writeStringNoMark(className)  // stateful
+                serializer.wrap(packet).writeStringNoMark(className)  // stateful
             }
             packet.acceptNBytes(stream, packetSize)
-            packets[jvmClass] = StaticDeserializer(inputStream(packet), protocols)
+            packets[jvmClass] = StaticDeserializer(packet.asInputStream(), protocols)
         }
         obj = ArrayOutputStream(readIntNoValidate()).apply { acceptNBytes(stream, bytes.size) }
-        return PolymorphicDeserializer(staticDeserializer(inputStream(obj), protocols), packets).readObject()
+        return PolymorphicDeserializer(StaticDeserializer(obj.asInputStream(), protocols), packets).readObject()
     }
 
     companion object {
