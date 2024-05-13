@@ -9,17 +9,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Polymorphic write test is now passing.">
-      <change afterPath="$PROJECT_DIR$/src/test/resources/inputOutput.bin" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/resources/missingProtocol.bin" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/resources/readmeExample.bin" afterDir="false" />
+    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Rework II">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/ArrayOutputStream.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/ArrayOutputStream.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Deserializers.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Deserializer.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Exceptions.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Deserializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Deserializer.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Protocol.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Protocol.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Schema.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Schema.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Serializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Serializer.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/TypeCode.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/TypeCode.kt" afterDir="false" />
     </list>
@@ -97,29 +90,29 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "Gradle.Download Sources.executor": "Run",
-    "Gradle.KanaryTest.executor": "Run",
-    "Gradle.KanaryTest.kanaryTest.executor": "Run",
-    "Gradle.KanaryTest.test (1).executor": "Run",
-    "Gradle.KanaryTest.test.executor": "Run",
-    "Gradle.Test.executor": "Run",
-    "Gradle.Test.test.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "preferences.lookFeel"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;Gradle.Download Sources.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.kanaryTest.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.test (1).executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.test.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Test.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Test.test.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;
   },
-  "keyToStringList": {
-    "kotlin-gradle-user-dirs": [
-      "C:\\Users\\eckar\\.gradle"
+  &quot;keyToStringList&quot;: {
+    &quot;kotlin-gradle-user-dirs&quot;: [
+      &quot;C:\\Users\\eckar\\.gradle&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\eckar\IdeaProjects\kanary\src\main\kotlin\kanary\assign" />
@@ -501,12 +494,19 @@
       <option name="project" value="LOCAL" />
       <updated>1715489491035</updated>
     </task>
-    <option name="localTasksCounter" value="30" />
+    <task id="LOCAL-00030" summary="Rework II">
+      <option name="closed" value="true" />
+      <created>1715562397194</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1715562397194</updated>
+    </task>
+    <option name="localTasksCounter" value="31" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="- Made protocol require type parameter again (enforces thread-safety)&#10;- Created MissingProtocolException&#10;- Made exceptions more specific&#10;- General code cleanup" />
     <MESSAGE value="Inlined type aliases in ProtocolBuilderScope functions" />
     <MESSAGE value="Converted read and write functions to assign-once variables." />
     <MESSAGE value="Renamed protocol to protocolOf for clarity." />
@@ -531,6 +531,7 @@
     <MESSAGE value="Reworked entire API" />
     <MESSAGE value="Documented PolymorphicDeserializer and updated serialized composite types in companion of StaticDeserializer." />
     <MESSAGE value="Polymorphic write test is now passing." />
-    <option name="LAST_COMMIT_MESSAGE" value="Polymorphic write test is now passing." />
+    <MESSAGE value="Rework II" />
+    <option name="LAST_COMMIT_MESSAGE" value="Rework II" />
   </component>
 </project>

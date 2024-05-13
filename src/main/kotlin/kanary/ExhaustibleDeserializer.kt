@@ -16,21 +16,9 @@ private val EMPTY_OSTREAM = OutputStream.nullOutputStream()
  * @return a new deserializer capable of reading primitives, primitive arrays, strings, and
  * instances of any type with a defined protocol from Kanary format
  */
-fun InputStream.deserializer(protocols: Schema = Schema.EMPTY): Deserializer {
-    return StaticDeserializer(this, protocols)
-}
+fun InputStream.deserializer(protocols: Schema = Schema.EMPTY): ExhaustibleDeserializer = InputDeserializer(this, protocols)
 
-/**
- * Reads serialized data from a stream in Kanary format.
- * Does not need to be closed so long as the underlying stream is closed.
- * Because no protocols are defined, no instances of any reference types may be read.
- * Calling [close] also closes the underlying stream.
- * This class is not thread-safe.
- */
-sealed interface Deserializer : Closeable {
-    fun isExhausted(): Boolean
-    fun isNotExhausted(): Boolean
-
+sealed interface Deserializer {
     fun readBoolean(): Boolean
     fun readByte(): Byte
     fun readChar(): Char
@@ -42,24 +30,38 @@ sealed interface Deserializer : Closeable {
     fun <T> read(): T
 
     companion object {
-        internal val EMPTY = StaticDeserializer(EMPTY_ISTREAM, Schema.EMPTY)
+        internal val EMPTY: ExhaustibleDeserializer = InputDeserializer(EMPTY_ISTREAM, Schema.EMPTY)
     }
 }
 
 /**
- * [Deserializer] allowing extraction of data from supertypes with a defined [write operation][ProtocolBuilder.write].
+ * Reads serialized data from a stream in Kanary format.
+ * Does not need to be closed so long as the underlying stream is closed.
+ * Because no protocols are defined, no instances of any reference types may be read.
+ * Calling [close] also closes the underlying stream.
+ * This class is not thread-safe.
+ */
+sealed interface ExhaustibleDeserializer : Deserializer, Closeable {
+    fun isExhausted(): Boolean
+    fun isNotExhausted(): Boolean
+}
+
+// Each instance is used to read a single OBJECT
+/**
+ * [ExhaustibleDeserializer] allowing extraction of data from supertypes with
+ * a defined [write operation][ProtocolBuilder.write].
  */
 class PolymorphicDeserializer internal constructor(
-    private val obj: StaticDeserializer,
-    private val packets: Map<JvmClass, Deserializer>,
-) : Deserializer by obj {
+    private val obj: InputDeserializer,
+    private val packets: Map<JvmClass, ExhaustibleDeserializer>,
+) : ExhaustibleDeserializer by obj {
     private val classRef = Class.forName(obj.readStringNoValidate()).kotlin
 
     /**
      * A deserializer corresponding to the data serialized by the immediate superclass.
      * If the superclass does not have a defined write operation, is assigned a deserializer containing no data.
      */
-    val superclass: Deserializer by lazy {
+    val superclass: ExhaustibleDeserializer by lazy {
         classRef.supertypes
             .first().jvmErasure
             .takeIf { !it.isAbstract }?.let { supertype(it) } ?: Deserializer.EMPTY
@@ -73,7 +75,7 @@ class PolymorphicDeserializer internal constructor(
     inline fun <reified T : Any> supertype() = supertype(T::class)
 
     @PublishedApi
-    internal fun supertype(jvmClass: JvmClass): Deserializer {
+    internal fun supertype(jvmClass: JvmClass): ExhaustibleDeserializer {
         return packets[jvmClass] ?: if (jvmClass.isSuperclassOf(classRef)) {
             Deserializer.EMPTY
         } else {
@@ -87,10 +89,10 @@ class PolymorphicDeserializer internal constructor(
     }
 }
 
-internal class StaticDeserializer(
+internal class InputDeserializer(
     private var stream: InputStream,
     internal val protocols: Schema
-) : Deserializer, Closeable {
+) : ExhaustibleDeserializer, Closeable {
     override fun isExhausted() = stream.available() == 0
     override fun isNotExhausted() = stream.available() != 0
 
@@ -170,10 +172,10 @@ internal class StaticDeserializer(
         val obj: ArrayOutputStream
         if (packetCount == 0) {
             obj = ArrayOutputStream(readIntNoValidate()).apply { acceptNBytes(stream, bytes.size) }
-            return PolymorphicDeserializer(StaticDeserializer(obj.asInputStream(), protocols), emptyMap()).readObject()
+            return PolymorphicDeserializer(InputDeserializer(obj.asInputStream(), protocols), emptyMap()).readObject()
         }
-        val serializer = Serializer(EMPTY_OSTREAM, protocols)
-        val packets = HashMap<JvmClass, Deserializer>(packetCount)
+        val serializer = OutputSerializer(EMPTY_OSTREAM, protocols)
+        val packets = HashMap<JvmClass, ExhaustibleDeserializer>(packetCount)
         repeat(packetCount) {
             val packetSize = readIntNoValidate()
             val packetCode = readTypeCode()
@@ -189,10 +191,10 @@ internal class StaticDeserializer(
                 serializer.wrap(packet).writeStringNoMark(className)  // stateful
             }
             packet.acceptNBytes(stream, packetSize)
-            packets[jvmClass] = StaticDeserializer(packet.asInputStream(), protocols)
+            packets[jvmClass] = InputDeserializer(packet.asInputStream(), protocols)
         }
         obj = ArrayOutputStream(readIntNoValidate()).apply { acceptNBytes(stream, bytes.size) }
-        return PolymorphicDeserializer(StaticDeserializer(obj.asInputStream(), protocols), packets).readObject()
+        return PolymorphicDeserializer(InputDeserializer(obj.asInputStream(), protocols), packets).readObject()
     }
 
     companion object {
@@ -305,7 +307,7 @@ internal class StaticDeserializer(
             }
         )
 
-        private fun read(code: TypeCode, read: StaticDeserializer.() -> Any?) = code to read
+        private fun read(code: TypeCode, read: InputDeserializer.() -> Any?) = code to read
 
         private class SerializedMapEntry(override val key: Any?, override val value: Any?) : Map.Entry<Any?,Any?>
         private class SerializedList(list: List<*>) : List<Any?> by list

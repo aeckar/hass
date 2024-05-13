@@ -2,8 +2,8 @@ package kanary
 
 import java.io.IOException
 
-internal typealias PolymorphicReadOperation<T> = PolymorphicDeserializer.() -> T
 internal typealias StaticReadOperation<T> = Deserializer.() -> T
+internal typealias ReadOperation<T> = PolymorphicDeserializer.() -> T
 internal typealias WriteOperation<T> = Serializer.(T) -> Unit
 
 /**
@@ -17,7 +17,7 @@ internal class Protocol<T : Any>(builder: ProtocolBuilder<T>) {
     val isReadStatic: Boolean   // TODO implement
     val isReadDefault: Boolean   // TODO implement
     val isWriteStatic: Boolean
-    val read: PolymorphicReadOperation<out T>?
+    val read: ReadOperation<out T>?
     val write: WriteOperation<in T>?
 
     init {
@@ -45,13 +45,13 @@ class ProtocolBuilder<T : Any>(internal val classRef: JvmClass) {
     }
 
     /**
-     * The binary read operation called when [Deserializer.read] is called with an object of class [T].
+     * The binary read operation called when [ExhaustibleDeserializer.read] is called with an object of class [T].
      * Information deserialized from supertypes is converted into a packet,
      * from which the read operation can use the information to create a new instance of [T].
      * @throws MalformedProtocolException [T] is an abstract class or interface
      * @throws ReassignmentException this is assigned to more than once in a single scope
      */
-    var read: PolymorphicReadOperation<T>
+    var read: ReadOperation<T>
         get() = throw MalformedProtocolException(classRef, "read operation may only be assigned to, not accessed")
         set(value) {
             if (classRef.isAbstract && !isReadDefault) {
@@ -63,7 +63,7 @@ class ProtocolBuilder<T : Any>(internal val classRef: JvmClass) {
         }
 
     /**
-     * The binary write operation called when [Serializer.write] is called with an object of class [T]
+     * The binary write operation called when [OutputSerializer.write] is called with an object of class [T]
      * If not declared, then a no-op default write operation is used.
      * @throws ReassignmentException this is assigned to more than once in a single scope
      */
@@ -74,7 +74,7 @@ class ProtocolBuilder<T : Any>(internal val classRef: JvmClass) {
             _write = value
         }
 
-    internal var _read: PolymorphicReadOperation<T> = @Suppress("CAST_NEVER_SUCCEEDS") { null as T }
+    internal var _read: ReadOperation<T> = @Suppress("CAST_NEVER_SUCCEEDS") { null as T }
     internal var _write: WriteOperation<T> = {}
 
     internal var isReadStatic = false
@@ -90,7 +90,7 @@ class ProtocolBuilder<T : Any>(internal val classRef: JvmClass) {
      * Any information not deserialized as a result is lost.
      * @throws MalformedProtocolException [T] is a final class, or called more than once in a single scope
      */
-    fun default(read: PolymorphicReadOperation<T>): PolymorphicReadOperation<T> {
+    fun default(read: ReadOperation<T>): ReadOperation<T> {
         if (classRef.isFinal) {
             throw MalformedProtocolException(classRef, "default read operation not supported for final classes")
         }
@@ -119,7 +119,7 @@ class ProtocolBuilder<T : Any>(internal val classRef: JvmClass) {
     /**
      * When prepended to a [read operation][read], declares that:
      * - Supertype packets are not accessed during the write operation
-     * - Version resolution through [exhaustion testing][Deserializer.isExhausted] is not required
+     * - Version resolution through [exhaustion testing][ExhaustibleDeserializer.isExhausted] is not required
      *
      * If used, the [write operation][write] of the same protocol must also be [static].
      * Enables certain optimizations.

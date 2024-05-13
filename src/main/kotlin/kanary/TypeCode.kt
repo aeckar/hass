@@ -44,6 +44,7 @@ internal enum class TypeCode(val jvmClass: JvmClass = Nothing::class) {
     MAP(Map::class),
     UNIT(Unit::class),
     OBJECT(Any::class),
+    STATIC_OBJECT(OBJECT.jvmClass), // Used when read and write are both 'static'
     NULL;
 
     // Ensures that the correct type is parsed during deserialization

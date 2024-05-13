@@ -14,10 +14,31 @@ import kotlin.reflect.jvm.jvmErasure
  * @return a new serializer capable of writing primitives, primitive arrays,
  * and instances of any type with a defined protocol to Kanary format
  */
-fun OutputStream.serializer(protocols: Schema = Schema.EMPTY) = Serializer(this, protocols)
+fun OutputStream.serializer(protocols: Schema = Schema.EMPTY): Serializer = OutputSerializer(this, protocols)
 
 @Suppress("UNCHECKED_CAST")
-private fun WriteOperation<*>.accept(stream: Serializer, obj: Any) = (this as WriteOperation<Any>)(stream, obj)
+private fun WriteOperation<*>.accept(stream: OutputSerializer, obj: Any) = (this as WriteOperation<Any>)(stream, obj)
+
+sealed interface Serializer {
+    fun writeBoolean(cond: Boolean)
+    fun writeByte(b: Byte)
+    fun writeChar(c: Char)
+    fun writeShort(n: Short)
+    fun writeInt(n: Int)
+    fun writeLong(n: Long)
+    fun writeFloat(fp: Float)
+    fun writeDouble(fp: Double)
+    fun write(obj: Any?)
+
+    // Optimizations for built-in composite types with non-nullable members
+    fun <T : Any> write(array: Array<out T>)
+    fun <T : Any> write(list: List<T>)
+    fun <T : Any> write(iter: Iterable<T>)
+    fun <T : Any> write(pair: Pair<T, T>)
+    fun <T : Any> write(triple: Triple<T, T, T>)
+    fun <K : Any, V : Any> write(entry: Map.Entry<K, V>)
+    fun <K : Any, V : Any> write(map: Map<K, V>)
+}
 
 /**
  * Writes serialized data to a stream in Kanary format.
@@ -25,46 +46,46 @@ private fun WriteOperation<*>.accept(stream: Serializer, obj: Any) = (this as Wr
  * Because no protocols are defined, no instances of any reference types may be written.
  * Calling [close] also closes the underlying stream.
  */
-class Serializer internal constructor(
+class OutputSerializer internal constructor(
     private var stream: OutputStream,
     private val protocols: Schema
-) : Closeable, Flushable {
-    fun writeBoolean(cond: Boolean) {
+) : Closeable, Flushable, Serializer {
+    override fun writeBoolean(cond: Boolean) {
         BOOLEAN.mark(stream)
         writeBooleanNoMark(cond)
     }
 
-    fun writeByte(b: Byte) {
+    override fun writeByte(b: Byte) {
         BYTE.mark(stream)
         writeByteNoMark(b)
     }
 
-    fun writeChar(c: Char) {
+    override fun writeChar(c: Char) {
         CHAR.mark(stream)
         writeCharNoMark(c)
     }
 
-    fun writeShort(n: Short) {
+    override fun writeShort(n: Short) {
         SHORT.mark(stream)
         writeShortNoMark(n)
     }
 
-    fun writeInt(n: Int) {
+    override fun writeInt(n: Int) {
         INT.mark(stream)
         writeIntNoMark(n)
     }
 
-    fun writeLong(n: Long) {
+    override fun writeLong(n: Long) {
         LONG.mark(stream)
         writeLongNoMark(n)
     }
 
-    fun writeFloat(fp: Float) {
+    override fun writeFloat(fp: Float) {
         FLOAT.mark(stream)
         writeFloatNoMark(fp)
     }
 
-    fun writeDouble(fp: Double) {
+    override fun writeDouble(fp: Double) {
         DOUBLE.mark(stream)
         writeDoubleNoMark(fp)
     }
@@ -74,7 +95,7 @@ class Serializer internal constructor(
      * If the object is not null and its type does not have a defined protocol, the protocol of its superclass or
      * the first interface declared in source code with a protocol is chosen.
      */
-    fun write(obj: Any?) {
+    override fun write(obj: Any?) {
         if (obj == null) {
             NULL.mark(stream)
             return
@@ -89,44 +110,44 @@ class Serializer internal constructor(
      * Avoids null check for members, unlike generic `write`.
      * Arrays of primitive types should be passed to the generic overload.
      */
-    fun <T : Any> write(array: Array<out T>) = writeAny(array, nonNullMembers = true)
+    override fun <T : Any> write(array: Array<out T>) = writeAny(array, nonNullMembers = true)
 
     /**
      * Writes all members in the list according the protocol of each.
      * Avoids null check for members, unlike generic `write`.
      */
-    fun <T : Any> write(list: List<T>) = writeAny(list, nonNullMembers = true)
+    override fun <T : Any> write(list: List<T>) = writeAny(list, nonNullMembers = true)
 
     /**
      * Writes all members in the iterable object according the protocol of each as a list.
      * The caller must ensure that the object has a finite number of members.
      * Avoids null check for members, unlike generic `write`.
      */
-    fun <T : Any> write(iter: Iterable<T>) = writeAny(iter, nonNullMembers = true)
+    override fun <T : Any> write(iter: Iterable<T>) = writeAny(iter, nonNullMembers = true)
 
     /**
      * Writes the given pair according to the protocols of its members.
      * Avoids null check for members, unlike generic `write`.
      */
-    fun <T : Any> write(pair: Pair<T,T>) = writeAny(pair, nonNullMembers = true)
+    override fun <T : Any> write(pair: Pair<T,T>) = writeAny(pair, nonNullMembers = true)
 
     /**
      * Writes the given triple according to the protocols of its members.
      * Avoids null check for members, unlike generic `write`.
      */
-    fun <T : Any> write(triple: Triple<T,T,T>) = writeAny(triple, nonNullMembers = true)
+    override fun <T : Any> write(triple: Triple<T,T,T>) = writeAny(triple, nonNullMembers = true)
 
     /**
      * Writes the given map entry according to the protocols of its key and value.
      * Avoids null check for members, unlike generic `write`.
      */
-    fun <K : Any, V : Any> write(entry: Map.Entry<K,V>) = writeAny(entry, nonNullMembers = true)
+    override fun <K : Any, V : Any> write(entry: Map.Entry<K,V>) = writeAny(entry, nonNullMembers = true)
 
     /**
      * Writes the given map according to the protocols of its keys and values.
      * Avoids null check for entries, unlike generic `write`.
      */
-    fun <K : Any, V : Any> write(map: Map<K,V>) = writeAny(map, nonNullMembers = true)
+    override fun <K : Any, V : Any> write(map: Map<K,V>) = writeAny(map, nonNullMembers = true)
 
     internal fun wrap(stream: OutputStream) = this.also { this.stream = stream }
 
@@ -253,9 +274,9 @@ class Serializer internal constructor(
         }
     }
 
-    private inline fun writeWithLength(write: Serializer.() -> Unit) {
+    private inline fun writeWithLength(write: OutputSerializer.() -> Unit) {
         val intermediate = ArrayOutputStream()
-        Serializer(intermediate, protocols).apply(write)
+        OutputSerializer(intermediate, protocols).apply(write)
         writeIntNoMark(intermediate.size)
         stream.write(intermediate.bytes)
     }
@@ -391,7 +412,7 @@ class Serializer internal constructor(
         )
 
         @Suppress("UNCHECKED_CAST")
-        private inline fun <reified T : Any> write(code: TypeCode, noinline write: WriteOperation<T>) =
+        private inline fun <reified T : Any> write(code: TypeCode, noinline write: OutputSerializer.(T) -> Unit) =
             T::class to (code to write as WriteOperation<Any>)
     }
 }
