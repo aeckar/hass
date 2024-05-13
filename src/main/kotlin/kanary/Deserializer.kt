@@ -1,4 +1,3 @@
-@file:Suppress("UNUSED")
 package kanary
 
 import kanary.TypeCode.*
@@ -18,6 +17,9 @@ private val EMPTY_OSTREAM = OutputStream.nullOutputStream()
  */
 fun InputStream.deserializer(protocols: Schema = Schema.EMPTY): ExhaustibleDeserializer = InputDeserializer(this, protocols)
 
+/**
+ * Reads serialized data from a stream in Kanary format.
+ */
 sealed interface Deserializer {
     fun readBoolean(): Boolean
     fun readByte(): Byte
@@ -37,9 +39,8 @@ sealed interface Deserializer {
 /**
  * Reads serialized data from a stream in Kanary format.
  * Does not need to be closed so long as the underlying stream is closed.
- * Because no protocols are defined, no instances of any reference types may be read.
  * Calling [close] also closes the underlying stream.
- * This class is not thread-safe.
+ * Until closed, instances are blocking.
  */
 sealed interface ExhaustibleDeserializer : Deserializer, Closeable {
     fun isExhausted(): Boolean
@@ -48,7 +49,7 @@ sealed interface ExhaustibleDeserializer : Deserializer, Closeable {
 
 // Each instance is used to read a single OBJECT
 /**
- * [ExhaustibleDeserializer] allowing extraction of data from supertypes with
+ * Deserializer allowing extraction of data from supertypes with
  * a defined [write operation][ProtocolBuilder.write].
  */
 class PolymorphicDeserializer internal constructor(

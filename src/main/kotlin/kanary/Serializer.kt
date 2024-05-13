@@ -45,6 +45,7 @@ sealed interface Serializer {
  * Does not need to be closed so long as the underlying stream is closed.
  * Because no protocols are defined, no instances of any reference types may be written.
  * Calling [close] also closes the underlying stream.
+ * Until closed, instances are blocking.
  */
 class OutputSerializer internal constructor(
     private var stream: OutputStream,

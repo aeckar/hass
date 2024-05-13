@@ -21,9 +21,14 @@ internal class Protocol<T : Any>(builder: ProtocolBuilder<T>) {
     val write: WriteOperation<in T>?
 
     init {
-        if (builder.isReadStatic && !builder.isWriteStatic) {
-            throw MalformedProtocolException(builder.classRef,
-                "read operation with 'static' modifier must accompany static write operation")
+        with(builder) {
+            if (isReadStatic && isReadDefault) {
+                throw MalformedProtocolException(classRef, "read operation cannot be assigned more than one modifier")
+            }
+            if (isReadStatic && !isWriteStatic) {
+                throw MalformedProtocolException(classRef,
+                    "read operation with 'static' modifier must accompany static write operation")
+            }
         }
         isReadStatic = builder.isReadStatic
         isReadDefault = builder.isReadDefault
