@@ -1,9 +1,17 @@
 package kanary
 
+import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 
 @PublishedApi
+internal val builtInTypes = TypeCode.entries.asSequence().map { it.jvmClass }.toHashSet()
+
+/**
+ * Thrown when an attempt is made to read serialized data of a certain fundamental type, but found another type.
+ */
+class TypeMismatchException internal constructor(message: String) : IOException(message)
+
 internal enum class TypeCode(val jvmClass: JvmClass = Nothing::class) {
     // Primitive types
     BOOLEAN(Boolean::class),
@@ -52,8 +60,6 @@ internal enum class TypeCode(val jvmClass: JvmClass = Nothing::class) {
     }
 
     companion object {
-        val jvmTypes = TypeCode.entries.asSequence().map { it.jvmClass }.toHashSet()
-
         fun nameOf(code: Int) = if (code == -1) "EOF" else (entries.find { it.ordinal == code }?.name ?: "UNKNOWN")
     }
 }

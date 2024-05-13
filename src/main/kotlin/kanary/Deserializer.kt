@@ -46,6 +46,47 @@ sealed interface Deserializer : Closeable {
     }
 }
 
+/**
+ * [Deserializer] allowing extraction of data from supertypes with a defined [write operation][ProtocolBuilder.write].
+ */
+class PolymorphicDeserializer internal constructor(
+    private val obj: StaticDeserializer,
+    private val packets: Map<JvmClass, Deserializer>,
+) : Deserializer by obj {
+    private val classRef = Class.forName(obj.readStringNoValidate()).kotlin
+
+    /**
+     * A deserializer corresponding to the data serialized by the immediate superclass.
+     * If the superclass does not have a defined write operation, is assigned a deserializer containing no data.
+     */
+    val superclass: Deserializer by lazy {
+        classRef.supertypes
+            .first().jvmErasure
+            .takeIf { !it.isAbstract }?.let { supertype(it) } ?: Deserializer.EMPTY
+    }
+
+    /**
+     * @return a deserializer corresponding to the data serialized by given supertype.
+     * If the supertype does not have a defined write operation, returns a deserializer containing no data.
+     * @throws MalformedProtocolException [T] is not a supertype
+     */
+    inline fun <reified T : Any> supertype() = supertype(T::class)
+
+    @PublishedApi
+    internal fun supertype(jvmClass: JvmClass): Deserializer {
+        return packets[jvmClass] ?: if (jvmClass.isSuperclassOf(classRef)) {
+            Deserializer.EMPTY
+        } else {
+            throw MalformedProtocolException(classRef, "type '${jvmClass.qualifiedName}' is not a supertype")
+        }
+    }
+
+    internal fun readObject(): Any {
+        return obj.protocols.allProtocols.getValue(classRef).read?.invoke(this)
+            ?: throw MalformedProtocolException(classRef, "read operation not found")
+    }
+}
+
 internal class StaticDeserializer(
     private var stream: InputStream,
     internal val protocols: Schema
@@ -126,7 +167,7 @@ internal class StaticDeserializer(
         builtInReads[code]?.let { return it(this) }
         assert(code === OBJECT)
         val packetCount = stream.read()
-        val obj: OutputStream
+        val obj: ArrayOutputStream
         if (packetCount == 0) {
             obj = ArrayOutputStream(readIntNoValidate()).apply { acceptNBytes(stream, bytes.size) }
             return PolymorphicDeserializer(StaticDeserializer(obj.asInputStream(), protocols), emptyMap()).readObject()
@@ -270,47 +311,5 @@ internal class StaticDeserializer(
         private class SerializedList(list: List<*>) : List<Any?> by list
         private class SerializedIterable(iter: Iterable<*>) : Iterable<Any?> by iter
         private class SerializedMap(map: Map<Any?,*>) : Map<Any?,Any?> by map
-    }
-}
-
-/**
- * [Deserializer] allowing extraction of data from supertypes with a defined [write operation][ProtocolBuilder.write].
- */
-class PolymorphicDeserializer internal constructor(
-    private val obj: StaticDeserializer,
-    private val packets: Map<JvmClass, Deserializer>,
-) : Deserializer by obj {
-
-    private val classRef = Class.forName(obj.readStringNoValidate()).kotlin
-
-    /**
-     * A deserializer corresponding to the data serialized by the immediate superclass.
-     * If the superclass does not have a defined write operation, is assigned a deserializer containing no data.
-     */
-    val superclass: Deserializer by lazy {
-        classRef.supertypes
-            .first().jvmErasure
-            .takeIf { !it.isAbstract }?.let { supertype(it) } ?: Deserializer.EMPTY
-    }
-
-    /**
-     * @return a deserializer corresponding to the data serialized by given supertype.
-     * If the supertype does not have a defined write operation, returns a deserializer containing no data.
-     * @throws MalformedProtocolException [T] is not a supertype
-     */
-    inline fun <reified T : Any> supertype() = supertype(T::class)
-
-    @PublishedApi
-    internal fun supertype(jvmClass: JvmClass): Deserializer {
-        return packets[jvmClass] ?: if (jvmClass.isSuperclassOf(classRef)) {
-            Deserializer.EMPTY
-        } else {
-            throw MalformedProtocolException(classRef, "type '${jvmClass.qualifiedName}' is not a supertype")
-        }
-    }
-
-    internal fun readObject(): Any {
-        return obj.protocols.allProtocols.getValue(classRef).read?.invoke(this)
-            ?: throw MalformedProtocolException(classRef, "read operation not found")
     }
 }

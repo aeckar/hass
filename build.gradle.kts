@@ -12,7 +12,6 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     implementation(kotlin("reflect"))
-    implementation("com.github.aeckar:once:1.0")
 }
 
 publishing {

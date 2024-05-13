@@ -1,6 +1,7 @@
 package kanary
 
 import java.io.EOFException
+import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -33,7 +34,12 @@ internal class ArrayOutputStream(initialCapacity: Int = DEFAULT_SIZE) : OutputSt
         if (required <= bytes.size) {
             return
         }
-        val new = ByteArray(size * 2)
+        val newSize = size.toLong() * 2L
+        if (newSize > Int.MAX_VALUE) {
+            throw IOException(
+                    "Packet is too large to be serialized. Consider dividing the information among multiple supertypes")
+        }
+        val new = ByteArray(newSize.toInt())
         System.arraycopy(bytes, 0, new, 0, size)
         bytes = new
     }

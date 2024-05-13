@@ -1,6 +1,5 @@
 package kanary
 
-import com.github.eckar.ReassignmentException
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.jvm.jvmErasure
@@ -17,9 +16,9 @@ private typealias MutableProtocolSequence = MutableList<ProtocolSpecifier>
  * It is acceptable, but not encouraged, to create an empty set. Doing so would provide
  * object read/write functionality to the serializer/deserializer, which will always fail when invoked.
  * This is because objects require their type to have a defined protocol before they can be manipulated.
- * @return a protocol set, which can be passed to a
+ * @return a serialization schema, which can be passed to a
  * [serializer][java.io.OutputStream.serializer] or [deserializer][java.io.InputStream.deserializer]
- * to provide reference type serialization functionality
+ * to provide the directions for serializing the specified reference types
  */
 inline fun schema(builder: SchemaBuilder.() -> Unit): Schema {
     val builderScope = SchemaBuilder()
@@ -28,15 +27,20 @@ inline fun schema(builder: SchemaBuilder.() -> Unit): Schema {
 }
 
 /**
+ * Thrown when there is an attempt to assign a value to a property that has already been given a value
+ * and can only be assigned a value once.
+ */
+class ReassignmentException /* not limited to API usage */(message: String) : Exception(message)
+
+/**
  * Defines a set of protocols corresponding to how certain types should be written to and read from binary.
  */
 class Schema {
     // Protocols used during deserialization
     internal val allProtocols: Map<JvmClass, Protocol<*>>
 
-    /* Protocols for each type serialized, organized in the order they are written
-     * Last member of protocol hierarchy is protocol of key
-     */
+    // Protocols for each type serialized, organized in the order they are written
+    // Last member of sequence contains write operation of key
     internal val writeSequences: Map<JvmClass, ProtocolSequence>
 
     @PublishedApi
@@ -46,9 +50,9 @@ class Schema {
                 .asSequence()
                 .map { it.jvmErasure }
                 .filter { jvmType ->
-                    builder.protocols[jvmType]?.let { protocol ->   // Has protocol
-                        protocol.write?.let {                       // Has write operation
-                            none { it.second == protocol }          // Not already in sequence
+                    builder.definedProtocols[jvmType]?.let { protocol ->    // Has protocol
+                        protocol.write?.let {                               // Has write operation
+                            none { it.second == protocol }                  // Not already in sequence
                         }
                     } ?: false
                 }
@@ -60,12 +64,12 @@ class Schema {
             return this
         }
 
-        allProtocols = builder.protocols
+        allProtocols = builder.definedProtocols
         writeSequences = mutableMapOf<JvmClass, ProtocolSequence>().apply {
-            builder.protocols.keys.forEach { jvmType ->
+            builder.definedProtocols.keys.forEach { jvmType ->
                 val hierarchy = mutableListOf<ProtocolSpecifier>()  // Can be empty
                 put(jvmType, hierarchy.build(jvmType.supertypes) /* stateful */)
-                builder.protocols.getValue(jvmType).write?.let {
+                builder.definedProtocols.getValue(jvmType).write?.let {
                     hierarchy += builder.specifierOf(jvmType)
                 }
             }
@@ -78,8 +82,8 @@ class Schema {
     }
 
     /**
-     * Useful as a utility, but slower than simply declaring all protocols within the same set.
-     * @return a new protocol set containing the protocols of each
+     * Useful as a utility, but slower than simply defining all protocols within the same schema.
+     * @return a new schema containing the protocols of each
      * @throws ReassignmentException the sets contain conflicting declarations of a given protocol
      */
     operator fun plus(other: Schema): Schema {
@@ -102,21 +106,21 @@ class Schema {
  */
 class SchemaBuilder @PublishedApi internal constructor() {  // No intent to add versioning support
     @PublishedApi
-    internal val protocols = mutableMapOf<JvmClass,Protocol<*>>()
+    internal val definedProtocols = mutableMapOf<JvmClass,Protocol<*>>()
 
     /**
-     * Provides a scope wherein a the binary [read][ProtocolBuilder.read] and [write][ProtocolBuilder.write]
-     * operations of a top-level class can be defined.
+     * Provides a scope wherein the [read][ProtocolBuilder.read] and [write][ProtocolBuilder.write]
+     * operations of a type can be defined.
      * @throws MalformedProtocolException [T] is not a top-level class or has already been defined a protocol
      * @throws ReassignmentException either of the operations are defined twice,
      * or this is called more than once for type [T]
      */
     inline fun <reified T : Any> define(builder: ProtocolBuilder<T>.() -> Unit) {
         val classRef = T::class
-        if (classRef in TypeCode.jvmTypes) {
+        if (classRef in builtInTypes) {
             throw MalformedProtocolException(classRef, "defined by default")
         }
-        if (classRef in protocols) {
+        if (classRef in definedProtocols) {
             throw MalformedProtocolException(classRef, "defined more than once")
         }
         val builderScope = ProtocolBuilder<T>(classRef)
@@ -125,10 +129,10 @@ class SchemaBuilder @PublishedApi internal constructor() {  // No intent to add 
         } catch (_: ReassignmentException) {
             throw ReassignmentException("Read or write operation defined more than once")
         }
-        protocols[classRef] = Protocol(builderScope)
+        definedProtocols[classRef] = Protocol(builderScope)
     }
 
     internal fun specifierOf(type: JvmClass): ProtocolSpecifier {
-        return type.qualifiedName!! to protocols.getValue(type)
+        return type.qualifiedName!! to definedProtocols.getValue(type)
     }
 }

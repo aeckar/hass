@@ -9,21 +9,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Documented PolymorphicDeserializer and updated serialized composite types in companion of StaticDeserializer.">
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/ArrayOutputStream.kt" afterDir="false" />
+    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Polymorphic write test is now passing.">
+      <change afterPath="$PROJECT_DIR$/src/test/resources/inputOutput.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/resources/missingProtocol.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/resources/readmeExample.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/package-list" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/package-list" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/ArrayStreams.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Deserializers.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Deserializers.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Exceptions.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Exceptions.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/ArrayOutputStream.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/ArrayOutputStream.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Deserializers.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Deserializer.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Exceptions.kt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Protocol.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Protocol.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/ProtocolSet.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Schema.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Serializers.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Serializer.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/kotlin/kanary/KanaryTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/kanary/KanaryTest.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/resources/inputOutput.bin" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/resources/missingProtocol.bin" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/resources/polymorphicWrite.bin" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/resources/polymorphicWrite.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/resources/readmeExample.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Schema.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Schema.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Serializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Serializer.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/TypeCode.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/TypeCode.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,9 +61,9 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Kotlin File" />
         <option value="Kotlin Object" />
         <option value="Kotlin Class" />
+        <option value="Kotlin File" />
       </list>
     </option>
   </component>
@@ -495,12 +493,19 @@
       <option name="project" value="LOCAL" />
       <updated>1715475242195</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="Polymorphic write test is now passing.">
+      <option name="closed" value="true" />
+      <created>1715489491035</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1715489491035</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="Explicit type annotation no longer needed for protocol" />
     <MESSAGE value="- Made protocol require type parameter again (enforces thread-safety)&#10;- Created MissingProtocolException&#10;- Made exceptions more specific&#10;- General code cleanup" />
     <MESSAGE value="Inlined type aliases in ProtocolBuilderScope functions" />
     <MESSAGE value="Converted read and write functions to assign-once variables." />
@@ -525,17 +530,7 @@
     <MESSAGE value="Updated Serializer.kt" />
     <MESSAGE value="Reworked entire API" />
     <MESSAGE value="Documented PolymorphicDeserializer and updated serialized composite types in companion of StaticDeserializer." />
-    <option name="LAST_COMMIT_MESSAGE" value="Documented PolymorphicDeserializer and updated serialized composite types in companion of StaticDeserializer." />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/src/main/kotlin/kanary/Deserializers.kt</url>
-          <line>129</line>
-          <option name="timeStamp" value="6" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <MESSAGE value="Polymorphic write test is now passing." />
+    <option name="LAST_COMMIT_MESSAGE" value="Polymorphic write test is now passing." />
   </component>
 </project>

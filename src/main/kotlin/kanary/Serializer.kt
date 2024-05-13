@@ -29,8 +29,6 @@ class Serializer internal constructor(
     private var stream: OutputStream,
     private val protocols: Schema
 ) : Closeable, Flushable {
-    fun wrap(stream: OutputStream) = this.also { this.stream = stream }
-
     fun writeBoolean(cond: Boolean) {
         BOOLEAN.mark(stream)
         writeBooleanNoMark(cond)
@@ -75,8 +73,6 @@ class Serializer internal constructor(
      * Writes the object in binary format according to the protocol of its type, or null.
      * If the object is not null and its type does not have a defined protocol, the protocol of its superclass or
      * the first interface declared in source code with a protocol is chosen.
-     * @throws MissingProtocolException if [obj] is not null, and
-     * its type is not a top-level class or does not have a defined protocol
      */
     fun write(obj: Any?) {
         if (obj == null) {
@@ -92,15 +88,12 @@ class Serializer internal constructor(
      * Writes all members in array according to the protocol of each instance.
      * Avoids null check for members, unlike generic `write`.
      * Arrays of primitive types should be passed to the generic overload.
-     * @throws MissingProtocolException the type of any member of [array]
-     * is not a top-level class or does not have a defined protocol
      */
     fun <T : Any> write(array: Array<out T>) = writeAny(array, nonNullMembers = true)
 
     /**
      * Writes all members in the list according the protocol of each.
      * Avoids null check for members, unlike generic `write`.
-     * @throws MissingProtocolException any member of [list] is not a top-level class or does not have a defined protocol
      */
     fun <T : Any> write(list: List<T>) = writeAny(list, nonNullMembers = true)
 
@@ -108,37 +101,34 @@ class Serializer internal constructor(
      * Writes all members in the iterable object according the protocol of each as a list.
      * The caller must ensure that the object has a finite number of members.
      * Avoids null check for members, unlike generic `write`.
-     * @throws MissingProtocolException any member of [iter] is not a top-level class or does not have a defined protocol
      */
     fun <T : Any> write(iter: Iterable<T>) = writeAny(iter, nonNullMembers = true)
 
     /**
      * Writes the given pair according to the protocols of its members.
      * Avoids null check for members, unlike generic `write`.
-     * @throws MissingProtocolException any member of [pair] is not a top-level class or does not have a defined protocol
      */
     fun <T : Any> write(pair: Pair<T,T>) = writeAny(pair, nonNullMembers = true)
 
     /**
      * Writes the given triple according to the protocols of its members.
      * Avoids null check for members, unlike generic `write`.
-     * @throws MissingProtocolException any member of [triple] is not a top-level class or does not have a defined protocol
      */
     fun <T : Any> write(triple: Triple<T,T,T>) = writeAny(triple, nonNullMembers = true)
 
     /**
      * Writes the given map entry according to the protocols of its key and value.
      * Avoids null check for members, unlike generic `write`.
-     * @throws MissingProtocolException any member of [entry] is not a top-level class or does not have a defined protocol
      */
     fun <K : Any, V : Any> write(entry: Map.Entry<K,V>) = writeAny(entry, nonNullMembers = true)
 
     /**
      * Writes the given map according to the protocols of its keys and values.
      * Avoids null check for entries, unlike generic `write`.
-     * @throws MissingProtocolException any entry in [map] is not a top-level class or does not have a defined protocol
      */
     fun <K : Any, V : Any> write(map: Map<K,V>) = writeAny(map, nonNullMembers = true)
+
+    internal fun wrap(stream: OutputStream) = this.also { this.stream = stream }
 
     override fun close() = stream.close()
     override fun flush() = stream.flush()
