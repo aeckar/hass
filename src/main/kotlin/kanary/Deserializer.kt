@@ -5,6 +5,7 @@ import java.io.Closeable
 import java.io.InputStream
 import java.io.OutputStream
 import java.nio.ByteBuffer
+import kotlin.reflect.KClass
 import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.jvm.jvmErasure
 
@@ -38,6 +39,7 @@ sealed interface Deserializer {
 
 /**
  * Reads serialized data from a stream in Kanary format.
+ * Can be used to determine whether there is more data that can be read from this object.
  * Does not need to be closed so long as the underlying stream is closed.
  * Calling [close] also closes the underlying stream.
  * Until closed, instances are blocking.
@@ -53,10 +55,10 @@ sealed interface ExhaustibleDeserializer : Deserializer, Closeable {
  * a defined [write operation][ProtocolBuilder.write].
  */
 class PolymorphicDeserializer internal constructor(
-    private val obj: InputDeserializer,
-    private val packets: Map<JvmClass, ExhaustibleDeserializer>,
-) : ExhaustibleDeserializer by obj {
-    private val classRef = Class.forName(obj.readStringNoValidate()).kotlin
+    private val objStream: InputDeserializer,
+    private val packets: Map<KClass<*>, ExhaustibleDeserializer>,
+) : ExhaustibleDeserializer by objStream {
+    private val classRef = KClass(objStream.readStringNoValidate())
 
     /**
      * A deserializer corresponding to the data serialized by the immediate superclass.
@@ -76,7 +78,7 @@ class PolymorphicDeserializer internal constructor(
     inline fun <reified T : Any> supertype() = supertype(T::class)
 
     @PublishedApi
-    internal fun supertype(jvmClass: JvmClass): ExhaustibleDeserializer {
+    internal fun supertype(jvmClass: KClass<*>): ExhaustibleDeserializer {
         return packets[jvmClass] ?: if (jvmClass.isSuperclassOf(classRef)) {
             Deserializer.EMPTY
         } else {
@@ -85,15 +87,17 @@ class PolymorphicDeserializer internal constructor(
     }
 
     internal fun readObject(): Any {
-        return obj.protocols.allProtocols.getValue(classRef).read?.invoke(this)
+        return objStream.schema.actualReads[classRef]?.invoke(this)
             ?: throw MalformedProtocolException(classRef, "read operation not found")
     }
 }
 
 internal class InputDeserializer(
     private var stream: InputStream,
-    internal val protocols: Schema
+    internal val schema: Schema
 ) : ExhaustibleDeserializer, Closeable {
+    private val serializerWrapper = OutputSerializer(EMPTY_OSTREAM, schema)
+
     override fun isExhausted() = stream.available() == 0
     override fun isNotExhausted() = stream.available() != 0
 
@@ -165,38 +169,47 @@ internal class InputDeserializer(
     private fun readFloatNoValidate() = readBytesNoValidate(Float.SIZE_BYTES).float
     private fun readDoubleNoValidate() = readBytesNoValidate(Double.SIZE_BYTES).double
 
+    @Suppress("UNCHECKED_CAST")
     private fun readAny(): Any? {
         val code = readTypeCode()
         builtInReads[code]?.let { return it(this) }
+        if (code === SIMPLE_OBJECT) {
+            val className = readStringNoValidate()
+            return (schema.actualReads[KClass(className)] as? SimpleReadOperation<*>)?.invoke(this)
+                ?: throw MissingOperationException("Read operation for type '$className' expected, but not found")
+        }
         assert(code === OBJECT)
         val packetCount = stream.read()
-        val obj: ArrayOutputStream
+        val objStream: ArrayOutputStream
         if (packetCount == 0) {
-            obj = ArrayOutputStream(readIntNoValidate()).apply { acceptNBytes(stream, bytes.size) }
-            return PolymorphicDeserializer(InputDeserializer(obj.asInputStream(), protocols), emptyMap()).readObject()
+            val lengthInBytes = readIntNoValidate()
+            objStream = ArrayOutputStream(lengthInBytes).apply { acceptNBytes(stream, lengthInBytes) }
+            return PolymorphicDeserializer(InputDeserializer(objStream), emptyMap()).readObject()
         }
-        val serializer = OutputSerializer(EMPTY_OSTREAM, protocols)
-        val packets = HashMap<JvmClass, ExhaustibleDeserializer>(packetCount)
+        val packets = HashMap<KClass<*>, ExhaustibleDeserializer>(packetCount)
         repeat(packetCount) {
-            val packetSize = readIntNoValidate()
+            val lengthInBytes = readIntNoValidate()
             val packetCode = readTypeCode()
-            val packet = ArrayOutputStream(packetSize)
-            val jvmClass: JvmClass
-            packet.write(packetCode.ordinal)
+            val stream = ArrayOutputStream(lengthInBytes)
+            val kClass: KClass<*>
+            stream.write(packetCode.ordinal)
             if (packetCode in builtInReads) {
-                jvmClass = packetCode.jvmClass
+                kClass = packetCode.jvmClass
             } else {
                 assert(packetCode === OBJECT)
                 val className = readStringNoValidate()
-                jvmClass = Class.forName(className).kotlin
-                serializer.wrap(packet).writeStringNoMark(className)  // stateful
+                kClass = KClass(className)
+                serializerWrapper.wrap(stream).writeStringNoMark(className)  // stateful
             }
-            packet.acceptNBytes(stream, packetSize)
-            packets[jvmClass] = InputDeserializer(packet.asInputStream(), protocols)
+            stream.acceptNBytes(this.stream, lengthInBytes)
+            packets[kClass] = InputDeserializer(stream)
         }
-        obj = ArrayOutputStream(readIntNoValidate()).apply { acceptNBytes(stream, bytes.size) }
-        return PolymorphicDeserializer(InputDeserializer(obj.asInputStream(), protocols), packets).readObject()
+        val lengthInBytes = readIntNoValidate()
+        objStream = ArrayOutputStream(lengthInBytes).apply { acceptNBytes(stream, lengthInBytes) }
+        return PolymorphicDeserializer(InputDeserializer(objStream), packets).readObject()
     }
+
+    private fun InputDeserializer(stream: ArrayOutputStream) = InputDeserializer(stream.asInputStream(), schema)
 
     companion object {
         private val builtInReads = mapOf(

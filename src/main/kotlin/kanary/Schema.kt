@@ -1,15 +1,12 @@
 package kanary
 
 import kotlin.reflect.KClass
-import kotlin.reflect.KType
-import kotlin.reflect.jvm.jvmErasure
+import kotlin.reflect.full.superclasses
 
-internal typealias JvmClass = KClass<*>
-internal typealias JvmType = KType
-internal typealias ProtocolSequence = List<ProtocolSpecifier>
-
-private typealias ProtocolSpecifier = Pair<String,Protocol<*>>
-private typealias MutableProtocolSequence = MutableList<ProtocolSpecifier>
+/*
+    Within the API, classes and interfaces are both referred to as "classes".
+    From the user's perspective, "type" will be used to refer to both instead.
+ */
 
 /**
  * Provides a scope wherein protocols for various classes may be defined.
@@ -36,49 +33,81 @@ class ReassignmentException /* not limited to API usage */(message: String) : Ex
  * Defines a set of protocols corresponding to how certain types should be written to and read from binary.
  */
 class Schema {
-    // Protocols used during deserialization
-    internal val allProtocols: Map<JvmClass, Protocol<*>>
+    /*
+      Keys contain:
+        - Write operations for each type serialized, organized in the order they are written
+        - Write of key as last member, if defined
+        - Possibly nothing
+      Subtypes come before supertypes, the final member being the exception
+     */
+    internal val writeSequences: Map<KClass<*>, List<WriteSpecifier>>
 
-    // Protocols for each type serialized, organized in the order they are written
-    // Last member of sequence contains write operation of key
-    internal val writeSequences: Map<JvmClass, ProtocolSequence>
+    // Delegates read to that of defined protocol or 'fallback' read
+    internal val actualReads: Map<KClass<*>, ReadOperation<*>>
+
+    internal val definedProtocols: Map<KClass<*>, Protocol<*>>
 
     @PublishedApi
     internal constructor(builder: SchemaBuilder) {
-        fun MutableProtocolSequence.build(supertypes: List<JvmType>): ProtocolSequence {
-            supertypes
-                .asSequence()
-                .map { it.jvmErasure }
-                .filter { jvmType ->
-                    builder.definedProtocols[jvmType]?.let { protocol ->    // Has protocol
-                        protocol.write?.let {                               // Has write operation
-                            none { it.second == protocol }                  // Not already in sequence
-                        }
-                    } ?: false
+        fun MutableList<WriteSpecifier>.buildWriteSequence(
+            builder: SchemaBuilder,
+            superclasses: List<KClass<*>>
+        ): List<WriteSpecifier> {
+            for (kClass in superclasses) {
+                builder.definedProtocols[kClass]?.write?.let { writeOperation ->
+                    if (none { it.write === writeOperation }) {
+                        this += builder.WriteSpecifier(kClass)!!
+                    }
                 }
-                .forEach { this += builder.specifierOf(it) }
-            supertypes
-                .asSequence()
-                .map { it.jvmErasure.supertypes }
-                .forEach { build(it) }
+            }
+            for (kClass in superclasses) {
+                buildWriteSequence(builder, kClass.superclasses)
+            }
             return this
         }
 
-        allProtocols = builder.definedProtocols
-        writeSequences = mutableMapOf<JvmClass, ProtocolSequence>().apply {
-            builder.definedProtocols.keys.forEach { jvmType ->
-                val hierarchy = mutableListOf<ProtocolSpecifier>()  // Can be empty
-                put(jvmType, hierarchy.build(jvmType.supertypes) /* stateful */)
-                builder.definedProtocols.getValue(jvmType).write?.let {
-                    hierarchy += builder.specifierOf(jvmType)
+        fun resolveRead(builder: SchemaBuilder, superclasses: List<KClass<*>>): ReadOperation<*>? {
+            for (kClass in superclasses) {
+                builder.definedProtocols[kClass]?.let { protocol ->
+                    if (protocol.hasFallback) {
+                        return protocol.read
+                    }
                 }
+            }
+            for (kClass in superclasses) {
+                resolveRead(builder, kClass.superclasses)?.let { return it }
+            }
+            return null
+        }
+
+        definedProtocols = builder.definedProtocols
+        writeSequences = mutableMapOf<KClass<*>, List<WriteSpecifier>>().apply {
+            for (kClass in (definedProtocols as Map).keys) {
+                val sequence = mutableListOf<WriteSpecifier>()
+                builder.WriteSpecifier(kClass)?.let { sequence += it }
+                this[kClass] = sequence.buildWriteSequence(builder, kClass.superclasses)
+            }
+        }
+        actualReads = mutableMapOf<KClass<*>, ReadOperation<*>>().apply {
+            builder.definedProtocols.forEach { (jvmType, protocol) ->
+                if (protocol.read != null) {
+                    this[jvmType] = protocol.read
+                    return@forEach
+                }
+                this[jvmType] = resolveRead(builder, jvmType.superclasses)
+                    ?: throw MissingOperationException("Read operation not defined for type '$jvmType' and fallback not specified")
             }
         }
     }
 
-    private constructor(allProtocols: Map<JvmClass, Protocol<*>>, writeProtocols: Map<JvmClass, ProtocolSequence>) {
-        this.allProtocols = allProtocols
-        this.writeSequences = writeProtocols
+    private constructor(
+        writeSequences: Map<KClass<*>, List<WriteSpecifier>>,
+        reads: Map<KClass<*>, ReadOperation<*>>,
+        definedProtocols: Map<KClass<*>, Protocol<*>>
+    ) {
+        this.writeSequences = writeSequences
+        this.actualReads = reads
+        this.definedProtocols = definedProtocols
     }
 
     /**
@@ -87,17 +116,21 @@ class Schema {
      * @throws ReassignmentException the sets contain conflicting declarations of a given protocol
      */
     operator fun plus(other: Schema): Schema {
-        val otherTypes = other.allProtocols.keys
-        for (jvmType in allProtocols.keys) {
+        val otherTypes = other.definedProtocols.keys
+        for (jvmType in definedProtocols.keys) {
             if (jvmType in otherTypes) {
                 throw ReassignmentException("Conflicting declarations for protocol of class '${jvmType.qualifiedName!!}'")
             }
         }
-        return Schema(allProtocols + other.allProtocols, writeSequences + other.writeSequences)
+        return Schema(
+            writeSequences + other.writeSequences,
+            actualReads + other.actualReads,
+            definedProtocols + other.definedProtocols
+        )
     }
 
     internal companion object {
-        val EMPTY = Schema(emptyMap(), emptyMap())
+        val EMPTY = Schema(emptyMap(), emptyMap(), emptyMap())
     }
 }
 
@@ -106,7 +139,7 @@ class Schema {
  */
 class SchemaBuilder @PublishedApi internal constructor() {  // No intent to add versioning support
     @PublishedApi
-    internal val definedProtocols = mutableMapOf<JvmClass,Protocol<*>>()
+    internal val definedProtocols = mutableMapOf<KClass<*>, Protocol<*>>()
 
     /**
      * Provides a scope wherein the [read][ProtocolBuilder.read] and [write][ProtocolBuilder.write]
@@ -132,7 +165,9 @@ class SchemaBuilder @PublishedApi internal constructor() {  // No intent to add 
         definedProtocols[classRef] = Protocol(builderScope)
     }
 
-    internal fun specifierOf(type: JvmClass): ProtocolSpecifier {
-        return type.qualifiedName!! to definedProtocols.getValue(type)
+    internal fun WriteSpecifier(type: KClass<*>): WriteSpecifier? {
+        return definedProtocols.getValue(type).write?.let { WriteSpecifier(type, it) }
     }
 }
+
+internal data class WriteSpecifier(val kClass: KClass<*>, val write: WriteOperation<*>)

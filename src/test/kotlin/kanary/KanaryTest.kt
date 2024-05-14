@@ -63,7 +63,7 @@ val personAndMessageProtocols = schema {
 
 val stringWrapperProtocol = schema {
     define<StringWrapper> {
-        read = {
+        read = noinherit {
             val chars = buildString {
                 val size = readInt()
                 repeat(size) {

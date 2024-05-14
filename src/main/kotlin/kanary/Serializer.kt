@@ -6,8 +6,9 @@ import java.io.Closeable
 import java.io.Flushable
 import java.io.OutputStream
 import java.nio.ByteBuffer
+import kotlin.reflect.KClass
 import kotlin.reflect.full.isSubclassOf
-import kotlin.reflect.jvm.jvmErasure
+import kotlin.reflect.full.superclasses
 
 /**
  * See [Schema] for the types with pre-defined binary I/O protocols.
@@ -49,7 +50,7 @@ sealed interface Serializer {
  */
 class OutputSerializer internal constructor(
     private var stream: OutputStream,
-    private val protocols: Schema
+    private val schema: Schema
 ) : Closeable, Flushable, Serializer {
     override fun writeBoolean(cond: Boolean) {
         BOOLEAN.mark(stream)
@@ -199,24 +200,16 @@ class OutputSerializer internal constructor(
      *  | code packetCount customPacket* builtInPacket? information sentinel
      */
     private fun writeAny(obj: Any, nonNullMembers: Boolean = false) {
-        fun List<JvmType>.writeSequence(allSequences: Map<JvmClass, ProtocolSequence>): ProtocolSequence {
-            asSequence()
-                .map { it.jvmErasure }
-                .forEach { jvmClass ->
-                    allSequences[jvmClass]?.let { return it }
-                }
-            for (jvmType in this) {
-                val result = jvmType.jvmErasure.supertypes.writeSequence(allSequences)
-                if (result.isNotEmpty()) {
-                    return result
-                }
-            }
-            return listOf()
+        fun List<KClass<*>>.resolveWriteSequence(
+            allSequences: Map<KClass<*>, List<WriteSpecifier>>
+        ): List<WriteSpecifier>? {
+            forEach { kClass -> allSequences[kClass]?.let { return it } }
+            forEach { kClass -> kClass.superclasses.resolveWriteSequence(allSequences)?.let { return it } }
+            return null
         }
 
-        fun writeBuiltIn(obj: Any, builtInType: JvmClass,
-            builtIns: Map<JvmClass, Pair<TypeCode, WriteOperation<Any>>>) {
-            builtIns.getValue(builtInType).let { (code, write) ->
+        fun writeBuiltIn(obj: Any, builtInKClass: KClass<*>, builtIns: Map<KClass<*>, BuiltInWriteSpecifier>) {
+            builtIns.getValue(builtInKClass).let { (code, write) ->
                 code.mark(stream)
                 write.accept(this, obj)
             }
@@ -227,65 +220,79 @@ class OutputSerializer internal constructor(
             return
         }
         val classRef = obj::class
-        val className = classRef.qualifiedName ?: throw MalformedProtocolException(classRef,
-            "local or anonymous") // Ensures eligible protocol
-        var writeSequence = protocols.writeSequences.getOrDefault(classRef, emptyList())
+        val className = classRef.qualifiedName ?: throw MalformedProtocolException(classRef, "local or anonymous")
+        var protocol = schema.definedProtocols[classRef]
         val builtIns = if (nonNullMembers) builtInNonNullWrites else builtInWrites
-        val builtInSupertype = builtIns.keys.find { classRef.isSubclassOf(it) }
-        if (writeSequence.isEmpty()) {
-            builtInSupertype?.let { jvmType ->  // Serialize object as built-in type
-                writeWithLength {
-                    writeBuiltIn(obj, jvmType, builtIns)
-                }
+        val builtInKClass: KClass<*>?
+        val writeSequence: List<WriteSpecifier>
+        if (protocol.isNotNullAnd { write != null && (hasNoinherit || hasStatic) }) {
+            builtInKClass = null
+            writeSequence = schema.writeSequences.getValue(classRef)
+        } else {    // Protocol undefined or fails test
+            builtInKClass = builtIns.keys.find { classRef.isSubclassOf(it) }
+            builtInKClass?.writeWithLength {   // Serialize object as built-in type
+                writeBuiltIn(obj, it, builtIns)
                 return
             }
-            writeSequence = classRef.supertypes.writeSequence(protocols.writeSequences) // Can be empty
+            writeSequence = classRef.superclasses.resolveWriteSequence(schema.writeSequences)
+                ?: throw MissingOperationException("WriteSpecifier operation for '$className' expected, but not found")
+        }
+        val specifier = writeSequence.first()
+        val write = specifier.write
+        protocol = schema.definedProtocols.getValue(specifier.kClass)
+        if (protocol.hasNoinherit) {
+            SIMPLE_OBJECT.mark(stream)
+            writeStringNoMark(className)
+            write.accept(this, obj)
+            return
         }
         OBJECT.mark(stream)
-        val objProtocol = writeSequence.lastOrNull()?.second
-        if (objProtocol?.isWriteStatic != false) {  // Necessary because static write overrides regular write sequence
+        if (protocol.hasStatic) {    // Necessary because static write overrides regular write sequence
             stream.write(0) // packet count
             writeWithLength {
                 writeStringNoMark(className)
-                objProtocol?.write?.accept(this, obj)
+                write.accept(this, obj)
             }
-            return  // No information serialized if writeSequence.isEmpty()
+            return
         }
         val customPacketCount = writeSequence.size - 1
-        val packetCount = if (builtInSupertype == null) customPacketCount else (customPacketCount + 1)
+        val packetCount = if (builtInKClass == null) customPacketCount else (customPacketCount + 1)
         stream.write(packetCount)
         repeat(customPacketCount) {
-            val (typeName, protocol) = writeSequence[it]
-            protocol.write?.let { write ->  // packet := typeName object
-                writeWithLength {
-                    OBJECT.mark(stream)
-                    writeStringNoMark(typeName)
-                    write.accept(this, obj)
-                }
+            val (packetKClass, writePacket) = writeSequence[it]
+            writeWithLength {
+                OBJECT.mark(stream)
+                writeStringNoMark(packetKClass.qualifiedName!!)
+                writePacket.accept(this, obj)
             }
         }
-        builtInSupertype?.let { // Built-in packet
-            writeWithLength {
-                writeBuiltIn(obj, it, builtIns) // Marks stream with appropriate built-in code
-            }
+        builtInKClass?.writeWithLength {    // Built-in packet
+            writeBuiltIn(obj, it, builtIns) // Marks stream with appropriate built-in code
         }
         writeWithLength {
             writeStringNoMark(className)
-            objProtocol.write?.accept(this, obj)
+            write.accept(this, obj)
         }
     }
 
     private inline fun writeWithLength(write: OutputSerializer.() -> Unit) {
         val intermediate = ArrayOutputStream()
-        OutputSerializer(intermediate, protocols).apply(write)
+        OutputSerializer(intermediate, schema).apply(write)
         writeIntNoMark(intermediate.size)
         stream.write(intermediate.bytes)
     }
 
-    @PublishedApi
-    internal companion object {
+    // Helps to reduce indentation
+    private inline fun <T> T.writeWithLength(writeWithValue: OutputSerializer.(T) -> Unit) {
+        val intermediate = ArrayOutputStream()
+        writeWithValue(OutputSerializer(intermediate, schema), this)
+        writeIntNoMark(intermediate.size)
+        stream.write(intermediate.bytes)
+    }
+
+    private companion object {
         // Optimizations for built-in composite types avoiding null-checks for members
-        private val builtInNonNullWrites = mapOf(
+        val builtInNonNullWrites = mapOf(
             write(OBJECT_ARRAY) { objArray: Array<Any> ->
                 writeIntNoMark(objArray.size)
                 objArray.forEach { writeAny(it) }
@@ -413,7 +420,11 @@ class OutputSerializer internal constructor(
         )
 
         @Suppress("UNCHECKED_CAST")
-        private inline fun <reified T : Any> write(code: TypeCode, noinline write: OutputSerializer.(T) -> Unit) =
-            T::class to (code to write as WriteOperation<Any>)
+        inline fun <reified T : Any> write(
+            code: TypeCode,
+            noinline write: OutputSerializer.(T) -> Unit
+        ): Pair<KClass<*>, BuiltInWriteSpecifier> = T::class to BuiltInWriteSpecifier(code, write as WriteOperation<Any>)
     }
 }
+
+private data class BuiltInWriteSpecifier(val code: TypeCode, val write: WriteOperation<*>)

@@ -3,6 +3,7 @@ package kanary
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
+import kotlin.reflect.KClass
 
 @PublishedApi
 internal val builtInTypes = TypeCode.entries.asSequence().map { it.jvmClass }.toHashSet()
@@ -12,7 +13,7 @@ internal val builtInTypes = TypeCode.entries.asSequence().map { it.jvmClass }.to
  */
 class TypeMismatchException internal constructor(message: String) : IOException(message)
 
-internal enum class TypeCode(val jvmClass: JvmClass = Nothing::class) {
+internal enum class TypeCode(val jvmClass: KClass<*> = Nothing::class) {
     // Primitive types
     BOOLEAN(Boolean::class),
     BYTE(Byte::class),
@@ -44,7 +45,7 @@ internal enum class TypeCode(val jvmClass: JvmClass = Nothing::class) {
     MAP(Map::class),
     UNIT(Unit::class),
     OBJECT(Any::class),
-    STATIC_OBJECT(OBJECT.jvmClass), // Used when read and write are both 'static'
+    SIMPLE_OBJECT(OBJECT.jvmClass),
     NULL;
 
     // Ensures that the correct type is parsed during deserialization

@@ -1,38 +1,44 @@
 package kanary
 
 import java.io.IOException
+import kotlin.reflect.KClass
 
-internal typealias StaticReadOperation<T> = Deserializer.() -> T
 internal typealias ReadOperation<T> = PolymorphicDeserializer.() -> T
 internal typealias WriteOperation<T> = Serializer.(T) -> Unit
+internal typealias SimpleReadOperation<T> = Deserializer.() -> T
 
 /**
  * Thrown when an attempt is made to define a protocol for a class that is not top-level.
  */
-class MalformedProtocolException @PublishedApi internal constructor(classRef: JvmClass, reason: String)
+class MalformedProtocolException @PublishedApi internal constructor(classRef: KClass<*>, reason: String)
         : IOException("Protocol for type '${classRef.qualifiedName}' is malformed ($reason)")
+
+/**
+ * Thrown when a [read][ProtocolBuilder.read] or [write][ProtocolBuilder.write] operation is expected, but not found.
+ */
+class MissingOperationException @PublishedApi internal constructor(message: String) : IOException(message)
 
 @PublishedApi
 internal class Protocol<T : Any>(builder: ProtocolBuilder<T>) {
-    val isReadStatic: Boolean   // TODO implement
-    val isReadDefault: Boolean   // TODO implement
-    val isWriteStatic: Boolean
+    val hasNoinherit: Boolean   // TODO implement
+    val hasFallback: Boolean   // TODO implement
+    val hasStatic: Boolean
     val read: ReadOperation<out T>?
     val write: WriteOperation<in T>?
 
     init {
         with(builder) {
-            if (isReadStatic && isReadDefault) {
+            if (hasNoinherit && hasFallback) {
                 throw MalformedProtocolException(classRef, "read operation cannot be assigned more than one modifier")
             }
-            if (isReadStatic && !isWriteStatic) {
+            if (hasNoinherit && !hasStatic) {
                 throw MalformedProtocolException(classRef,
                     "read operation with 'static' modifier must accompany static write operation")
             }
         }
-        isReadStatic = builder.isReadStatic
-        isReadDefault = builder.isReadDefault
-        isWriteStatic = builder.isWriteStatic
+        hasNoinherit = builder.hasNoinherit
+        hasFallback = builder.hasFallback
+        hasStatic = builder.hasStatic
         read = builder.takeIf { it.isReadDefined }?._read
         write = builder.takeIf { it.isWriteDefined }?._write
     }
@@ -42,7 +48,7 @@ internal class Protocol<T : Any>(builder: ProtocolBuilder<T>) {
  * The scope wherein a protocol's [read] and [write] operations are defined.
  */
 @Suppress("PropertyName")
-class ProtocolBuilder<T : Any>(internal val classRef: JvmClass) {
+class ProtocolBuilder<T : Any>(internal val classRef: KClass<*>) {
     init {
         if (classRef in builtInTypes) {
             throw MalformedProtocolException(classRef, "built-in protocol already exists")
@@ -59,9 +65,12 @@ class ProtocolBuilder<T : Any>(internal val classRef: JvmClass) {
     var read: ReadOperation<T>
         get() = throw MalformedProtocolException(classRef, "read operation may only be assigned to, not accessed")
         set(value) {
-            if (classRef.isAbstract && !isReadDefault) {
+            if (classRef.isAbstract && !hasFallback) {
                 throw MalformedProtocolException(classRef,
                         "read operation without a 'default' modifier not supported for abstract classes and interfaces")
+            }
+            if (isReadDefined) {
+                throw ReassignmentException("read operation assigned more than once")
             }
             isReadDefined = true
             _read = value
@@ -75,6 +84,9 @@ class ProtocolBuilder<T : Any>(internal val classRef: JvmClass) {
     var write: WriteOperation<T>
         get() = throw MalformedProtocolException(classRef, "write operation may only be assigned to, not accessed")
         set(value) {
+            if (isWriteDefined) {
+                throw ReassignmentException("write operation assigned more than once")
+            }
             isWriteDefined = true
             _write = value
         }
@@ -82,59 +94,61 @@ class ProtocolBuilder<T : Any>(internal val classRef: JvmClass) {
     internal var _read: ReadOperation<T> = @Suppress("CAST_NEVER_SUCCEEDS") { null as T }
     internal var _write: WriteOperation<T> = {}
 
-    internal var isReadStatic = false
-    internal var isReadDefault = false
-    internal var isWriteStatic = false
+    internal var hasNoinherit = false
+    internal var hasFallback = false
+    internal var hasStatic = false
+
     internal var isReadDefined = false
     internal var isWriteDefined = false
 
     /**
      * When prepended to a [read operation][read], declares that subtypes without a read operation
      * can still be instantiated as an instance of [T] using this read operation.
-     * Generally, this should be done for types whose subtypes will not override equals() or hashCode().
+     * Generally, this should be used for types whose subtypes have the same public API.
      * Any information not deserialized as a result is lost.
      * @throws MalformedProtocolException [T] is a final class, or called more than once in a single scope
      */
-    fun default(read: ReadOperation<T>): ReadOperation<T> {
+    fun fallback(read: ReadOperation<T>): ReadOperation<T> {
         if (classRef.isFinal) {
-            throw MalformedProtocolException(classRef, "default read operation not supported for final classes")
+            throw MalformedProtocolException(classRef, "read modifier 'fallback' not supported for final classes")
         }
-        if (isReadDefault) {
-            throw MalformedProtocolException(classRef, "read modifier 'default' used more than once")
+        if (hasFallback) {
+            throw MalformedProtocolException(classRef, "read modifier 'fallback' used more than once")
         }
-        isReadDefault = true
+        hasFallback = true
         return read
     }
 
     /**
-     * When prepended to a [write operation][write], declares that supertypes
-     * will not write their packets when an instance of [T] is serialized.
-     * Generally, this should be done for types whose supertypes lack write operations.
+     * When prepended to a [write operation][write], declares that the only information serialized
+     * from an instance of [T] is that which is specifically written here.
+     * If used, subtypes of this type may not define a protocol with a write operation.
      * Enables certain optimizations.
      * @throws MalformedProtocolException this function is called more than once in a single scope
      */
     fun static(write: WriteOperation<T>): WriteOperation<T> {
-        if (isWriteStatic) {
+        if (hasStatic) {
             throw MalformedProtocolException(classRef, "write modifier 'static' used more than once")
         }
-        isWriteStatic = true
+        hasStatic = true
         return write
     }
 
     /**
      * When prepended to a [read operation][read], declares that:
      * - Supertype packets are not accessed during the write operation
-     * - Version resolution through [exhaustion testing][ExhaustibleDeserializer.isExhausted] is not required
+     * - Version resolution through [exhaustion testing][ExhaustibleDeserializer] is not required
      *
-     * If used, the [write operation][write] of the same protocol must also be [static].
+     * If used, the [write operation][write] of the same protocol must have the [hasStatic] modifier.
+     * Additionally, subtypes of this type may not define a protocol within the same schema.
      * Enables certain optimizations.
      * @throws MalformedProtocolException this function is called more than once in a single scope
      */
-    fun static(read: StaticReadOperation<T>): StaticReadOperation<T> {
-        if (isReadStatic) {
+    fun noinherit(read: SimpleReadOperation<T>): SimpleReadOperation<T> {
+        if (hasNoinherit) {
             throw MalformedProtocolException(classRef, "read modifier 'static' used more than once")
         }
-        isReadStatic = true
+        hasNoinherit = true
         return read
     }
 }
