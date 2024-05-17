@@ -119,13 +119,6 @@ data class SerializableData(
     }
 }
 
-interface Person {
-    val name: String
-    val id: Int
-}
-
-class UniquePerson(override val name: String, override val id: Int) : Person
-
 class Phonebook(val map: Map<String,Int>) : Map<String,Int> by map
 
 open class ParentClass
@@ -133,6 +126,13 @@ open class SubClass : ParentClass()
 class SubSubClass : SubClass()
 
 class KanaryTest {
+    interface Person {
+        val name: String
+        val id: Int
+    }
+
+    class UniquePerson(override val name: String, override val id: Int) : Person
+
     @Test
     fun deserialized_data_is_same_as_serialized_data() {
         val schema = schema {

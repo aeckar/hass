@@ -60,42 +60,42 @@ class OutputSerializer internal constructor(
     private val schema: Schema
 ) : Closeable, Flushable, Serializer {
     override fun writeBoolean(cond: Boolean) {
-        BOOLEAN.mark(stream)
+        writeFlag(BOOLEAN)
         writeBooleanNoMark(cond)
     }
 
     override fun writeByte(b: Byte) {
-        BYTE.mark(stream)
+        writeFlag(BYTE)
         writeByteNoMark(b)
     }
 
     override fun writeChar(c: Char) {
-        CHAR.mark(stream)
+        writeFlag(CHAR)
         writeCharNoMark(c)
     }
 
     override fun writeShort(n: Short) {
-        SHORT.mark(stream)
+        writeFlag(SHORT)
         writeShortNoMark(n)
     }
 
     override fun writeInt(n: Int) {
-        INT.mark(stream)
+        writeFlag(INT)
         writeIntNoMark(n)
     }
 
     override fun writeLong(n: Long) {
-        LONG.mark(stream)
+        writeFlag(LONG)
         writeLongNoMark(n)
     }
 
     override fun writeFloat(fp: Float) {
-        FLOAT.mark(stream)
+        writeFlag(FLOAT)
         writeFloatNoMark(fp)
     }
 
     override fun writeDouble(fp: Double) {
-        DOUBLE.mark(stream)
+        writeFlag(DOUBLE)
         writeDoubleNoMark(fp)
     }
 
@@ -106,7 +106,7 @@ class OutputSerializer internal constructor(
      */
     override fun write(obj: Any?) {
         if (obj == null) {
-            NULL.mark(stream)
+            writeFlag(NULL)
             return
         }
         writeAny(obj)
@@ -138,32 +138,30 @@ class OutputSerializer internal constructor(
      * Writes the given pair according to the protocols of its members.
      * Avoids null check for members, unlike generic `write`.
      */
-    override fun <T : Any> write(pair: Pair<T,T>) = writeAny(pair, nonNullMembers = true)
+    override fun <T : Any> write(pair: Pair<T, T>) = writeAny(pair, nonNullMembers = true)
 
     /**
      * Writes the given triple according to the protocols of its members.
      * Avoids null check for members, unlike generic `write`.
      */
-    override fun <T : Any> write(triple: Triple<T,T,T>) = writeAny(triple, nonNullMembers = true)
+    override fun <T : Any> write(triple: Triple<T, T, T>) = writeAny(triple, nonNullMembers = true)
 
     /**
      * Writes the given map entry according to the protocols of its key and value.
      * Avoids null check for members, unlike generic `write`.
      */
-    override fun <K : Any, V : Any> write(entry: Map.Entry<K,V>) = writeAny(entry, nonNullMembers = true)
+    override fun <K : Any, V : Any> write(entry: Map.Entry<K, V>) = writeAny(entry, nonNullMembers = true)
 
     /**
      * Writes the given map according to the protocols of its keys and values.
      * Avoids null check for entries, unlike generic `write`.
      */
-    override fun <K : Any, V : Any> write(map: Map<K,V>) = writeAny(map, nonNullMembers = true)
+    override fun <K : Any, V : Any> write(map: Map<K, V>) = writeAny(map, nonNullMembers = true)
 
     internal fun wrap(stream: OutputStream) = this.also { this.stream = stream }
 
     override fun close() = stream.close()
     override fun flush() = stream.flush()
-
-    // Non-marking functions...
 
     internal fun writeStringNoMark(s: String) {
         val bytes = s.toByteArray(Charsets.UTF_8)
@@ -171,6 +169,10 @@ class OutputSerializer internal constructor(
         stream.write(bytes)
     }
 
+    private fun writeFlag(flag: TypeFlag) {
+        stream.write(flag.ordinal)
+    }
+    
     private inline fun writeBytesNoMark(count: Int, write: ByteBuffer.() -> Unit) {
         val buffer = ByteBuffer.allocate(count)
         write(buffer)
@@ -194,32 +196,20 @@ class OutputSerializer internal constructor(
         stream.write(buffer.array())
     }
 
-    /* Separate function since 'null' does not have a class, and therefore cannot be searched in the map.
-     * Comes with the added benefit of being able to be used whenever
-     * a member of a composite type is guaranteed to not be null.
-     */
-
-    /* information := typeName object
-     * customPacket := flag typeName object sentinel
-     * builtInPacket := builtInCode builtInInformation
-     * object :=
-     *  builtInCode object
-     *  | flag packetCount customPacket* builtInPacket? information sentinel
-     */
     private fun writeAny(obj: Any, nonNullMembers: Boolean = false) {
         fun writeBuiltIn(obj: Any, builtInKClass: KClass<*>, builtIns: Map<KClass<*>, BuiltInWriteSpecifier>) {
             builtIns.getValue(builtInKClass).let { (flag, write) ->
-                flag.mark(stream)
+                writeFlag(flag)
                 write.accept(this, obj)
             }
         }
 
         if (obj === Unit) {
-            UNIT.mark(stream)
+            writeFlag(UNIT)
             return
         }
         if (obj is Function<*>) {
-            FUNCTION.mark(stream)
+            writeFlag(FUNCTION)
             ObjectOutputStream(stream).writeObject(obj)
             return
         }
@@ -249,12 +239,12 @@ class OutputSerializer internal constructor(
         val (kClass, write) = writeSequence.first()
         protocol = schema.definedProtocols.getValue(kClass)
         if (protocol.hasNoinherit) {
-            SIMPLE_OBJECT.mark(stream)
+            writeFlag(SIMPLE_OBJECT)
             writeStringNoMark(className)
             write.accept(this, obj)
             return
         }
-        OBJECT.mark(stream)
+        writeFlag(OBJECT)
         if (protocol.hasStatic) {    // Necessary because static write overrides regular write sequence
             stream.write(0) // packet count
             writeWithLength {
@@ -269,7 +259,8 @@ class OutputSerializer internal constructor(
         repeat(customPacketCount) {
             val (packetKClass, packetWrite) = writeSequence[it + 1]
             writeWithLength {
-                OBJECT.mark(stream)                         // Deserializer use only
+                writeFlag(OBJECT)
+                // Deserializer use only
                 writeStringNoMark(packetKClass.className!!) // Deserializer use only
                 packetWrite.accept(this, obj)
             }
@@ -309,20 +300,20 @@ class OutputSerializer internal constructor(
                     iter.forEach { writeAny(it) }
                 }
             },
-            write(PAIR) { pair: Pair<Any,Any> ->
+            write(PAIR) { pair: Pair<Any, Any> ->
                 writeAny(pair.first)
                 writeAny(pair.second)
             },
-            write(TRIPLE) { triple: Triple<Any,Any,Any> ->
+            write(TRIPLE) { triple: Triple<Any, Any, Any> ->
                 writeAny(triple.first)
                 writeAny(triple.second)
                 writeAny(triple.third)
             },
-            write(MAP_ENTRY) { entry: Map.Entry<Any,Any> ->
+            write(MAP_ENTRY) { entry: Map.Entry<Any, Any> ->
                 writeAny(entry.key)
                 writeAny(entry.value)
             },
-            write(MAP) { map: Map<Any,Any> ->   // Multi-maps not supported by default
+            write(MAP) { map: Map<Any, Any> ->   // Multi-maps not supported by default
                 writeIntNoMark(map.size)
                 map.forEach { (key, value) ->
                     writeAny(key)
@@ -394,33 +385,38 @@ class OutputSerializer internal constructor(
             },
             write(LIST) { list: List<*> ->
                 writeIntNoMark(list.size)
-                list.forEach { it?.let { write(it) } ?: NULL.mark(stream) }
+                list.forEach { it?.let { write(it) } ?: run {
+                    writeFlag(NULL)
+                }
+                }
             },
             write(ITERABLE) { iter: Iterable<*> ->
                 var size = 0
                 val intermediate = ArrayOutputStream()
                 val serializer = OutputSerializer(intermediate)
                 iter.forEach {
-                    it?.let { serializer.write(it) } ?: NULL.mark(serializer.stream)
+                    it?.let { serializer.write(it) } ?: run {
+                        serializer.writeFlag(NULL)
+                    }
                     ++size
                 }
                 writeIntNoMark(size)
                 intermediate.writeTo(stream)
             },
-            write(PAIR) { pair: Pair<*,*> ->
+            write(PAIR) { pair: Pair<*, *> ->
                 write(pair.first)
                 write(pair.second)
             },
-            write(TRIPLE) { triple: Triple<*,*,*> ->
+            write(TRIPLE) { triple: Triple<*, *, *> ->
                 write(triple.first)
                 write(triple.second)
                 write(triple.third)
             },
-            write(MAP_ENTRY) { entry: Map.Entry<*,*> ->
+            write(MAP_ENTRY) { entry: Map.Entry<*, *> ->
                 write(entry.key)
                 write(entry.value)
             },
-            write(MAP) { map: Map<*,*> ->   // Multi-maps not supported
+            write(MAP) { map: Map<*, *> ->   // Multi-maps not supported
                 writeIntNoMark(map.size)
                 map.forEach { (key, value) ->
                     write(key)
@@ -433,7 +429,8 @@ class OutputSerializer internal constructor(
         inline fun <reified T : Any> write(
             flag: TypeFlag,
             noinline write: OutputSerializer.(T) -> Unit
-        ): Pair<KClass<*>, BuiltInWriteSpecifier> = T::class to BuiltInWriteSpecifier(flag, write as WriteOperation<Any>)
+        ): Pair<KClass<*>, BuiltInWriteSpecifier> =
+            T::class to BuiltInWriteSpecifier(flag, write as WriteOperation<Any>)
     }
 }
 

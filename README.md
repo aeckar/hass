@@ -11,14 +11,6 @@ Furthermore, libraries such as
 [kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization) require the use of plugins and
 code generation, which adds unnecessary complexity for small projects. Kanary aims to avoid these issues.
 
-## Tutorial
-
-TODO
-
-## Benchmarks
-
-TODO
-
 ## Changelog
 
 ### v1.0
@@ -56,4 +48,15 @@ TODO
 
 ### v3.0
 
-TODO
+- Reworked core library functionality
+- Written data by supertypes are now propagated to subtypes as "packets" by default
+- Added `noinherit`, `fallback`, and `static` operation modifiers
+- Improved type-safety
+- Default protocols now exist for certain built-in types
+- `KClass<*>` extensions have been made public
+- Many name changes to improve semantics
+- All reference types are now read from binary using `read<T>()`
+
+*Breaking changes:*
+- Types with default protocols are written with their own unique 1-byte code
+- For other object types, packets are now emitted during serialization

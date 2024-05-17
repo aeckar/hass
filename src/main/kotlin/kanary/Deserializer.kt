@@ -17,17 +17,67 @@ fun InputStream.deserializer(protocols: Schema = Schema.EMPTY) = InputDeserializ
  * Reads serialized data from a stream in Kanary format.
  */
 sealed interface Deserializer {
+    /**
+     * Capable of reading the corresponding boxed type as well.
+     * @return the serialized value
+     */
     fun readBoolean(): Boolean
+
+    /**
+     * Capable of reading the corresponding boxed type as well.
+     * @return the serialized value
+     */
     fun readByte(): Byte
+
+    /**
+     * Capable of reading the corresponding boxed type as well.
+     * @return the serialized value
+     */
     fun readChar(): Char
+
+    /**
+     * Capable of reading the corresponding boxed type as well.
+     * @return the serialized value
+     */
     fun readShort(): Short
+
+    /**
+     * Capable of reading the corresponding boxed type as well.
+     * @return the serialized value
+     */
     fun readInt(): Int
+
+    /**
+     * Capable of reading the corresponding boxed type as well.
+     * @return the serialized value
+     */
     fun readLong(): Long
+
+    /**
+     * Capable of reading the corresponding boxed type as well.
+     * @return the serialized value
+     */
     fun readFloat(): Float
+
+    /**
+     * Capable of reading the corresponding boxed type as well.
+     * @return the serialized value
+     */
     fun readDouble(): Double
+
+    /**
+     * If [T] is a primitive type, is capable of reading a primitive value.
+     * Can be null.
+     * @return the serialized object of the given type
+     * @throws TypeFlagMismatchException the value was not serialized as a singular object or null
+     * @throws TypeCastException the object is not an instance of type [T]
+     */
     fun <T> read(): T
 
     companion object {
+        /**
+         * A [Deserializer] containing no data.
+         */
         val EMPTY: ExhaustibleDeserializer = InputDeserializer(InputStream.nullInputStream(), Schema.EMPTY)
     }
 }
@@ -37,7 +87,16 @@ sealed interface Deserializer {
  * Can be used to determine whether there is more data that can be read from this object.
  */
 sealed interface ExhaustibleDeserializer : Deserializer {
+    /**
+     * @return true if all data has been read
+     * @see isNotExhausted
+     */
     fun isExhausted(): Boolean
+
+    /**
+     * @return true if there is more data that can be read
+     * @see isExhausted
+     */
     fun isNotExhausted(): Boolean
 }
 
@@ -52,7 +111,7 @@ class PolymorphicDeserializer internal constructor( // Each instance used to rea
     private val classRef = KClass(objStream.readStringNoValidate())
 
     /**
-     * A deserializer corresponding to the data serialized by the immediate superclass.
+     * A *packet* deserializer corresponding to the data serialized by the immediate superclass.
      * If the superclass does not have a defined write operation, is assigned a deserializer containing no data.
      */
     val superclass: ExhaustibleDeserializer by lazy {
@@ -63,7 +122,7 @@ class PolymorphicDeserializer internal constructor( // Each instance used to rea
     }
 
     /**
-     * @return a deserializer corresponding to the data serialized by given supertype.
+     * @return a *packet* deserializer corresponding to the data serialized by given supertype.
      * If the supertype does not have a defined write operation, returns a deserializer containing no data.
      * @throws MalformedProtocolException [T] is not a supertype
      */
@@ -100,50 +159,45 @@ class InputDeserializer(
     override fun isNotExhausted() = stream.available() != 0
 
     override fun readBoolean(): Boolean {
-        BOOLEAN.validate(stream)
+        readFlag(BOOLEAN)
         return readBooleanNoValidate()
     }
 
     override fun readByte(): Byte {
-        BYTE.validate(stream)
+        readFlag(BYTE)
         return readByteNoValidate()
     }
 
     override fun readChar(): Char {
-        CHAR.validate(stream)
+        readFlag(CHAR)
         return readCharNoValidate()
     }
 
     override fun readShort(): Short {
-        SHORT.validate(stream)
+        readFlag(SHORT)
         return readShortNoValidate()
     }
 
     override fun readInt(): Int {
-        INT.validate(stream)
+        readFlag(INT)
         return readIntNoValidate()
     }
 
     override fun readLong(): Long {
-        LONG.validate(stream)
+        readFlag(LONG)
         return readLongNoValidate()
     }
 
     override fun readFloat(): Float {
-        FLOAT.validate(stream)
+        readFlag(FLOAT)
         return readFloatNoValidate()
     }
 
     override fun readDouble(): Double {
-        DOUBLE.validate(stream)
+        readFlag(DOUBLE)
         return readDoubleNoValidate()
     }
 
-    /**
-     * Reads an object of the specified type from binary according to the protocol of its type, or null respectively.
-     * @throws TypeFlagMismatchException the value was not serialized as a singular object or null
-     * @throws TypeCastException the object is not an instance of type [T]
-     */
     @Suppress("UNCHECKED_CAST")
     override fun <T> read() = readObject() as T
 
@@ -154,7 +208,16 @@ class InputDeserializer(
         return String(stream.readNBytesChecked(lengthInBytes))
     }
 
-    private fun readTypeFlag() = TypeFlag.entries[stream.readChecked()]
+    // Ensures that the correct type is parsed during deserialization
+    private fun readFlag(flag: TypeFlag) {
+        val ordinal = stream.readChecked()
+        if (flag.ordinal != ordinal) {
+            throw TypeFlagMismatchException("Type flag '$flag' expected, but found '${TypeFlag.nameOf(ordinal)}'")
+        }
+    }
+
+    // Does not verify correctness of ordinal
+    private fun readFlag() = TypeFlag.entries[stream.readChecked()]
 
     private fun readBytesToBuffer(count: Int) = ByteBuffer.wrap(stream.readNBytesChecked(count))
 
@@ -169,7 +232,7 @@ class InputDeserializer(
 
     @Suppress("UNCHECKED_CAST")
     private fun readObject(): Any? {
-        val flag = readTypeFlag()
+        val flag = readFlag()
         builtInReads[flag]?.let { return it(this) }
         if (flag === SIMPLE_OBJECT) {
             val className = readStringNoValidate()
@@ -190,7 +253,7 @@ class InputDeserializer(
         val packets = HashMap<KClass<*>, ExhaustibleDeserializer>(packetCount)
         repeat(packetCount) {
             val lengthInBytes = readIntNoValidate()
-            val packetFlag = readTypeFlag()
+            val packetFlag = readFlag()
             val intermediate: ArrayOutputStream
             val kClass: KClass<*>
             if (packetFlag in builtInReads) {

@@ -1,8 +1,6 @@
 package kanary
 
 import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 
@@ -10,7 +8,7 @@ import kotlin.reflect.KFunction
 internal val builtInTypes = TypeFlag.entries.asSequence().map { it.kClass }.toHashSet()
 
 /**
- * Thrown when an attempt is made to read serialized data of a certain fundamental type, but found another type.
+ * Thrown when an attempt is made to read serialized data of a certain flagged type, but another type is encountered.
  */
 class TypeFlagMismatchException internal constructor(message: String) : IOException(message)
 
@@ -50,20 +48,7 @@ internal enum class TypeFlag(val kClass: KClass<*> = Nothing::class) {
     FUNCTION(KFunction::class),
     NULL;
 
-    // Ensures that the correct type is parsed during deserialization
-    fun validate(stream: InputStream) {
-        val flag = stream.read()
-        if (ordinal != flag) {
-            throw TypeFlagMismatchException("Type flag '$name' expected, but found '${TypeFlag.nameOf(flag)}'")
-        }
-    }
-
-    // Marks the beginning of a new type during serialization
-    fun mark(stream: OutputStream) {
-        stream.write(ordinal)
-    }
-
     companion object {
-        fun nameOf(flag: Int) = if (flag == -1) "EOF" else (entries.find { it.ordinal == flag }?.name ?: "UNKNOWN")
+        fun nameOf(ordinal: Int) = entries.find { it.ordinal == ordinal }?.name ?: "UNKNOWN"
     }
 }
