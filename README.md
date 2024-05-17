@@ -60,3 +60,7 @@ code generation, which adds unnecessary complexity for small projects. Kanary ai
 *Breaking changes:*
 - Types with default protocols are written with their own unique 1-byte code
 - For other object types, packets are now emitted during serialization
+
+### v3.1
+
+- Added suport for write delegation using the `Writable` interface
