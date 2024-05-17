@@ -64,3 +64,8 @@ code generation, which adds unnecessary complexity for small projects. Kanary ai
 ### v3.1
 
 - Added suport for write delegation using the `Writable` interface
+
+### v3.2
+
+- Type aliases for read and write operations made public
+- Added documentation for `Writable`

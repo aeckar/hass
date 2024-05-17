@@ -56,32 +56,6 @@ class ProtocolBuilder<T : Any>(internal val classRef: KClass<*>) {
     }
 
     /**
-     * When assigned to [write], signals that serialization should be handled individually by each instance of [T],
-     * without also serializing information held by each superclass.
-     * Necessary for serializing private members.
-     * If a default protocol is not already defined for the types of these members, one must be defined.
-     */
-    fun static() = static {
-        val serializer = this
-        with(it as Writable) { serializer.write() }
-    }
-
-    /**
-     * Signals that serialization should be handled individually by each instance of [T].
-     * Necessary for serializing private members.
-     * If a default protocol is not already defined for the types of these members, one must be defined.
-     */
-    fun write() {
-        if (Writable::class !in classRef.allSuperclasses) {
-            throwMalformed("type does not implement Writable")
-        }
-        write = {
-            val serializer = this
-            with (it as Writable) { serializer.write() }
-        }
-    }
-
-    /**
      * The binary read operation called when [ExhaustibleDeserializer.read] is called with an object of class [T].
      * Information deserialized from supertypes is converted into a packet,
      * from which the read operation can use the information to create a new instance of [T].
@@ -171,6 +145,32 @@ class ProtocolBuilder<T : Any>(internal val classRef: KClass<*>) {
         }
         hasNoinherit = true
         return read
+    }
+
+    /**
+     * When assigned to [write], signals that serialization should be handled individually by each instance of [T],
+     * without also serializing information held by each superclass.
+     * Necessary for serializing private members.
+     * If a default protocol is not already defined for the types of these members, one must be defined.
+     */
+    fun static() = static {
+        val serializer = this
+        with(it as Writable) { serializer.write() }
+    }
+
+    /**
+     * Signals that serialization should be handled individually by each instance of [T].
+     * Necessary for serializing private members.
+     * If a default protocol is not already defined for the types of these members, one must be defined.
+     */
+    fun write() {
+        if (Writable::class !in classRef.allSuperclasses) {
+            throwMalformed("type does not implement Writable")
+        }
+        write = {
+            val serializer = this
+            with (it as Writable) { serializer.write() }
+        }
     }
 
     private var readableParams = false
