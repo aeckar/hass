@@ -52,7 +52,7 @@ class ProtocolBuilder<T : Any>(internal val classRef: KClass<*>) {
         if (classRef in builtInTypes) {
             throw MalformedProtocolException(classRef, "built-in protocol already exists")
         }
-        if (classRef.qualifiedName == null) {
+        if (classRef.className == null) {
             throw MalformedProtocolException(classRef, "local and anonymous classes cannot be serialized")
         }
     }

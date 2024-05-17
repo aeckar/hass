@@ -224,8 +224,8 @@ class OutputSerializer internal constructor(
             return
         }
         val classRef = obj::class
-        val className = classRef.qualifiedName
-            ?: throw MissingOperationException("Serialization of local and anonymous classes without aliases not supported")
+        val className = classRef.className
+            ?: throw MissingOperationException("Serialization of local and anonymous classes not supported")
         var protocol = schema.definedProtocols[classRef]
         val builtIns = if (nonNullMembers) builtInNonNullWrites else builtInWrites
         val builtInKClass: KClass<*>?
@@ -269,8 +269,8 @@ class OutputSerializer internal constructor(
         repeat(customPacketCount) {
             val (packetKClass, packetWrite) = writeSequence[it + 1]
             writeWithLength {
-                OBJECT.mark(stream)                                 // Deserializer use only
-                writeStringNoMark(packetKClass.qualifiedName!!)     // Deserializer use only
+                OBJECT.mark(stream)                         // Deserializer use only
+                writeStringNoMark(packetKClass.className!!) // Deserializer use only
                 packetWrite.accept(this, obj)
             }
         }

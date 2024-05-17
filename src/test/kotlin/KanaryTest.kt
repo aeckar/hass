@@ -132,8 +132,6 @@ open class ParentClass
 open class SubClass : ParentClass()
 class SubSubClass : SubClass()
 
-// FIXME nested classes are not found by KClass(...), could be a JUnit issue
-
 class KanaryTest {
     @Test
     fun deserialized_data_is_same_as_serialized_data() {

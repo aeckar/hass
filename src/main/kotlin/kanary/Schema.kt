@@ -7,6 +7,8 @@ import kotlin.reflect.full.superclasses
 /*
     Within the API, classes and interfaces are both referred to as "classes".
     From the user's perspective, "type" will be used to refer to both instead.
+    Similarly, KClass's of defined protocols are named 'classRef'.
+    All other class references are simply named 'kClass'.
  */
 
 /**
@@ -23,12 +25,6 @@ inline fun schema(builder: SchemaBuilder.() -> Unit): Schema {
     builder(builderScope)
     return Schema(builderScope)
 }
-
-/**
- * Thrown when there is an attempt to assign a value to a property that has already been given a value
- * and can only be assigned a value once.
- */
-class ReassignmentException /* not limited to API usage */(message: String) : Exception(message)
 
 /**
  * Defines a set of protocols corresponding to how certain types should be written to and read from binary.
@@ -86,27 +82,28 @@ class Schema {
 
         definedProtocols = builder.definedProtocols
         writeSequences = HashMap<KClass<*>, List<WriteSpecifier>>().apply {
-            for (kClass in (definedProtocols as Map).keys) {
+            for (classRef in (definedProtocols as Map).keys) {
                 val sequence = mutableListOf<WriteSpecifier>()
-                val protocol = definedProtocols.getValue(kClass)
-                protocol.write?.let { sequence += WriteSpecifier(kClass, it) }
-                this[kClass] = sequence.takeIf { !protocol.hasStatic }?.buildWriteSequence(builder, kClass.superclasses)
-                    ?: sequence
+                val protocol = definedProtocols.getValue(classRef)
+                protocol.write?.let { sequence += WriteSpecifier(classRef, it) }
+                this[classRef] = sequence
+                    .takeIf { !protocol.hasStatic }
+                    ?.buildWriteSequence(builder, classRef.superclasses) ?: sequence
             }
         }
         actualReads = HashMap<KClass<*>, ReadOperation<*>>().apply {
-            builder.definedProtocols.forEach { (kClass, protocol) ->
+            builder.definedProtocols.forEach { (classRef, protocol) ->
                 protocol.takeIf { !it.hasNoinherit }?.write?.let {  // Ensure no supertype has static write
-                    if (kClass.allSuperclasses.any { superclass -> definedProtocols[superclass]?.hasStatic == true }) {
-                        throw MalformedProtocolException(kClass, "write defined when supertype write is 'static'")
+                    if (classRef.allSuperclasses.any { superclass -> definedProtocols[superclass]?.hasStatic == true }) {
+                        throw MalformedProtocolException(classRef, "write defined when supertype write is 'static'")
                     }
                 }
                 if (protocol.read != null) {
-                    this[kClass] = protocol.read
+                    this[classRef] = protocol.read
                     return@forEach
                 }
-                resolveRead(builder, kClass.superclasses)?.let {
-                    this[kClass] = it
+                resolveRead(builder, classRef.superclasses)?.let {
+                    this[classRef] = it
                 }
             }
         }
@@ -129,9 +126,9 @@ class Schema {
      */
     operator fun plus(other: Schema): Schema {
         val otherTypes = other.definedProtocols.keys
-        for (jvmType in definedProtocols.keys) {
-            if (jvmType in otherTypes) {
-                throw ReassignmentException("Conflicting declarations for protocol of class '${jvmType.qualifiedName!!}'")
+        for (kClass in definedProtocols.keys) {
+            if (kClass in otherTypes) {
+                throw ReassignmentException("Conflicting declarations for protocol of class '${kClass.qualifiedName!!}'")
             }
         }
         return Schema(

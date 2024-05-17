@@ -13,8 +13,6 @@ import kotlin.reflect.full.superclasses
  */
 fun InputStream.deserializer(protocols: Schema = Schema.EMPTY) = InputDeserializer(this, protocols)
 
-private fun KClass(className: String): KClass<*> = Class.forName(className).kotlin
-
 /**
  * Reads serialized data from a stream in Kanary format.
  */
@@ -72,11 +70,12 @@ class PolymorphicDeserializer internal constructor( // Each instance used to rea
     inline fun <reified T : Any> supertype() = supertype(T::class)
 
     @PublishedApi
-    internal fun supertype(jvmClass: KClass<*>): ExhaustibleDeserializer {
-        return packets[jvmClass] ?: if (jvmClass.isSuperclassOf(classRef)) {
+    internal fun supertype(classRef: KClass<*>): ExhaustibleDeserializer {
+        return packets[classRef] ?: if (classRef.isSuperclassOf(classRef)) {
             Deserializer.EMPTY
         } else {
-            throw MalformedProtocolException(classRef, "type '${jvmClass.qualifiedName}' is not a supertype")
+            throw MalformedProtocolException(classRef,
+                    "type '${classRef.qualifiedName ?: "<local or anonymous>"}' is not a supertype")
         }
     }
 
@@ -95,7 +94,6 @@ class InputDeserializer(
     private var stream: InputStream,
     internal val schema: Schema
 ) : ExhaustibleDeserializer, Closeable {
-    private val serializerWrapper = OutputSerializer(OutputStream.nullOutputStream(), schema)
     private val byteWrapper = ByteArray(1)
 
     override fun isExhausted() = stream.available() == 0
@@ -198,7 +196,7 @@ class InputDeserializer(
             if (packetFlag in builtInReads) {
                 intermediate = ArrayOutputStream(lengthInBytes - 1 /* flag */)
                 intermediate.write(packetFlag.ordinal)  // Users may read built-in superclass as itself
-                kClass = packetFlag.jvmClass
+                kClass = packetFlag.kClass
             } else {
                 assert(packetFlag === OBJECT)
                 val stringLength = readIntNoValidate()

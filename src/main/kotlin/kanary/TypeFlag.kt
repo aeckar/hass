@@ -7,14 +7,14 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 
 @PublishedApi
-internal val builtInTypes = TypeFlag.entries.asSequence().map { it.jvmClass }.toHashSet()
+internal val builtInTypes = TypeFlag.entries.asSequence().map { it.kClass }.toHashSet()
 
 /**
  * Thrown when an attempt is made to read serialized data of a certain fundamental type, but found another type.
  */
 class TypeFlagMismatchException internal constructor(message: String) : IOException(message)
 
-internal enum class TypeFlag(val jvmClass: KClass<*> = Nothing::class) {
+internal enum class TypeFlag(val kClass: KClass<*> = Nothing::class) {
     // Primitive types
     BOOLEAN(Boolean::class),
     BYTE(Byte::class),
@@ -46,7 +46,7 @@ internal enum class TypeFlag(val jvmClass: KClass<*> = Nothing::class) {
     MAP(Map::class),
     UNIT(Unit::class),
     OBJECT(Any::class),
-    SIMPLE_OBJECT(OBJECT.jvmClass),
+    SIMPLE_OBJECT(OBJECT.kClass),
     FUNCTION(KFunction::class),
     NULL;
 
