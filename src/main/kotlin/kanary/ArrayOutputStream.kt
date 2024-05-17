@@ -7,6 +7,7 @@ import java.io.OutputStream
 
 private const val DEFAULT_SIZE = 32
 
+// Unlike java.io.ByteOutputStream, is not synchronized
 internal class ArrayOutputStream(initialCapacity: Int = DEFAULT_SIZE) : OutputStream() {
     var size = 0
     val capacity inline get() = bytes.size
