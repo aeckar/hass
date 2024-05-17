@@ -2,21 +2,17 @@ package kanary
 
 import java.io.IOException
 import kotlin.reflect.KClass
+import kotlin.reflect.full.allSuperclasses
 
-internal typealias ReadOperation<T> = PolymorphicDeserializer.() -> T
-internal typealias WriteOperation<T> = Serializer.(T) -> Unit
-internal typealias SimpleReadOperation<T> = Deserializer.() -> T
+private fun ProtocolBuilder<*>.throwMalformed(reason: String): Nothing {
+    throw MalformedProtocolException(classRef, reason)
+}
 
 /**
  * Thrown when an attempt is made to define a protocol for a class that is not top-level.
  */
 class MalformedProtocolException @PublishedApi internal constructor(classRef: KClass<*>?, reason: String)
         : IOException("Protocol for type '${classRef?.qualifiedName}' is malformed ($reason)")
-
-/**
- * Thrown when a [read][ProtocolBuilder.read] or [write][ProtocolBuilder.write] operation is expected, but not found.
- */
-class MissingOperationException @PublishedApi internal constructor(message: String) : IOException(message)
 
 @PublishedApi
 internal class Protocol<T : Any>(builder: ProtocolBuilder<T>) {
@@ -29,7 +25,7 @@ internal class Protocol<T : Any>(builder: ProtocolBuilder<T>) {
     init {
         with(builder) {
             if (hasNoinherit && hasFallback) {
-                throw MalformedProtocolException(classRef, "read operation cannot be assigned more than one modifier")
+                throwMalformed("read operation cannot be assigned more than one modifier")
             }
             if (hasNoinherit && !hasStatic) {
                 throw MalformedProtocolException(classRef,
@@ -52,10 +48,36 @@ internal class Protocol<T : Any>(builder: ProtocolBuilder<T>) {
 class ProtocolBuilder<T : Any>(internal val classRef: KClass<*>) {
     init {
         if (classRef in builtInTypes) {
-            throw MalformedProtocolException(classRef, "built-in protocol already exists")
+            throwMalformed("built-in protocol already exists")
         }
         if (classRef.className == null) {
-            throw MalformedProtocolException(classRef, "local and anonymous classes cannot be serialized")
+            throwMalformed("local and anonymous classes cannot be serialized")
+        }
+    }
+
+    /**
+     * When assigned to [write], signals that serialization should be handled individually by each instance of [T],
+     * without also serializing information held by each superclass.
+     * Necessary for serializing private members.
+     * If a default protocol is not already defined for the types of these members, one must be defined.
+     */
+    fun static() = static {
+        val serializer = this
+        with(it as Writable) { serializer.write() }
+    }
+
+    /**
+     * Signals that serialization should be handled individually by each instance of [T].
+     * Necessary for serializing private members.
+     * If a default protocol is not already defined for the types of these members, one must be defined.
+     */
+    fun write() {
+        if (Writable::class !in classRef.allSuperclasses) {
+            throwMalformed("type does not implement Writable")
+        }
+        write = {
+            val serializer = this
+            with (it as Writable) { serializer.write() }
         }
     }
 
@@ -72,11 +94,10 @@ class ProtocolBuilder<T : Any>(internal val classRef: KClass<*>) {
             return field
         }
         set(value) {
-            value ?: throwNullAssign("read operation")
+            value ?: throwNullAssignment("read operation")
             access { read }?.let { throwReassignment("read operation") }
             if (classRef.isAbstract && !hasFallback) {
-                throw MalformedProtocolException(classRef,
-                    "read operation without a 'default' modifier not supported for abstract classes and interfaces")
+                throwMalformed("read operation without a 'default' modifier not supported for abstract classes and interfaces")
             }
             field = value
         }
@@ -92,7 +113,7 @@ class ProtocolBuilder<T : Any>(internal val classRef: KClass<*>) {
             return field
         }
         set(value) {
-            value ?: throwNullAssign("write operation")
+            value ?: throwNullAssignment("write operation")
             access { write }?.let { throwReassignment("write operation") }
             field = value
         }
@@ -110,10 +131,10 @@ class ProtocolBuilder<T : Any>(internal val classRef: KClass<*>) {
      */
     fun fallback(read: ReadOperation<T>): ReadOperation<T> {
         if (classRef.isFinal) {
-            throw MalformedProtocolException(classRef, "read modifier 'fallback' not supported for final classes")
+            throwMalformed("read modifier 'fallback' not supported for final classes")
         }
         if (hasFallback) {
-            throw MalformedProtocolException(classRef, "read modifier 'fallback' used more than once")
+            throwMalformed("read modifier 'fallback' used more than once")
         }
         hasFallback = true
         return read
@@ -128,7 +149,7 @@ class ProtocolBuilder<T : Any>(internal val classRef: KClass<*>) {
      */
     fun static(write: WriteOperation<T>): WriteOperation<T> {
         if (hasStatic) {
-            throw MalformedProtocolException(classRef, "write modifier 'static' used more than once")
+            throwMalformed("write modifier 'static' used more than once")
         }
         hasStatic = true
         return write
@@ -146,7 +167,7 @@ class ProtocolBuilder<T : Any>(internal val classRef: KClass<*>) {
      */
     fun noinherit(read: SimpleReadOperation<T>): SimpleReadOperation<T> {
         if (hasNoinherit) {
-            throw MalformedProtocolException(classRef, "read modifier 'static' used more than once")
+            throwMalformed("read modifier 'static' used more than once")
         }
         hasNoinherit = true
         return read
@@ -161,17 +182,18 @@ class ProtocolBuilder<T : Any>(internal val classRef: KClass<*>) {
         return result
     }
 
-    private fun throwNullAssign(varName: String): Nothing {
-        throw MalformedProtocolException(classRef, "$varName cannot be null")
+    private fun throwNullAssignment(varName: String): Nothing {
+        throwMalformed("$varName cannot be null")
     }
 
     private fun throwReassignment(varName: String): Nothing {
-        throw MalformedProtocolException(classRef, "$varName assigned a value more than once")
+        throwMalformed("$varName assigned a value more than once")
     }
 
     private fun checkAccess(varName: String) {
         if (!readableParams) {
-            throw MalformedProtocolException(classRef, "$varName may only be assigned to, not accessed")
+            throwMalformed("$varName may only be assigned to, not accessed")
         }
     }
 }
+

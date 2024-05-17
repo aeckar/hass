@@ -332,6 +332,33 @@ class KanaryTest {
         assertEquals(names, listOf("parent", "subclass", "subclass of subclass"))
     }
 
+    class MyClass : Writable {
+        override fun Serializer.write() {
+            write("Your data here")
+        }
+    }
+
+    @Test
+    fun default_write() {
+        val schema = schema {
+            define<MyClass> {
+                read = noinherit {
+                    assertEquals(read(), "Your data here")
+                    MyClass()
+                }
+                write = static()
+            }
+        }
+
+        val serialized = MyClass()
+        useSerializer("default_write", schema) {
+            it.write(serialized)
+        }
+        useDeserializer("default_write", schema) {
+            it.read<MyClass>()
+        }
+    }
+
     private fun noinherit_and_static_reads(testName: String) {
         val schema = schema {
             define<Phonebook> {

@@ -9,147 +9,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Rework VII">
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-deserializer/-companion/-e-m-p-t-y.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-deserializer/-companion/index.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-deserializer/read-boolean.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-deserializer/read-byte.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-deserializer/read-char.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-deserializer/read-double.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-deserializer/read-float.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-deserializer/read-int.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-deserializer/read-long.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-deserializer/read-short.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-deserializer/read.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-exhaustible-deserializer/index.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-exhaustible-deserializer/is-exhausted.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-exhaustible-deserializer/is-not-exhausted.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-input-deserializer/-input-deserializer.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-input-deserializer/close.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-input-deserializer/index.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-input-deserializer/is-exhausted.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-input-deserializer/is-not-exhausted.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-input-deserializer/read-boolean.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-input-deserializer/read-byte.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-input-deserializer/read-char.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-input-deserializer/read-double.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-input-deserializer/read-float.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-input-deserializer/read-int.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-input-deserializer/read-long.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-input-deserializer/read-short.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-input-deserializer/read.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-k-class.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-malformed-protocol-exception/index.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-missing-operation-exception/index.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-output-serializer/close.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-output-serializer/flush.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-output-serializer/index.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-output-serializer/write-boolean.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-output-serializer/write-byte.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-output-serializer/write-char.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-output-serializer/write-double.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-output-serializer/write-float.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-output-serializer/write-int.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-output-serializer/write-long.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-output-serializer/write-short.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-output-serializer/write.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-polymorphic-deserializer/index.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-polymorphic-deserializer/superclass.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-polymorphic-deserializer/supertype.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-protocol-builder/-protocol-builder.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-protocol-builder/fallback.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-protocol-builder/index.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-protocol-builder/noinherit.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-protocol-builder/read.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-protocol-builder/static.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-protocol-builder/write.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-schema-builder/define.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-schema-builder/index.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-schema/index.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-schema/plus.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-serializer/write-boolean.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-serializer/write-byte.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-serializer/write-char.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-serializer/write-double.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-serializer/write-float.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-serializer/write-int.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-serializer/write-long.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/-serializer/write-short.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/class-name.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/schema.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/kanary/kanary/write.md" afterDir="false" />
+    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Updated to 3.0">
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Operations.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-assign-once/-assign-once.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-assign-once/get-value.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-assign-once/index.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-assign-once/set-value.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-deserializer/index.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/kanary/-deserializer/index.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-deserializer/read-array.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-deserializer/read-iterable.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-deserializer/read-list.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-deserializer/read-nullable.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-deserializer/read-nullables-array.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-deserializer/read-nullables-iterable.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-deserializer/read-nullables-list.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-deserializer/read-object.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-invalid-protocol-exception/index.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-kanary-exception/index.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-missing-protocol-exception/index.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/kanary/-type-flag-mismatch-exception/index.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-primitive-deserializer/close.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-primitive-deserializer/index.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-primitive-deserializer/read-boolean-array.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-primitive-deserializer/read-boolean.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-primitive-deserializer/read-byte.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-primitive-deserializer/read-char-array.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-primitive-deserializer/read-char.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-primitive-deserializer/read-double-array.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-primitive-deserializer/read-double.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-primitive-deserializer/read-float-array.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-primitive-deserializer/read-float.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-primitive-deserializer/read-int-array.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-primitive-deserializer/read-int.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-primitive-deserializer/read-long-array.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-primitive-deserializer/read-long.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-primitive-deserializer/read-short-array.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-primitive-deserializer/read-short.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-primitive-deserializer/read-string.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-primitive-serializer/close.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-primitive-serializer/flush.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-primitive-serializer/index.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-primitive-serializer/write.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-protocol-builder-scope/-protocol-builder-scope.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-protocol-builder-scope/index.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-protocol-builder-scope/read.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-protocol-builder-scope/write.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-protocol-set-builder-scope/index.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-protocol-set-builder-scope/protocol-of.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-protocol-set/index.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-protocol-set/plus.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-reassignment-exception/index.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/kanary/-reassignment-exception/index.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-serializer/index.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/kanary/-serializer/index.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-serializer/write-all-or.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-serializer/write-all.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-serializer/write-or.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-serializer/write.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/kanary/-serializer/write.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/-type-mismatch-exception/index.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/deserializer.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/kanary/deserializer.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/index.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/kanary/index.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/protocol-set.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/kanary/serializer.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/kanary/serializer.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/package-list" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Deserializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Deserializer.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Protocol.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Protocol.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Serializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Serializer.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/TypeFlag.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/TypeFlag.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/kotlin/KanaryTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/InputOutput.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/resources/deserialized_data_is_same_as_serialized_data.bin" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/resources/fallback_read.bin" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/resources/noinherit_read.bin" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/resources/polymorphic_read.bin" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/resources/static_write.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/kotlin/KanaryTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/KanaryTest.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -225,37 +89,37 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "Gradle.Download Sources.executor": "Run",
-    "Gradle.KanaryTest (1).executor": "Run",
-    "Gradle.KanaryTest.deserialized_data_is_same_as_serialized_data.executor": "Run",
-    "Gradle.KanaryTest.executor": "Run",
-    "Gradle.KanaryTest.fallback_read.executor": "Run",
-    "Gradle.KanaryTest.kanaryTest.executor": "Run",
-    "Gradle.KanaryTest.malformed_protocol_throws.executor": "Run",
-    "Gradle.KanaryTest.polymorphic_read.executor": "Run",
-    "Gradle.KanaryTest.test (1).executor": "Run",
-    "Gradle.KanaryTest.test.executor": "Run",
-    "Gradle.Test.executor": "Run",
-    "Gradle.Test.test.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "preferences.lookFeel"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;Gradle.Download Sources.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest (1).executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.deserialized_data_is_same_as_serialized_data.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.fallback_read.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.kanaryTest.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.malformed_protocol_throws.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.polymorphic_read.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.test (1).executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.test.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Test.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Test.test.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;
   },
-  "keyToStringList": {
-    "kotlin-gradle-user-dirs": [
-      "C:\\Users\\eckar\\.gradle"
+  &quot;keyToStringList&quot;: {
+    &quot;kotlin-gradle-user-dirs&quot;: [
+      &quot;C:\\Users\\eckar\\.gradle&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\eckar\IdeaProjects\kanary\docs" />
@@ -687,12 +551,19 @@
       <option name="project" value="LOCAL" />
       <updated>1715915581518</updated>
     </task>
-    <option name="localTasksCounter" value="36" />
+    <task id="LOCAL-00036" summary="Updated to 3.0">
+      <option name="closed" value="true" />
+      <created>1715919003175</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1715919003175</updated>
+    </task>
+    <option name="localTasksCounter" value="37" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="Updated README.md" />
     <MESSAGE value="Added Maven plugin" />
     <MESSAGE value="Amended README.md" />
     <MESSAGE value="Added .idea to .gitignore and incremented version number" />
@@ -717,7 +588,8 @@
     <MESSAGE value="Rework V" />
     <MESSAGE value="Rework VI" />
     <MESSAGE value="Rework VII" />
-    <option name="LAST_COMMIT_MESSAGE" value="Rework VII" />
+    <MESSAGE value="Updated to 3.0" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated to 3.0" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
