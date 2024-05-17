@@ -13,9 +13,12 @@ import kotlin.reflect.full.superclasses
 
 /**
  * Provides a scope wherein protocols for various classes may be defined.
+ *
  * It is acceptable, but not encouraged, to create an empty set. Doing so would provide
  * object read/write functionality to the serializer/deserializer, which will always fail when invoked.
  * This is because objects require their type to have a defined protocol before they can be manipulated.
+ *
+ * A schema with no protocols defined is legal.
  * @return a serialization schema, which can be passed to a
  * [serializer][java.io.OutputStream.serializer] or [deserializer][java.io.InputStream.deserializer]
  * to provide the directions for serializing the specified reference types
@@ -29,7 +32,8 @@ inline fun schema(builder: SchemaBuilder.() -> Unit): Schema {
 /**
  * Defines a set of protocols corresponding to how certain types should be written to and read from binary.
  */
-class Schema {
+class Schema// Ensure no supertype has static write// End search; static write overrides all others
+@PublishedApi internal constructor(builder: SchemaBuilder) {
     /*
       Keys contain:
         - Write operations for each type serialized, organized in the order they are written
@@ -44,8 +48,7 @@ class Schema {
 
     internal val definedProtocols: Map<KClass<*>, Protocol<*>>
 
-    @PublishedApi
-    internal constructor(builder: SchemaBuilder) {
+    init {
         fun MutableList<WriteSpecifier>.buildWriteSequence(
             builder: SchemaBuilder,
             superclasses: List<KClass<*>>
@@ -79,10 +82,9 @@ class Schema {
             }
             return null
         }
-
         definedProtocols = builder.definedProtocols
         writeSequences = HashMap<KClass<*>, List<WriteSpecifier>>().apply {
-            for (classRef in (definedProtocols as Map).keys) {
+            for (classRef in definedProtocols.keys) {
                 val sequence = mutableListOf<WriteSpecifier>()
                 val protocol = definedProtocols.getValue(classRef)
                 protocol.write?.let { sequence += WriteSpecifier(classRef, it) }
@@ -109,33 +111,16 @@ class Schema {
         }
     }
 
-    private constructor(
-        writeSequences: Map<KClass<*>, List<WriteSpecifier>>,
-        reads: Map<KClass<*>, ReadOperation<*>>,
-        definedProtocols: Map<KClass<*>, Protocol<*>>,
-    ) {
-        this.writeSequences = writeSequences
-        this.actualReads = reads
-        this.definedProtocols = definedProtocols
-    }
-
     /**
-     * Useful as a utility, but slower than simply defining all protocols within the same schema.
-     * @return a new schema containing the protocols of each
-     * @throws ReassignmentException the sets contain conflicting declarations of a given protocol
+     * Returns a new schema containing the protocols of both.
+     * Should be used if the union is used only once.
+     * If used more than once, a new [schema] should be defined with both added to it.
      */
     operator fun plus(other: Schema): Schema {
-        val otherTypes = other.definedProtocols.keys
-        for (kClass in definedProtocols.keys) {
-            if (kClass in otherTypes) {
-                throw ReassignmentException("Conflicting declarations for protocol of class '${kClass.qualifiedName!!}'")
-            }
+        return schema {
+            this += this@Schema
+            this += other
         }
-        return Schema(
-            writeSequences + other.writeSequences,
-            actualReads + other.actualReads,
-            definedProtocols + other.definedProtocols
-        )
     }
 
     internal fun resolveWriteSequence(superclasses: List<KClass<*>>): List<WriteSpecifier>? {
@@ -165,7 +150,7 @@ class Schema {
     }
 
     internal companion object {
-        val EMPTY = Schema(emptyMap(), emptyMap(), emptyMap())
+        val EMPTY = Schema(SchemaBuilder())
     }
 }
 
@@ -198,6 +183,21 @@ class SchemaBuilder @PublishedApi internal constructor() {  // No intent to add 
             throw ReassignmentException("Read or write operation defined more than once")
         }
         definedProtocols[classRef] = Protocol(builderScope)
+    }
+
+    /**
+     * Adds all protocols from the given schema to this one.
+     * If the union of two schemas is used only sparingly, [Schema.plus] should be used instead.
+     * @throws ReassignmentException there exist conflicting declarations of a given protocol
+     */
+    operator fun plusAssign(other: Schema) {
+        val otherClassRefs = other.definedProtocols.keys
+        for (classRef in definedProtocols.keys) {
+            if (classRef in otherClassRefs) {
+                throw ReassignmentException("Conflicting declarations for protocol of class '${classRef.qualifiedName!!}'")
+            }
+        }
+        definedProtocols += other.definedProtocols
     }
 }
 
