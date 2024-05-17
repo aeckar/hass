@@ -4,16 +4,17 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
 
 @PublishedApi
-internal val builtInTypes = TypeCode.entries.asSequence().map { it.jvmClass }.toHashSet()
+internal val builtInTypes = TypeFlag.entries.asSequence().map { it.jvmClass }.toHashSet()
 
 /**
  * Thrown when an attempt is made to read serialized data of a certain fundamental type, but found another type.
  */
-class TypeMismatchException internal constructor(message: String) : IOException(message)
+class TypeFlagMismatchException internal constructor(message: String) : IOException(message)
 
-internal enum class TypeCode(val jvmClass: KClass<*> = Nothing::class) {
+internal enum class TypeFlag(val jvmClass: KClass<*> = Nothing::class) {
     // Primitive types
     BOOLEAN(Boolean::class),
     BYTE(Byte::class),
@@ -46,13 +47,14 @@ internal enum class TypeCode(val jvmClass: KClass<*> = Nothing::class) {
     UNIT(Unit::class),
     OBJECT(Any::class),
     SIMPLE_OBJECT(OBJECT.jvmClass),
+    FUNCTION(KFunction::class),
     NULL;
 
     // Ensures that the correct type is parsed during deserialization
     fun validate(stream: InputStream) {
-        val code = stream.read()
-        if (ordinal != code) {
-            throw TypeMismatchException("Type '$name' expected, but found '${TypeCode.nameOf(code)}'")
+        val flag = stream.read()
+        if (ordinal != flag) {
+            throw TypeFlagMismatchException("Type flag '$name' expected, but found '${TypeFlag.nameOf(flag)}'")
         }
     }
 
@@ -62,6 +64,6 @@ internal enum class TypeCode(val jvmClass: KClass<*> = Nothing::class) {
     }
 
     companion object {
-        fun nameOf(code: Int) = if (code == -1) "EOF" else (entries.find { it.ordinal == code }?.name ?: "UNKNOWN")
+        fun nameOf(flag: Int) = if (flag == -1) "EOF" else (entries.find { it.ordinal == flag }?.name ?: "UNKNOWN")
     }
 }

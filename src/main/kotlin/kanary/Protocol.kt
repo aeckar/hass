@@ -10,8 +10,8 @@ internal typealias SimpleReadOperation<T> = Deserializer.() -> T
 /**
  * Thrown when an attempt is made to define a protocol for a class that is not top-level.
  */
-class MalformedProtocolException @PublishedApi internal constructor(classRef: KClass<*>, reason: String)
-        : IOException("Protocol for type '${classRef.qualifiedName}' is malformed ($reason)")
+class MalformedProtocolException @PublishedApi internal constructor(classRef: KClass<*>?, reason: String)
+        : IOException("Protocol for type '${classRef?.qualifiedName}' is malformed ($reason)")
 
 /**
  * Thrown when a [read][ProtocolBuilder.read] or [write][ProtocolBuilder.write] operation is expected, but not found.
@@ -20,8 +20,8 @@ class MissingOperationException @PublishedApi internal constructor(message: Stri
 
 @PublishedApi
 internal class Protocol<T : Any>(builder: ProtocolBuilder<T>) {
-    val hasNoinherit: Boolean   // TODO implement
-    val hasFallback: Boolean   // TODO implement
+    val hasNoinherit: Boolean
+    val hasFallback: Boolean
     val hasStatic: Boolean
     val read: ReadOperation<out T>?
     val write: WriteOperation<in T>?
@@ -33,25 +33,27 @@ internal class Protocol<T : Any>(builder: ProtocolBuilder<T>) {
             }
             if (hasNoinherit && !hasStatic) {
                 throw MalformedProtocolException(classRef,
-                    "read operation with 'static' modifier must accompany static write operation")
+                    "read operation with 'noinherit' modifier must accompany 'static' write operation")
             }
         }
         hasNoinherit = builder.hasNoinherit
         hasFallback = builder.hasFallback
         hasStatic = builder.hasStatic
-        read = builder.takeIf { it.isReadDefined }?._read
-        write = builder.takeIf { it.isWriteDefined }?._write
+        read = builder.access { read }
+        write = builder.access { write }
     }
 }
 
 /**
  * The scope wherein a protocol's [read] and [write] operations are defined.
  */
-@Suppress("PropertyName")
 class ProtocolBuilder<T : Any>(internal val classRef: KClass<*>) {
     init {
         if (classRef in builtInTypes) {
             throw MalformedProtocolException(classRef, "built-in protocol already exists")
+        }
+        if (classRef.qualifiedName == null) {
+            throw MalformedProtocolException(classRef, "local and anonymous classes cannot be serialized")
         }
     }
 
@@ -62,18 +64,19 @@ class ProtocolBuilder<T : Any>(internal val classRef: KClass<*>) {
      * @throws MalformedProtocolException [T] is an abstract class or interface
      * @throws ReassignmentException this is assigned to more than once in a single scope
      */
-    var read: ReadOperation<T>
-        get() = throw MalformedProtocolException(classRef, "read operation may only be assigned to, not accessed")
+    var read: ReadOperation<T>? = null
+        get() {
+            checkAccess("read operation")
+            return field
+        }
         set(value) {
+            value ?: throwNullAssign("read operation")
+            access { read }?.let { throwReassignment("read operation") }
             if (classRef.isAbstract && !hasFallback) {
                 throw MalformedProtocolException(classRef,
-                        "read operation without a 'default' modifier not supported for abstract classes and interfaces")
+                    "read operation without a 'default' modifier not supported for abstract classes and interfaces")
             }
-            if (isReadDefined) {
-                throw ReassignmentException("read operation assigned more than once")
-            }
-            isReadDefined = true
-            _read = value
+            field = value
         }
 
     /**
@@ -81,25 +84,20 @@ class ProtocolBuilder<T : Any>(internal val classRef: KClass<*>) {
      * If not declared, then a no-op default write operation is used.
      * @throws ReassignmentException this is assigned to more than once in a single scope
      */
-    var write: WriteOperation<T>
-        get() = throw MalformedProtocolException(classRef, "write operation may only be assigned to, not accessed")
-        set(value) {
-            if (isWriteDefined) {
-                throw ReassignmentException("write operation assigned more than once")
-            }
-            isWriteDefined = true
-            _write = value
+    var write: WriteOperation<T>? = null
+        get() {
+            checkAccess("write operation")
+            return field
         }
-
-    internal var _read: ReadOperation<T> = @Suppress("CAST_NEVER_SUCCEEDS") { null as T }
-    internal var _write: WriteOperation<T> = {}
+        set(value) {
+            value ?: throwNullAssign("write operation")
+            access { write }?.let { throwReassignment("write operation") }
+            field = value
+        }
 
     internal var hasNoinherit = false
     internal var hasFallback = false
     internal var hasStatic = false
-
-    internal var isReadDefined = false
-    internal var isWriteDefined = false
 
     /**
      * When prepended to a [read operation][read], declares that subtypes without a read operation
@@ -150,5 +148,28 @@ class ProtocolBuilder<T : Any>(internal val classRef: KClass<*>) {
         }
         hasNoinherit = true
         return read
+    }
+
+    private var readableParams = false
+
+    internal inline fun <R> access(block: ProtocolBuilder<T>.() -> R): R {
+        readableParams = true
+        val result = block()
+        readableParams = false
+        return result
+    }
+
+    private fun throwNullAssign(varName: String): Nothing {
+        throw MalformedProtocolException(classRef, "$varName cannot be null")
+    }
+
+    private fun throwReassignment(varName: String): Nothing {
+        throw MalformedProtocolException(classRef, "$varName assigned a value more than once")
+    }
+
+    private fun checkAccess(varName: String) {
+        if (!readableParams) {
+            throw MalformedProtocolException(classRef, "$varName may only be assigned to, not accessed")
+        }
     }
 }

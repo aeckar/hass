@@ -1,6 +1,7 @@
 package kanary
 
 import kotlin.reflect.KClass
+import kotlin.reflect.full.allSuperclasses
 import kotlin.reflect.full.superclasses
 
 /*
@@ -52,16 +53,19 @@ class Schema {
         fun MutableList<WriteSpecifier>.buildWriteSequence(
             builder: SchemaBuilder,
             superclasses: List<KClass<*>>
-        ): List<WriteSpecifier> {
+        ): List<WriteSpecifier>? {
             for (kClass in superclasses) {
-                builder.definedProtocols[kClass]?.write?.let { writeOperation ->
-                    if (none { it.write === writeOperation }) {
-                        this += builder.WriteSpecifier(kClass)!!
+                val protocol = builder.definedProtocols[kClass] ?: continue
+                val writeOperation = protocol.write ?: continue
+                if (none { it.write === writeOperation }) {
+                    this += WriteSpecifier(kClass, writeOperation)
+                    if (protocol.hasStatic) {
+                        return null // End search; static write overrides all others
                     }
                 }
             }
             for (kClass in superclasses) {
-                buildWriteSequence(builder, kClass.superclasses)
+                buildWriteSequence(builder, kClass.superclasses) ?: return this
             }
             return this
         }
@@ -81,21 +85,29 @@ class Schema {
         }
 
         definedProtocols = builder.definedProtocols
-        writeSequences = mutableMapOf<KClass<*>, List<WriteSpecifier>>().apply {
+        writeSequences = HashMap<KClass<*>, List<WriteSpecifier>>().apply {
             for (kClass in (definedProtocols as Map).keys) {
                 val sequence = mutableListOf<WriteSpecifier>()
-                builder.WriteSpecifier(kClass)?.let { sequence += it }
-                this[kClass] = sequence.buildWriteSequence(builder, kClass.superclasses)
+                val protocol = definedProtocols.getValue(kClass)
+                protocol.write?.let { sequence += WriteSpecifier(kClass, it) }
+                this[kClass] = sequence.takeIf { !protocol.hasStatic }?.buildWriteSequence(builder, kClass.superclasses)
+                    ?: sequence
             }
         }
-        actualReads = mutableMapOf<KClass<*>, ReadOperation<*>>().apply {
-            builder.definedProtocols.forEach { (jvmType, protocol) ->
+        actualReads = HashMap<KClass<*>, ReadOperation<*>>().apply {
+            builder.definedProtocols.forEach { (kClass, protocol) ->
+                protocol.takeIf { !it.hasNoinherit }?.write?.let {  // Ensure no supertype has static write
+                    if (kClass.allSuperclasses.any { superclass -> definedProtocols[superclass]?.hasStatic == true }) {
+                        throw MalformedProtocolException(kClass, "write defined when supertype write is 'static'")
+                    }
+                }
                 if (protocol.read != null) {
-                    this[jvmType] = protocol.read
+                    this[kClass] = protocol.read
                     return@forEach
                 }
-                this[jvmType] = resolveRead(builder, jvmType.superclasses)
-                    ?: throw MissingOperationException("Read operation not defined for type '$jvmType' and fallback not specified")
+                resolveRead(builder, kClass.superclasses)?.let {
+                    this[kClass] = it
+                }
             }
         }
     }
@@ -103,7 +115,7 @@ class Schema {
     private constructor(
         writeSequences: Map<KClass<*>, List<WriteSpecifier>>,
         reads: Map<KClass<*>, ReadOperation<*>>,
-        definedProtocols: Map<KClass<*>, Protocol<*>>
+        definedProtocols: Map<KClass<*>, Protocol<*>>,
     ) {
         this.writeSequences = writeSequences
         this.actualReads = reads
@@ -129,6 +141,32 @@ class Schema {
         )
     }
 
+    internal fun resolveWriteSequence(superclasses: List<KClass<*>>): List<WriteSpecifier>? {
+        for (kClass in superclasses) {
+            writeSequences[kClass]?.let { return it }
+        }
+        for (kClass in superclasses) {
+            resolveWriteSequence(kClass.superclasses)?.let { return it }
+        }
+        return null
+    }
+
+    internal fun resolveRead(classRef: KClass<*>): ReadOperation<*> {
+        actualReads[classRef]?.let { return it }
+        resolveFallbackRead(classRef.superclasses)?.let { return it }
+        throw MalformedProtocolException(classRef, "read or 'fallback' read for '${classRef.qualifiedName}' not found")
+    }
+
+    private fun resolveFallbackRead(superclasses: List<KClass<*>>): ReadOperation<*>? {
+        for (kClass in superclasses) {
+            definedProtocols[kClass]?.let { if (it.hasFallback) return it.read }
+        }
+        for (kClass in superclasses) {
+            resolveFallbackRead(kClass.superclasses)?.let { return it }
+        }
+        return null
+    }
+
     internal companion object {
         val EMPTY = Schema(emptyMap(), emptyMap(), emptyMap())
     }
@@ -139,7 +177,7 @@ class Schema {
  */
 class SchemaBuilder @PublishedApi internal constructor() {  // No intent to add versioning support
     @PublishedApi
-    internal val definedProtocols = mutableMapOf<KClass<*>, Protocol<*>>()
+    internal val definedProtocols = HashMap<KClass<*>, Protocol<*>>()
 
     /**
      * Provides a scope wherein the [read][ProtocolBuilder.read] and [write][ProtocolBuilder.write]
@@ -163,10 +201,6 @@ class SchemaBuilder @PublishedApi internal constructor() {  // No intent to add 
             throw ReassignmentException("Read or write operation defined more than once")
         }
         definedProtocols[classRef] = Protocol(builderScope)
-    }
-
-    internal fun WriteSpecifier(type: KClass<*>): WriteSpecifier? {
-        return definedProtocols.getValue(type).write?.let { WriteSpecifier(type, it) }
     }
 }
 

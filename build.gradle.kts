@@ -8,10 +8,10 @@ group = "com.github.aeckar"
 version = "2.1"
 
 dependencies {
+    implementation(kotlin("reflect"))
     testImplementation(kotlin("test"))
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    implementation(kotlin("reflect"))
 }
 
 publishing {
