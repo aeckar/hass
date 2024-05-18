@@ -17,6 +17,15 @@ import kotlin.reflect.full.superclasses
  */
 fun OutputStream.serializer(protocols: Schema = Schema.EMPTY) = OutputSerializer(this, protocols)
 
+/**
+ * Writes the objects in binary format according to the protocol of each type.
+ * Null objects are accepted, however their non-nullable type information is erased.
+ * If an object is not null and its type does not have a defined protocol, the protocol of its superclass or
+ * the first interface declared in source code with a protocol is chosen.
+ * If no objects are supplied, nothing is serialized.
+ * @throws MissingOperationException any object of an anonymous or local class,
+ * or an appropriate write operation cannot be found
+ */
 fun Serializer.write(vararg objs: Any?) {
     objs.forEach { write(it) }
 }
@@ -99,9 +108,12 @@ class OutputSerializer internal constructor(
     }
 
     /**
-     * Writes the object in binary format according to the protocol of its type, or null.
+     * Writes the object in binary format according to the protocol of its type.
+     * Null objects are accepted, however their non-nullable type information is erased.
      * If the object is not null and its type does not have a defined protocol, the protocol of its superclass or
      * the first interface declared in source code with a protocol is chosen.
+     * @throws MissingOperationException any object of an anonymous or local class,
+     * or an appropriate write operation cannot be found
      */
     override fun write(obj: Any?) {
         if (obj == null) {
