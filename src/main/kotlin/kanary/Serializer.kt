@@ -55,7 +55,7 @@ sealed interface Serializer {
  * Until closed, instances are blocking.
  */
 class OutputSerializer internal constructor(
-    private var stream: OutputStream,
+    private val stream: OutputStream,
     private val schema: Schema
 ) : Closeable, Flushable, Serializer {
     override fun writeBoolean(cond: Boolean) {
@@ -156,8 +156,6 @@ class OutputSerializer internal constructor(
      * Avoids null check for entries, unlike generic `write`.
      */
     override fun <K : Any, V : Any> write(map: Map<K, V>) = writeAny(map, nonNullMembers = true)
-
-    internal fun wrap(stream: OutputStream) = this.also { this.stream = stream }
 
     override fun close() = stream.close()
     override fun flush() = stream.flush()
