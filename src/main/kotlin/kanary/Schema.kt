@@ -5,7 +5,7 @@ import kotlin.reflect.full.allSuperclasses
 import kotlin.reflect.full.superclasses
 
 /*
-    Within the API, classes and interfaces are both referred to as "classes".
+    Within the private API, classes and interfaces are both referred to as "classes".
     From the user's perspective, "type" will be used to refer to both instead.
     Similarly, KClass's of defined protocols are named 'classRef'.
     All other class references are simply named 'kClass'.
@@ -32,8 +32,7 @@ inline fun schema(builder: SchemaBuilder.() -> Unit): Schema {
 /**
  * Defines a set of protocols corresponding to how certain types should be written to and read from binary.
  */
-class Schema// Ensure no supertype has static write// End search; static write overrides all others
-@PublishedApi internal constructor(builder: SchemaBuilder) {
+class Schema @PublishedApi internal constructor(builder: SchemaBuilder) {
     /*
       Keys contain:
         - Write operations for each type serialized, organized in the order they are written
@@ -114,7 +113,8 @@ class Schema// Ensure no supertype has static write// End search; static write o
     /**
      * Returns a new schema containing the protocols of both.
      * Should be used if the union is used only once.
-     * If used more than once, a new [schema] should be defined with both added to it.
+     * If used more than once, a new [schema] should be defined with both [added][SchemaBuilder.plusAssign] to it.
+     * @throws ReassignmentException there exist conflicting declarations of a given protocol
      */
     operator fun plus(other: Schema): Schema {
         return schema {
