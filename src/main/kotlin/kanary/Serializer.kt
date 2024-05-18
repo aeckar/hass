@@ -1,4 +1,3 @@
-@file:Suppress("UNUSED")
 package kanary
 
 import kanary.TypeFlag.*
