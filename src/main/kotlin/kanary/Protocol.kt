@@ -28,8 +28,7 @@ internal class Protocol<T : Any>(builder: ProtocolBuilder<T>) {
                 throwMalformed("read operation cannot be assigned more than one modifier")
             }
             if (hasNoinherit && !hasStatic) {
-                throw MalformedProtocolException(classRef,
-                    "read operation with 'noinherit' modifier must accompany 'static' write operation")
+                throwMalformed("read operation with 'noinherit' modifier must accompany 'static' write operation")
             }
         }
         hasNoinherit = builder.hasNoinherit
