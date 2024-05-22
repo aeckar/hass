@@ -2,8 +2,6 @@ package kanary
 
 import java.io.IOException
 
-// TODO ensure proper generic variance (in, out)
-
 /**
  * Lambda specified by [read operation][ProtocolBuilder.read].
  */
@@ -22,8 +20,8 @@ internal typealias WriteOperation = Serializer.(Any?) -> Unit
  */
 @Suppress("UNCHECKED_CAST")
 inline fun <reified T> define(
-    noinline read: TypedReadOperation<T>? = null,
-    noinline write: TypedWriteOperation<T>? = null
+    noinline read: TypedReadOperation<out T>? = null,
+    noinline write: TypedWriteOperation<in T>? = null
 ): Protocol {
     return LocalTypeProtocol(read, write as WriteOperation)
 }
@@ -32,13 +30,13 @@ inline fun <reified T> define(
  * Applies the 'static' modifier to the given write operation.
  * @return the supplied write operation
  */
-fun <T> static(write: TypedWriteOperation<T>): TypedWriteOperation<T> = StaticWriteOperation(write)
+fun <T> static(write: TypedWriteOperation<in T>): TypedWriteOperation<in T> = StaticWriteOperation(write)
 
 /**
  * Applies the 'fallback' modifier to the given read operation.
  * @return the supplied [read operation][ProtocolBuilder.read]
  */
-fun <T> fallback(read: TypedReadOperation<T>): TypedReadOperation<T> = FallbackReadOperation(read)
+fun <T> fallback(read: TypedReadOperation<out T>): TypedReadOperation<out T> = FallbackReadOperation(read)
 
 /**
  * A locally defined protocol.
@@ -72,5 +70,5 @@ internal class LocalTypeProtocol(
     override val hasStatic = write is StaticWriteOperation
 }
 
-private class FallbackReadOperation<T>(read: TypedReadOperation<T>): (ObjectDeserializer) -> T by read
-private class StaticWriteOperation<T>(write: TypedWriteOperation<T>) : (Serializer, T) -> Unit by write
+private class FallbackReadOperation<T>(read: TypedReadOperation<out T>): (ObjectDeserializer) -> T by read
+private class StaticWriteOperation<T>(write: TypedWriteOperation<in T>) : (Serializer, T) -> Unit by write
