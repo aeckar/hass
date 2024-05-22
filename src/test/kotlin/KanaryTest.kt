@@ -389,7 +389,7 @@ class KanaryTest {
     }
 
     class MyOuterClass(val id: Int) {
-        inner class MyInnerClass {
+        open /* <- allow fallback */ inner class MyInnerClass {
             val id get() = this@MyOuterClass.id
         }
     }
@@ -398,10 +398,10 @@ class KanaryTest {
     fun inner_class() {
         val schema = schema {
             define<MyOuterClass.MyInnerClass> {
-                read = {
+                read = fallback {
                     MyOuterClass(readInt()).MyInnerClass()
                 }
-                write = {
+                write = static {
                     writeInt(it.id)
                 }
             }

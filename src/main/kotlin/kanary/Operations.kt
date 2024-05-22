@@ -2,6 +2,8 @@ package kanary
 
 import java.io.IOException
 
+// TODO test static and fallback
+
 /**
  * Lambda specified by [read operation][ProtocolBuilder.read].
  */
