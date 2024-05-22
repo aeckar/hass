@@ -1,6 +1,7 @@
 package kanary.utils
 
 import kotlin.reflect.KClass
+import kotlin.reflect.full.companionObjectInstance
 
 /**
  * The [qualified name][KClass.qualifiedName] of the class reference.
@@ -8,6 +9,15 @@ import kotlin.reflect.KClass
  * If local or anonymous, this property is null.
  */
 val KClass<*>.jvmName: String? get() = qualifiedName?.let { if ('.' in it) java.name else it }
+
+/**
+ * Circumvents bug in [companionObjectInstance] where an [IllegalStateException] is thrown for certain Java classes.
+ * @return the companion object of the given class, or null if one does not exist
+ */
+val KClass<*>.companion: Any? get() {
+    val isKotlinClass = java.declaredAnnotations.any { it.annotationClass.qualifiedName == "kotlin.Metadata" }
+    return takeIf { isKotlinClass }?.companionObjectInstance
+}
 
 /**
  * @return the class reference matching the given typename

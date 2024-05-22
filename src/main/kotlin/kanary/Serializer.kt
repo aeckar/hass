@@ -294,7 +294,7 @@ private class OutputSerializer(
         val classRef = obj::class
         val className = classRef.jvmName
             ?: throw MissingOperationException("Serialization of local and anonymous class instances not supported")
-        var protocol = schema.protocolOf(classRef)
+        var protocol = schema.protocolOrNull(classRef)
         val builtIns = if (nonNullElements) nonNullBuiltIns else nullableBuiltIns
         val builtInKClass: KClass<*>?
         val definedHandles: Set<WriteHandle>
@@ -311,7 +311,7 @@ private class OutputSerializer(
             }
         }
         val (kClass, lambda) = definedHandles.first()
-        protocol = schema.protocolOf(kClass) ?: TODO()
+        protocol = schema.protocolOrNull(kClass)!!
         writeFlag(OBJECT)
         writeStringNoMark(className)
         val customSuperCount = definedHandles.size - 1

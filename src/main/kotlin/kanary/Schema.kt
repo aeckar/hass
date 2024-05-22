@@ -1,9 +1,9 @@
 package kanary
 
+import kanary.utils.companion
 import kanary.utils.takeIf
 import kotlin.reflect.KClass
 import kotlin.reflect.full.allSuperclasses
-import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.superclasses
 
 /*
@@ -133,10 +133,14 @@ class Schema @PublishedApi internal constructor(builder: SchemaBuilder) {
 
     internal fun protocols(): Map<KClass<*>, Protocol> = protocols
 
-    // Returns null if protocol does not exist
-    internal fun protocolOf(classRef: KClass<*>): Protocol? {
+    /*
+        In kotlin.reflect.full, there is a bug where LinkedHashSet::class.companionObjectInstance
+        throws an IllegalStateException instead of null.
+        To avoid this, companion objects are not checked for any class in
+     */
+    internal fun protocolOrNull(classRef: KClass<*>): Protocol? {
         return protocols[classRef]
-            ?: localProtocolOf(classRef)
+            ?: classRef.companion?.takeIf<Protocol>()?.also { protocols[classRef] = it }
     }
 
     internal fun writeSequenceOf(classRef: KClass<*>): Set<WriteHandle> {
@@ -152,18 +156,14 @@ class Schema @PublishedApi internal constructor(builder: SchemaBuilder) {
                     "read or 'fallback' read for '${classRef.qualifiedName}'expected, but not found")
     }
 
-    private fun localProtocolOf(classRef: KClass<*>): Protocol? {
-        return classRef.companionObjectInstance.takeIf<Protocol>()?.also { protocols[classRef] = it }
-    }
-
     private fun resolveReadOperation(classRef: KClass<*>, curKClass: KClass<*> = classRef): TypedReadOperation<*>? {
         val superclasses = curKClass.superclasses
-        localProtocolOf(classRef)?.read?.let {
+        protocolOrNull(classRef)?.read?.let {
             readOperations[classRef] = it
             return it
         }
         for (kClass in superclasses) {
-            protocolOf(kClass)?.takeIf { it.hasFallback }?.read?.let {
+            protocolOrNull(kClass)?.takeIf { it.hasFallback }?.read?.let {
                 readOperations[classRef] = it
                 return it
             }
@@ -180,13 +180,13 @@ class Schema @PublishedApi internal constructor(builder: SchemaBuilder) {
         localWriteSequence: MutableSet<WriteHandle> = mutableSetOf()
     ): Set<WriteHandle>? {
         val superclasses = curKClass.superclasses
-        localProtocolOf(curKClass)?.write?.let { localWriteSequence += WriteHandle(curKClass, it) }
+        protocolOrNull(curKClass)?.write?.let { localWriteSequence += WriteHandle(curKClass, it) }
         for (kClass in superclasses) {
             writeSequences[kClass]?.let {
                 writeSequences[classRef] = it
                 return it
             }
-            localProtocolOf(kClass)?.write?.let { localWriteSequence += WriteHandle(kClass, it) }
+            protocolOrNull(kClass)?.write?.let { localWriteSequence += WriteHandle(kClass, it) }
         }
         for (kClass in superclasses) {
             resolveWriteSequence(classRef, kClass, localWriteSequence)?.let { return it }
