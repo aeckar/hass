@@ -1,17 +1,23 @@
 package kanary
 
 import kanary.TypeFlag.*
-import java.io.*
+import kanary.utils.KClass
+import java.io.Closeable
+import java.io.EOFException
+import java.io.InputStream
+import java.io.ObjectInputStream
 import java.nio.ByteBuffer
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.full.superclasses
 
+private val EMPTY_DESERIALIZER: Deserializer = InputDeserializer(InputStream.nullInputStream(), Schema.EMPTY)
+
 /**
  * @return a new deserializer capable of reading primitives, primitive arrays, strings, and
  * instances of any type with a defined protocol from Kanary format
  */
-fun InputStream.deserializer(protocols: Schema = Schema.EMPTY) = InputDeserializer(this, protocols)
+fun InputStream.deserializer(protocols: Schema = Schema.EMPTY): Deserializer = InputDeserializer(this, protocols)
 
 /**
  * Reads serialized data from a stream in Kanary format.
@@ -19,49 +25,66 @@ fun InputStream.deserializer(protocols: Schema = Schema.EMPTY) = InputDeserializ
 sealed interface Deserializer {
     /**
      * Capable of reading the corresponding boxed type as well.
-     * @return the serialized value
+     * @return the serialized value, unboxed
+     * @throws TypeFlagMismatchException an object of a different type was serialized in the current stream position
+     * @throws EOFException the stream is exhausted before a value can be determined
      */
     fun readBoolean(): Boolean
 
     /**
      * Capable of reading the corresponding boxed type as well.
-     * @return the serialized value
+     * @return the serialized value, unboxed
+     * @throws TypeFlagMismatchException an object of a different type was serialized in the current stream position
+     * @throws EOFException the stream is exhausted before a value can be determined
      */
     fun readByte(): Byte
 
     /**
      * Capable of reading the corresponding boxed type as well.
-     * @return the serialized value
+     * @return the serialized value, unboxed
+     * @throws TypeFlagMismatchException an object of a different type was serialized in the current stream position
+     * @throws EOFException the stream is exhausted before a value can be determined
      */
     fun readChar(): Char
 
     /**
      * Capable of reading the corresponding boxed type as well.
-     * @return the serialized value
+     * @return the serialized value, unboxed
+     * @throws TypeFlagMismatchException an object of a different type was serialized in the current stream position
+     * @throws EOFException the stream is exhausted before a value can be determined
      */
     fun readShort(): Short
 
     /**
      * Capable of reading the corresponding boxed type as well.
-     * @return the serialized value
+     * @return the serialized value, unboxed
+     * @throws TypeFlagMismatchException an object of a different type was serialized in the current stream position
+     * @throws EOFException the stream is exhausted before a value can be determined
      */
     fun readInt(): Int
 
     /**
      * Capable of reading the corresponding boxed type as well.
-     * @return the serialized value
+     * @return the serialized value, unboxed
+     * @throws TypeFlagMismatchException an object of a different type was serialized in the current stream position
+     * @throws EOFException the stream is exhausted before a value can be determined
      */
     fun readLong(): Long
 
     /**
      * Capable of reading the corresponding boxed type as well.
-     * @return the serialized value
+     * @return the serialized value, unboxed
+     * @throws TypeFlagMismatchException an object of a different type was serialized in the current stream position
+     * @throws EOFException the stream is exhausted before a value can be determined
      */
     fun readFloat(): Float
 
     /**
      * Capable of reading the corresponding boxed type as well.
-     * @return the serialized value
+     * @return the serialized value, unboxed
+     * @throws
+     * @throws TypeFlagMismatchException an object of a different type was serialized in the current stream position
+     * @throws EOFException the stream is exhausted before a value can be determined
      */
     fun readDouble(): Double
 
@@ -71,67 +94,37 @@ sealed interface Deserializer {
      * @return the serialized object of the given type
      * @throws TypeFlagMismatchException the value was not serialized as a singular object or null
      * @throws TypeCastException the object is not an instance of type [T]
+     * @throws EOFException the stream is exhausted before a value can be determined
      */
     fun <T> read(): T
-
-    companion object {
-        /**
-         * A [Deserializer] containing no data.
-         */
-        val EMPTY: ExhaustibleDeserializer = InputDeserializer(InputStream.nullInputStream(), Schema.EMPTY)
-    }
-}
-
-/**
- * Reads serialized data from a stream in Kanary format.
- * Can be used to determine whether there is more data that can be read from this object.
- */
-sealed interface ExhaustibleDeserializer : Deserializer {
-    /**
-     * @return true if all data has been read
-     * @see isNotExhausted
-     */
-    fun isExhausted(): Boolean
-
-    /**
-     * @return true if there is more data that can be read
-     * @see isExhausted
-     */
-    fun isNotExhausted(): Boolean
 }
 
 /**
  * Deserializer allowing extraction of data from supertypes with
  * a defined [write operation][ProtocolBuilder.write].
  */
-class PolymorphicDeserializer internal constructor( // Each instance used to read a single OBJECT
-    private val objStream: InputDeserializer,
-    private val packets: Map<KClass<*>, ExhaustibleDeserializer>,
-) : ExhaustibleDeserializer by objStream {
-    private val classRef = KClass(objStream.readStringNoValidate())
-
+class ObjectDeserializer internal constructor( // Each instance used to read a single OBJECT
+    private val classRef: KClass<*>,
+    private val supertypes: Map<KClass<*>, Deserializer>,
+    private val source: InputDeserializer
+) : Deserializer by source {
     /**
-     * A *packet* deserializer corresponding to the data serialized by the immediate superclass.
+     * A supertype deserializer corresponding to the data serialized by the immediate superclass.
      * If the superclass does not have a defined write operation, is assigned a deserializer containing no data.
      */
-    val superclass: ExhaustibleDeserializer by lazy {
-        classRef.superclasses
-            .first()
-            .takeIf { !it.isAbstract }
-            ?.let { supertype(it) } ?: Deserializer.EMPTY
-    }
+    val superclass: Deserializer by lazy { supertype(classRef.superclasses.first()) }
 
     /**
-     * @return a *packet* deserializer corresponding to the data serialized by given supertype.
+     * @return a supertype deserializer corresponding to the data serialized by given supertype.
      * If the supertype does not have a defined write operation, returns a deserializer containing no data.
      * @throws MalformedProtocolException [T] is not a supertype
      */
     inline fun <reified T : Any> supertype() = supertype(T::class)
 
     @PublishedApi
-    internal fun supertype(classRef: KClass<*>): ExhaustibleDeserializer {
-        return packets[classRef] ?: if (classRef.isSuperclassOf(classRef)) {
-            Deserializer.EMPTY
+    internal fun supertype(classRef: KClass<*>): Deserializer {
+        return supertypes[classRef] ?: if (classRef.isSuperclassOf(classRef)) {
+            EMPTY_DESERIALIZER
         } else {
             throw MalformedProtocolException(classRef,
                     "type '${classRef.qualifiedName ?: "<local or anonymous>"}' is not a supertype")
@@ -139,7 +132,12 @@ class PolymorphicDeserializer internal constructor( // Each instance used to rea
     }
 
     internal fun resolveObject(): Any? {
-        return objStream.schema.resolveRead(classRef)(this)
+        return try {
+            source.schema.resolveRead(classRef)(this).also { source.readFlag() /* END_OBJECT */ }
+        } catch (_: NoSuchElementException) {
+            throw MalformedProtocolException(classRef,
+                    "attempted read of object after object deserializer was exhausted")
+        }
     }
 }
 
@@ -149,14 +147,11 @@ class PolymorphicDeserializer internal constructor( // Each instance used to rea
  * Does not need to be closed so long as the underlying stream is closed.
  * Calling [close] also closes the underlying stream.
  */
-class InputDeserializer(
-    private var stream: InputStream,
+internal class InputDeserializer(
+    private val stream: InputStream,
     internal val schema: Schema
-) : ExhaustibleDeserializer, Closeable {
+) : Deserializer, Closeable {
     private val byteWrapper = ByteArray(1)
-
-    override fun isExhausted() = stream.available() == 0
-    override fun isNotExhausted() = stream.available() != 0
 
     override fun readBoolean(): Boolean {
         readFlag(BOOLEAN)
@@ -217,7 +212,7 @@ class InputDeserializer(
     }
 
     // Does not verify correctness of ordinal
-    private fun readFlag() = TypeFlag.entries[stream.readChecked()]
+    internal fun readFlag() = TypeFlag.entries[stream.readChecked()]
 
     private fun readBytesToBuffer(count: Int) = ByteBuffer.wrap(stream.readNBytesChecked(count))
 
@@ -230,54 +225,32 @@ class InputDeserializer(
     private fun readFloatNoValidate() = readBytesToBuffer(Float.SIZE_BYTES).float
     private fun readDoubleNoValidate() = readBytesToBuffer(Double.SIZE_BYTES).double
 
-    @Suppress("UNCHECKED_CAST")
-    private fun readObject(): Any? {
-        val flag = readFlag()
-        builtInReads[flag]?.let { return it(this) }
-        if (flag === SIMPLE_OBJECT) {
-            val className = readStringNoValidate()
-            return (schema.actualReads[KClass(className)] as? SimpleReadOperation<*>)?.invoke(this)
-                ?: throw MissingOperationException("read operation or 'fallback' read operation for '$className' not found")
-        }
-        if (flag === FUNCTION) {
-            return ObjectInputStream(stream).readObject()
-        }
+    internal fun readObject(flag: TypeFlag = readFlag()): Any? {
+        builtIns[flag]?.let { return this.it() }
         assert(flag === OBJECT)
-        val packetCount = stream.read()
-        val objStream: ArrayOutputStream
-        if (packetCount == 0) {
-            val lengthInBytes = readIntNoValidate()
-            objStream = ArrayOutputStream(lengthInBytes).apply { acceptNBytes(stream, lengthInBytes) }
-            return PolymorphicDeserializer(InputDeserializer(objStream), emptyMap()).resolveObject()
-        }
-        val packets = HashMap<KClass<*>, ExhaustibleDeserializer>(packetCount)
-        repeat(packetCount) {
-            val lengthInBytes = readIntNoValidate()
-            val packetFlag = readFlag()
-            val intermediate: ArrayOutputStream
-            val kClass: KClass<*>
-            if (packetFlag in builtInReads) {
-                intermediate = ArrayOutputStream(lengthInBytes - 1 /* flag */)
-                intermediate.write(packetFlag.ordinal)  // Users may read built-in superclass as itself
-                kClass = packetFlag.kClass
-            } else {
-                assert(packetFlag === OBJECT)
-                val stringLength = readIntNoValidate()
-                val className = String(stream.readNBytesChecked(stringLength))
-                intermediate = ArrayOutputStream(lengthInBytes - stringLength - 5 /* flag + strlen */)
-                kClass = KClass(className)
+        val classRef = KClass(className = readStringNoValidate())
+        val superCount = stream.read()
+        val supertypes = if (superCount == 0) {
+            emptyMap()
+        } else {
+            val source = this
+            buildMap<KClass<*>, Deserializer>(superCount) {
+                repeat(superCount) {
+                    val superFlag = readFlag()
+                    val supertype: KClass<*>
+                    val isBuiltIn = superFlag in builtIns
+                    if (isBuiltIn) {
+                        supertype = superFlag.kClass
+                    } else {
+                        assert(superFlag === OBJECT)
+                        supertype = KClass(className = readStringNoValidate())
+                    }
+                    this[supertype] = SupertypeDeserializer(classRef, supertype, superFlag, source, isBuiltIn)
+                }
             }
-            intermediate.acceptNBytes(this.stream, intermediate.capacity)
-            packets[kClass] = InputDeserializer(intermediate)
         }
-        val lengthInBytes = readIntNoValidate()
-        objStream = ArrayOutputStream(lengthInBytes).apply { acceptNBytes(stream, lengthInBytes) }
-        return PolymorphicDeserializer(InputDeserializer(objStream), packets).resolveObject()
+        return ObjectDeserializer(classRef, supertypes, this).resolveObject()
     }
-
-    private fun readBuiltInList(): List<*> = builtInReads.getValue(LIST)() as List<*>
-
-    private fun InputDeserializer(stream: ArrayOutputStream) = InputDeserializer(stream.asInputStream(), schema)
 
     // Allows reading of Byte's with possible value of -1
     private fun InputStream.readCheckedRaw(): Byte {
@@ -292,105 +265,112 @@ class InputDeserializer(
     private fun InputStream.readNBytesChecked(len: Int) = readNBytes(len).also { if (it.isEmpty()) throwEOF() }
 
     private fun throwEOF(): Nothing {
-        throw EOFException("Attempted read of object after stream was exhausted." +
-                "Ensure packets are not overridden by 'static' write operation")
+        throw EOFException(
+                "Attempted read of object after deserializer was exhausted. " +
+                "Ensure supertype write operations are not overridden by 'static' write")
     }
 
     private companion object {
-        val builtInReads = linkedMapOf( // Preserve iteration order
-            read(UNIT) {},
-            read(NULL) {
+        val builtIns = hashMapOf(
+            builtInOf(END_OBJECT) {
+                throw NoSuchElementException("No object serialized in the current position")
+            },
+            builtInOf(UNIT) {},
+            builtInOf(FUNCTION) {
+                ObjectInputStream(stream).readObject()
+            },
+            builtInOf(NULL) {
                 null
             },
-            read(BOOLEAN) {
+            builtInOf(BOOLEAN) {
                 readBooleanNoValidate()
             },
-            read(BYTE) {
+            builtInOf(BYTE) {
                 readByteNoValidate()
             },
-            read(CHAR) {
+            builtInOf(CHAR) {
                 readCharNoValidate()
             },
-            read(SHORT) {
+            builtInOf(SHORT) {
                 readShortNoValidate()
             },
-            read(INT) {
+            builtInOf(INT) {
                 readIntNoValidate()
             },
-            read(LONG) {
+            builtInOf(LONG) {
                 readLongNoValidate()
             },
-            read(FLOAT) {
+            builtInOf(FLOAT) {
                 readFloatNoValidate()
             },
-            read(DOUBLE) {
+            builtInOf(DOUBLE) {
                 readDoubleNoValidate()
             },
-            read(BOOLEAN_ARRAY) {
+            builtInOf(BOOLEAN_ARRAY) {
                 BooleanArray(readIntNoValidate()) { stream.readChecked() == 1 }
             },
-            read(BYTE_ARRAY) {
+            builtInOf(BYTE_ARRAY) {
                 ByteArray(readIntNoValidate()) { stream.readCheckedRaw() }
             },
-            read(CHAR_ARRAY) {
+            builtInOf(CHAR_ARRAY) {
                 val size = readIntNoValidate()
                 val buffer = readBytesToBuffer(size*Char.SIZE_BYTES).asCharBuffer()
                 CharArray(buffer.remaining()).apply { buffer.get(this) }
             },
-            read(SHORT_ARRAY) {
+            builtInOf(SHORT_ARRAY) {
                 val size = readIntNoValidate()
                 val buffer = readBytesToBuffer(size*Short.SIZE_BYTES).asShortBuffer()
                 ShortArray(buffer.remaining()).apply { buffer.get(this) }
             },
-            read(INT_ARRAY) {
+            builtInOf(INT_ARRAY) {
                 val size = readIntNoValidate()
                 val buffer = readBytesToBuffer(size*Int.SIZE_BYTES).asIntBuffer()
                 IntArray(buffer.remaining()).apply { buffer.get(this) }
             },
-            read(LONG_ARRAY) {
+            builtInOf(LONG_ARRAY) {
                 val size = readIntNoValidate()
                 val buffer = readBytesToBuffer(size * Long.SIZE_BYTES).asLongBuffer()
                 LongArray(buffer.remaining()).apply { buffer.get(this) }
             },
-            read(FLOAT_ARRAY) {
+            builtInOf(FLOAT_ARRAY) {
                 val size = readIntNoValidate()
                 val buffer = readBytesToBuffer(size * Float.SIZE_BYTES).asFloatBuffer()
                 FloatArray(buffer.remaining()).apply { buffer.get(this) }
             },
-            read(DOUBLE_ARRAY) {
+            builtInOf(DOUBLE_ARRAY) {
                 val size = readIntNoValidate()
                 val buffer = readBytesToBuffer(size * Double.SIZE_BYTES).asDoubleBuffer()
                 DoubleArray(buffer.remaining()).apply { buffer.get(this) }
             },
-            read(STRING) {
+            builtInOf(STRING) {
                 readStringNoValidate()
             },
-            read(OBJECT_ARRAY) {
+            builtInOf(OBJECT_ARRAY) {
                 val size = readIntNoValidate()
                 Array(size) { readObject() }
             },
-            read(LIST) {
+            builtInOf(LIST) {
                 val size = readIntNoValidate()
-                val list = ArrayList<Any?>(size).apply {
+                buildList(size) {
                     repeat(size) { this += readObject() }
                 }
-                object : List<Any?> by list {}  // Prevent modification by user
             },
-            read(ITERABLE) {
-                object : Iterable<Any?> by readBuiltInList() {}
+            builtInOf(ITERABLE) {
+                buildList {
+                    var flag = readFlag()
+                    while (flag != END_OBJECT) {
+                        this += readObject(flag)
+                        flag = readFlag()
+                    }
+                }
             },
-            read(PAIR) {
-                val first = readObject()   // Ensure proper read order
-                val second = readObject()
-                Pair(first, second)
+            builtInOf(PAIR) {
+                Pair(readObject(), readObject())
             },
-            read(TRIPLE) {
-                val first = readObject()
-                val second = readObject()
-                val third = readObject()
-                Triple(first, second, third)
+            builtInOf(TRIPLE) {
+                Triple(readObject(), readObject(), readObject())
             },
-            read(MAP_ENTRY) {
+            builtInOf(MAP_ENTRY) {
                 val key = readObject()
                 val value = readObject()
                 object : Map.Entry<Any?,Any?> {
@@ -398,19 +378,55 @@ class InputDeserializer(
                     override val value get() = value
                 }
             },
-            read(MAP) {
+            builtInOf(MAP) {
                 val size = readIntNoValidate()
-                val map = HashMap<Any?,Any?>(size).apply {
-                    repeat(size) {
-                        val key = readObject()
-                        val value = readObject()
-                        put(key, value)
-                    }
+                buildMap(size) {
+                    repeat(size) { this[readObject()] = readObject() }
                 }
-                object : Map<Any?,Any?> by map {}
             }
         )
 
-        fun read(flag: TypeFlag, read: InputDeserializer.() -> Any?) = flag to read
+        fun builtInOf(flag: TypeFlag, read: InputDeserializer.() -> Any?) = flag to read
+    }
+}
+
+private class SupertypeDeserializer(
+    private val classRef: KClass<*>,
+    private val supertype: KClass<*>,
+    superFlag: TypeFlag,
+    source: InputDeserializer,
+    isBuiltIn: Boolean
+) : Deserializer {
+    private var cursor = 0
+    private val objects = if (isBuiltIn) {
+        listOf(source.readObject(superFlag))
+    } else {
+        buildList {
+            var flag = source.readFlag()
+            while (flag !== END_OBJECT) {
+                this += source.readObject(flag)
+                flag = source.readFlag()
+            }
+        }
+    }
+
+    override fun readBoolean(): Boolean = nextObject()
+    override fun readByte(): Byte = nextObject()
+    override fun readChar(): Char = nextObject()
+    override fun readShort(): Short = nextObject()
+    override fun readInt(): Int = nextObject()
+    override fun readLong(): Long = nextObject()
+    override fun readFloat(): Float = nextObject()
+    override fun readDouble(): Double = nextObject()
+    override fun <T> read(): T = nextObject()
+
+    @Suppress("UNCHECKED_CAST")
+    private fun <T> nextObject(): T {
+        return try {
+            (objects[cursor] as T).also { ++cursor }
+        } catch (_: IndexOutOfBoundsException) {
+            throw MalformedProtocolException(classRef,
+                    "attempted read of object in supertype '$supertype' after supertype deserializer was exhausted")
+        }
     }
 }

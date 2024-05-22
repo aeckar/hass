@@ -5,17 +5,15 @@ import java.io.IOException
 /**
  * Lambda specified by [read][ProtocolBuilder.read].
  */
-typealias ReadOperation<T> = PolymorphicDeserializer.() -> T
+typealias TypedReadOperation<T> = ObjectDeserializer.() -> T
 
-/**
- * Lambda specified by [read][ProtocolBuilder.read] when [noinherit][ProtocolBuilder.noinherit] is used as a modifier.
- */
-typealias SimpleReadOperation<T> = Deserializer.() -> T
+internal typealias ReadOperation = ObjectDeserializer.() -> Any?
+internal typealias WriteOperation = Serializer.(Any?) -> Unit
 
 /**
  * Lambda specified by write.
  */
-typealias WriteOperation<T> = Serializer.(T) -> Unit
+typealias TypedWriteOperation<T> = Serializer.(T) -> Unit
 
 /**
  * Allows the protocol of the implementing type to delegate its write operation to each specific instance of that type.

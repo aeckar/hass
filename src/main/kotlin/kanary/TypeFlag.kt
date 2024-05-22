@@ -44,9 +44,10 @@ internal enum class TypeFlag(val kClass: KClass<*> = Nothing::class) {
     MAP(Map::class),
     UNIT(Unit::class),
     OBJECT(Any::class),
-    SIMPLE_OBJECT(OBJECT.kClass),
     FUNCTION(KFunction::class),
-    NULL;
+    NULL,
+
+    END_OBJECT;
 
     companion object {
         fun nameOf(ordinal: Int) = entries.find { it.ordinal == ordinal }?.name ?: "UNKNOWN"

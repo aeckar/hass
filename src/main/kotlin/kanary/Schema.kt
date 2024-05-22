@@ -11,14 +11,10 @@ import kotlin.reflect.full.superclasses
     All other class references are simply named 'kClass'.
  */
 
+typealias ReassignmentException = kanary.utils.ReassignmentException
+
 /**
- * Provides a scope wherein protocols for various classes may be defined.
- *
- * It is acceptable, but not encouraged, to create an empty set. Doing so would provide
- * object read/write functionality to the serializer/deserializer, which will always fail when invoked.
- * This is because objects require their type to have a defined protocol before they can be manipulated.
- *
- * A schema with no protocols defined is legal.
+ * Provides a scope wherein protocols for various classes may be defined. A schema with no protocols defined is legal.
  * @return a serialization schema, which can be passed to a
  * [serializer][java.io.OutputStream.serializer] or [deserializer][java.io.InputStream.deserializer]
  * to provide the directions for serializing the specified reference types
@@ -39,36 +35,37 @@ class Schema @PublishedApi internal constructor(builder: SchemaBuilder) {
         - Write of key as last member, if defined
         - Possibly nothing
       Subtypes come before supertypes, the final member being the exception
+      Does not include write operations of supertypes with built-in protocols
      */
-    internal val writeSequences: Map<KClass<*>, List<WriteSpecifier>>
+    internal val writeSequences: Map<KClass<*>, List<WriteHandle>>
+
+    internal val definedProtocols: Map<KClass<*>, Protocol>
 
     // Delegates read to that of defined protocol or 'fallback' read
-    internal val actualReads: Map<KClass<*>, ReadOperation<*>>
-
-    internal val definedProtocols: Map<KClass<*>, Protocol<*>>
+    private val actualReads: Map<KClass<*>, ReadOperation>
 
     init {
-        fun MutableList<WriteSpecifier>.buildWriteSequence(
+        fun MutableList<WriteHandle>.appendSuperclasses(
             builder: SchemaBuilder,
             superclasses: List<KClass<*>>
-        ): List<WriteSpecifier>? {
+        ): List<WriteHandle>? {
             for (kClass in superclasses) {
                 val protocol = builder.definedProtocols[kClass] ?: continue
                 val writeOperation = protocol.write ?: continue
-                if (none { it.write === writeOperation }) {
-                    this += WriteSpecifier(kClass, writeOperation)
+                if (none { it.lambda === writeOperation }) {
+                    this += WriteHandle(kClass, writeOperation)
                     if (protocol.hasStatic) {
                         return null // End search; static write overrides all others
                     }
                 }
             }
             for (kClass in superclasses) {
-                buildWriteSequence(builder, kClass.superclasses) ?: return this
+                appendSuperclasses(builder, kClass.superclasses) ?: return this
             }
             return this
         }
 
-        fun resolveRead(builder: SchemaBuilder, superclasses: List<KClass<*>>): ReadOperation<*>? {
+        fun resolveRead(builder: SchemaBuilder, superclasses: List<KClass<*>>): TypedReadOperation<*>? {
             for (kClass in superclasses) {
                 builder.definedProtocols[kClass]?.let { protocol ->
                     if (protocol.hasFallback) {
@@ -82,23 +79,28 @@ class Schema @PublishedApi internal constructor(builder: SchemaBuilder) {
             return null
         }
         definedProtocols = builder.definedProtocols
-        writeSequences = HashMap<KClass<*>, List<WriteSpecifier>>().apply {
+        writeSequences = buildMap {
             for (classRef in definedProtocols.keys) {
-                val sequence = mutableListOf<WriteSpecifier>()
+                val sequence = mutableListOf<WriteHandle>()
                 val protocol = definedProtocols.getValue(classRef)
-                protocol.write?.let { sequence += WriteSpecifier(classRef, it) }
+                protocol.write?.let { sequence += WriteHandle(classRef, it) }
                 this[classRef] = sequence
                     .takeIf { !protocol.hasStatic }
-                    ?.buildWriteSequence(builder, classRef.superclasses) ?: sequence
+                    ?.appendSuperclasses(builder, classRef.superclasses) ?: sequence
             }
         }
-        actualReads = HashMap<KClass<*>, ReadOperation<*>>().apply {
+        actualReads = buildMap {
             builder.definedProtocols.forEach { (classRef, protocol) ->
-                protocol.takeIf { !it.hasNoinherit }?.write?.let {  // Ensure no supertype has static write
+                /*
+                    Within this scope, since must be checked for every defined protocol.
+                    Ensures no supertype has static write.
+                 */
+                protocol.write.takeIf { !protocol.hasStatic }?.let {
                     if (classRef.allSuperclasses.any { superclass -> definedProtocols[superclass]?.hasStatic == true }) {
-                        throw MalformedProtocolException(classRef, "write defined when supertype write is 'static'")
+                        throw MalformedProtocolException(classRef, "non-static write defined with static supertype write")
                     }
                 }
+
                 if (protocol.read != null) {
                     this[classRef] = protocol.read
                     return@forEach
@@ -123,23 +125,23 @@ class Schema @PublishedApi internal constructor(builder: SchemaBuilder) {
         }
     }
 
-    internal fun resolveWriteSequence(superclasses: List<KClass<*>>): List<WriteSpecifier>? {
+    internal fun resolveDefinedWriteSequence(superclasses: List<KClass<*>>): List<WriteHandle>? {
         for (kClass in superclasses) {
             writeSequences[kClass]?.let { return it }
         }
         for (kClass in superclasses) {
-            resolveWriteSequence(kClass.superclasses)?.let { return it }
+            resolveDefinedWriteSequence(kClass.superclasses)?.let { return it }
         }
         return null
     }
 
-    internal fun resolveRead(classRef: KClass<*>): ReadOperation<*> {
+    internal fun resolveRead(classRef: KClass<*>): TypedReadOperation<*> {
         actualReads[classRef]?.let { return it }
         resolveFallbackRead(classRef.superclasses)?.let { return it }
         throw MalformedProtocolException(classRef, "read or 'fallback' read for '${classRef.qualifiedName}' not found")
     }
 
-    private fun resolveFallbackRead(superclasses: List<KClass<*>>): ReadOperation<*>? {
+    private fun resolveFallbackRead(superclasses: List<KClass<*>>): TypedReadOperation<*>? {
         for (kClass in superclasses) {
             definedProtocols[kClass]?.let { if (it.hasFallback) return it.read }
         }
@@ -155,16 +157,16 @@ class Schema @PublishedApi internal constructor(builder: SchemaBuilder) {
 }
 
 /**
- * The scope wherein binary I/O [protocols][define] may be defined.
+ * The scope wherein binary I/O protocols may be [defined][define].
  */
 class SchemaBuilder @PublishedApi internal constructor() {  // No intent to add versioning support
     @PublishedApi
-    internal val definedProtocols = HashMap<KClass<*>, Protocol<*>>()
+    internal val definedProtocols = HashMap<KClass<*>, Protocol>()
 
     /**
      * Provides a scope wherein the [read][ProtocolBuilder.read] and [write][ProtocolBuilder.write]
      * operations of a type can be defined.
-     * @throws MalformedProtocolException [T] is not a top-level class or has already been defined a protocol
+     * @throws MalformedProtocolException [T] is not a top-level or nested class, or has already been defined a protocol
      * @throws ReassignmentException either of the operations are defined twice,
      * or this is called more than once for type [T]
      */
@@ -201,4 +203,4 @@ class SchemaBuilder @PublishedApi internal constructor() {  // No intent to add 
     }
 }
 
-internal data class WriteSpecifier(val kClass: KClass<*>, val write: WriteOperation<*>)
+internal data class WriteHandle(val kClass: KClass<*>, val lambda: WriteOperation)

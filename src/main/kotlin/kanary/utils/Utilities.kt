@@ -1,27 +1,13 @@
-package kanary
+package kanary.utils
 
 import kotlin.reflect.KClass
-
-/*
-    These API are not related to the library, but are useful nonetheless and should be available to users.
- */
 
 /**
  * The [qualified name][KClass.qualifiedName] of the class reference.
  * Replaces any periods after any enclosing typenames with dollar signs, matching their signature in the JVM.
  * If local or anonymous, this property is null.
  */
-val KClass<*>.className: String? get() {
-    val name = qualifiedName ?: return null
-    val classPos = name.indexOfFirst { it.isUpperCase() } + 1
-    if (classPos == 0) {
-        return name
-    }
-    return buildString {
-        append(name, 0, classPos)
-        append(name.replace(".", "$"), classPos, name.length)
-    }
-}
+val KClass<*>.jvmName: String? get() = qualifiedName?.let { if ('.' in it) java.name else it }
 
 /**
  * @return the class reference matching the given typename

@@ -1,6 +1,7 @@
 package kanary
 
 import kanary.TypeFlag.*
+import kanary.utils.jvmName
 import java.io.Closeable
 import java.io.Flushable
 import java.io.ObjectOutputStream
@@ -15,7 +16,7 @@ import kotlin.reflect.full.superclasses
  * @return a new serializer capable of writing primitives, primitive arrays,
  * and instances of any type with a defined protocol to Kanary format
  */
-fun OutputStream.serializer(protocols: Schema = Schema.EMPTY) = OutputSerializer(this, protocols)
+fun OutputStream.serializer(protocols: Schema = Schema.EMPTY): Serializer = OutputSerializer(this, protocols)
 
 /**
  * Writes the objects in binary format according to the protocol of each type.
@@ -30,29 +31,105 @@ fun Serializer.write(vararg objs: Any?) {
     objs.forEach { write(it) }
 }
 
-private inline fun <T> T.isNotNullAnd(predicate: (T & Any).() -> Boolean) = if (this == null) false else predicate(this)
-
-@Suppress("UNCHECKED_CAST")
-private fun WriteOperation<*>.accept(stream: OutputSerializer, obj: Any) = (this as WriteOperation<Any>)(stream, obj)
-
+/**
+ * Serializes data to a stream in Kanary format.
+ */
 sealed interface Serializer {
+    /**
+     * Serializes the value without autoboxing.
+     */
     fun writeBoolean(cond: Boolean)
+
+    /**
+     * Serializes the value without autoboxing.
+     */
     fun writeByte(b: Byte)
+
+    /**
+     * Serializes the value without autoboxing.
+     */
     fun writeChar(c: Char)
+
+    /**
+     * Serializes the value without autoboxing.
+     */
     fun writeShort(n: Short)
+
+    /**
+     * Serializes the value without autoboxing.
+     */
     fun writeInt(n: Int)
+
+    /**
+     * Serializes the value without autoboxing.
+     */
     fun writeLong(n: Long)
+
+    /**
+     * Serializes the value without autoboxing.
+     */
     fun writeFloat(fp: Float)
+
+    /**
+     * Serializes the value without autoboxing.
+     */
     fun writeDouble(fp: Double)
+
+    /**
+     * Serializes the object or boxed primitive value.
+     * @throws MissingOperationException obj is not an instance of a top-level or nested class,
+     * or a suitable write operation cannot be determined
+     */
     fun write(obj: Any?)
 
     // Optimizations for built-in composite types with non-nullable members
+    /**
+     * Serializes the array without checking for null members.
+     * @throws MissingOperationException any member is not an instance of a top-level or nested class,
+     * or a suitable write operation for it cannot be determined
+     */
     fun <T : Any> write(array: Array<out T>)
+
+    /**
+     * Serializes the list without checking for null members.
+     * @throws MissingOperationException any member is not an instance of a top-level or nested class,
+     * or a suitable write operation for it cannot be determined
+     */
     fun <T : Any> write(list: List<T>)
+
+    /**
+     * Serializes the iterable without checking for null members.
+     * @throws MissingOperationException any member is not an instance of a top-level or nested class,
+     * or a suitable write operation for it cannot be determined
+     */
     fun <T : Any> write(iter: Iterable<T>)
+
+    /**
+     * Serializes the pair without checking for null members.
+     * @throws MissingOperationException any member is not an instance of a top-level or nested class,
+     * or a suitable write operation for it cannot be determined
+     */
     fun <T : Any> write(pair: Pair<T, T>)
+
+    /**
+     * Serializes the triple without checking for null members.
+     * @throws MissingOperationException any member is not an instance of a top-level or nested class,
+     * or a suitable write operation for it cannot be determined
+     */
     fun <T : Any> write(triple: Triple<T, T, T>)
+
+    /**
+     * Serializes the map entry without checking for null members.
+     * @throws MissingOperationException the key or value is not an instance of a top-level or nested class,
+     * or a suitable write operation for either cannot be determined
+     */
     fun <K : Any, V : Any> write(entry: Map.Entry<K, V>)
+
+    /**
+     * Serializes the map without checking for null keys or values.
+     * @throws MissingOperationException any key or value is not an instance of a top-level or nested class,
+     * or a suitable write operation for any cannot be determined
+     */
     fun <K : Any, V : Any> write(map: Map<K, V>)
 }
 
@@ -63,7 +140,7 @@ sealed interface Serializer {
  * Calling [close] also closes the underlying stream.
  * Until closed, instances are blocking.
  */
-class OutputSerializer internal constructor(
+private class OutputSerializer(
     private val stream: OutputStream,
     private val schema: Schema
 ) : Closeable, Flushable, Serializer {
@@ -120,7 +197,7 @@ class OutputSerializer internal constructor(
             writeFlag(NULL)
             return
         }
-        writeAny(obj)
+        writeObject(obj)
     }
 
     // Optimizations for built-in composite types with non-nullable members...
@@ -130,49 +207,49 @@ class OutputSerializer internal constructor(
      * Avoids null check for members, unlike generic `write`.
      * Arrays of primitive types should be passed to the generic overload.
      */
-    override fun <T : Any> write(array: Array<out T>) = writeAny(array, nonNullMembers = true)
+    override fun <T : Any> write(array: Array<out T>) = writeObject(array, nonNullMembers = true)
 
     /**
      * Writes all members in the list according the protocol of each.
      * Avoids null check for members, unlike generic `write`.
      */
-    override fun <T : Any> write(list: List<T>) = writeAny(list, nonNullMembers = true)
+    override fun <T : Any> write(list: List<T>) = writeObject(list, nonNullMembers = true)
 
     /**
      * Writes all members in the iterable object according the protocol of each as a list.
      * The caller must ensure that the object has a finite number of members.
      * Avoids null check for members, unlike generic `write`.
      */
-    override fun <T : Any> write(iter: Iterable<T>) = writeAny(iter, nonNullMembers = true)
+    override fun <T : Any> write(iter: Iterable<T>) = writeObject(iter, nonNullMembers = true)
 
     /**
      * Writes the given pair according to the protocols of its members.
      * Avoids null check for members, unlike generic `write`.
      */
-    override fun <T : Any> write(pair: Pair<T, T>) = writeAny(pair, nonNullMembers = true)
+    override fun <T : Any> write(pair: Pair<T, T>) = writeObject(pair, nonNullMembers = true)
 
     /**
      * Writes the given triple according to the protocols of its members.
      * Avoids null check for members, unlike generic `write`.
      */
-    override fun <T : Any> write(triple: Triple<T, T, T>) = writeAny(triple, nonNullMembers = true)
+    override fun <T : Any> write(triple: Triple<T, T, T>) = writeObject(triple, nonNullMembers = true)
 
     /**
      * Writes the given map entry according to the protocols of its key and value.
      * Avoids null check for members, unlike generic `write`.
      */
-    override fun <K : Any, V : Any> write(entry: Map.Entry<K, V>) = writeAny(entry, nonNullMembers = true)
+    override fun <K : Any, V : Any> write(entry: Map.Entry<K, V>) = writeObject(entry, nonNullMembers = true)
 
     /**
      * Writes the given map according to the protocols of its keys and values.
      * Avoids null check for entries, unlike generic `write`.
      */
-    override fun <K : Any, V : Any> write(map: Map<K, V>) = writeAny(map, nonNullMembers = true)
+    override fun <K : Any, V : Any> write(map: Map<K, V>) = writeObject(map, nonNullMembers = true)
 
     override fun close() = stream.close()
     override fun flush() = stream.flush()
 
-    internal fun writeStringNoMark(s: String) {
+    fun writeStringNoMark(s: String) {
         val bytes = s.toByteArray(Charsets.UTF_8)
         writeIntNoMark(bytes.size)
         stream.write(bytes)
@@ -205,128 +282,94 @@ class OutputSerializer internal constructor(
         stream.write(buffer.array())
     }
 
-    private fun writeAny(obj: Any, nonNullMembers: Boolean = false) {
-        fun writeBuiltIn(obj: Any, builtInKClass: KClass<*>, builtIns: Map<KClass<*>, BuiltInWriteSpecifier>) {
-            builtIns.getValue(builtInKClass).let { (flag, write) ->
+    private fun writeObject(obj: Any, nonNullMembers: Boolean = false) {
+        fun KClass<*>.writeBuiltIn(obj: Any, builtIns: Map<KClass<*>, BuiltInWriteHandle>) {
+            builtIns.getValue(this).let { (flag, lambda) ->
                 writeFlag(flag)
-                write.accept(this, obj)
+                this@OutputSerializer.lambda(obj)
             }
         }
 
-        if (obj === Unit) {
-            writeFlag(UNIT)
-            return
-        }
-        if (obj is Function<*>) {
+        if (obj is Function<*>) {   // Necessary because lambdas lack qualified names
             writeFlag(FUNCTION)
             ObjectOutputStream(stream).writeObject(obj)
             return
         }
         val classRef = obj::class
-        val className = classRef.className
-            ?: throw MissingOperationException("Serialization of local and anonymous classes not supported")
+        val className = classRef.jvmName
+            ?: throw MissingOperationException("Serialization of local and anonymous class instances not supported")
         var protocol = schema.definedProtocols[classRef]
-        val builtIns = if (nonNullMembers) builtInNonNullWrites else builtInWrites
+        val builtIns = if (nonNullMembers) nonNullBuiltIns else nullableBuiltIns
         val builtInKClass: KClass<*>?
-        val writeSequence: List<WriteSpecifier>
-        if (protocol.isNotNullAnd { write != null && (hasNoinherit || hasStatic) }) {
+        val definedHandles: List<WriteHandle>
+        if (protocol != null && protocol.hasStatic) {
             builtInKClass = null
-            writeSequence = schema.writeSequences.getValue(classRef)
+            definedHandles = schema.writeSequences.getValue(classRef)
         } else {
             builtInKClass = builtIns.keys.find { classRef.isSubclassOf(it) }
-            builtInKClass?.writeWithLength {   // Serialize object as built-in type
-                writeBuiltIn(obj, it, builtIns)
-                return
-            }
-            writeSequence = if (protocol != null) {
+            definedHandles = if (protocol != null) {
                 schema.writeSequences.getValue(classRef)
             } else {
-                schema.resolveWriteSequence(classRef.superclasses)
+                builtInKClass?.writeBuiltIn(obj, builtIns)?.let { return }  // Serialize as built-in type
+                schema.resolveDefinedWriteSequence(classRef.superclasses)
                     ?: throw MissingOperationException("Write operation for '$className' expected, but not found")
             }
         }
-        val (kClass, write) = writeSequence.first()
+        val (kClass, lambda) = definedHandles.first()
         protocol = schema.definedProtocols.getValue(kClass)
-        if (protocol.hasNoinherit) {
-            writeFlag(SIMPLE_OBJECT)
-            writeStringNoMark(className)
-            write.accept(this, obj)
-            return
-        }
         writeFlag(OBJECT)
-        if (protocol.hasStatic) {    // Necessary because static write overrides regular write sequence
-            stream.write(0) // packet count
-            writeWithLength {
-                writeStringNoMark(className)
-                write.accept(this, obj)
-            }
-            return
-        }
-        val customPacketCount = writeSequence.size - 1
-        val packetCount = if (builtInKClass == null) customPacketCount else (customPacketCount + 1)
-        stream.write(packetCount)
-        repeat(customPacketCount) {
-            val (packetKClass, packetWrite) = writeSequence[it + 1]
-            writeWithLength {
+        writeStringNoMark(className)
+        val customSuperCount = definedHandles.size - 1
+        assert(!protocol.hasStatic || customSuperCount == 0)
+        val superCount = if (builtInKClass == null|| protocol.hasStatic) customSuperCount else (customSuperCount + 1)
+        stream.write(superCount)
+        if (customSuperCount != 0) {
+            repeat(customSuperCount) {
+                val (superKClass, superLambda) = definedHandles[it + 1]
                 writeFlag(OBJECT)
-                // Deserializer use only
-                writeStringNoMark(packetKClass.className!!) // Deserializer use only
-                packetWrite.accept(this, obj)
+                writeStringNoMark(superKClass.jvmName!!)
+                this.superLambda(obj)
+                writeFlag(END_OBJECT)
             }
+            builtInKClass?.writeBuiltIn(obj, builtIns) // Marks stream with appropriate built-in flag
         }
-        builtInKClass?.writeWithLength {    // Built-in packet
-            writeBuiltIn(obj, it, builtIns) // Marks stream with appropriate built-in flag
-        }
-        writeWithLength {
-            writeStringNoMark(className)
-            write.accept(this, obj)
-        }
+        this.lambda(obj)
+        writeFlag(END_OBJECT)
     }
-
-    // Helps to reduce indentation
-    private inline fun <T> T.writeWithLength(writeWithValue: OutputSerializer.(T) -> Unit) {
-        val intermediate = ArrayOutputStream()
-        writeWithValue(OutputSerializer(intermediate), this)
-        writeIntNoMark(intermediate.size)
-        intermediate.writeTo(stream)
-    }
-
-    private fun OutputSerializer(stream: ArrayOutputStream) = OutputSerializer(stream, schema)
 
     private companion object {
         // Optimizations for built-in composite types avoiding null-checks for members
-        val builtInNonNullWrites = linkedMapOf( // Preserve iteration order
-            write(OBJECT_ARRAY) { objArray: Array<Any> ->
+        val nonNullBuiltIns = linkedMapOf(
+            builtInOf(OBJECT_ARRAY) { objArray: Array<Any> ->
                 writeIntNoMark(objArray.size)
-                objArray.forEach { writeAny(it) }
+                objArray.forEach { writeObject(it) }
             },
-            write(LIST) { list: List<Any> ->
+            builtInOf(LIST) { list: List<Any> ->
                 writeIntNoMark(list.size)
-                list.forEach { writeAny(it) }
+                list.forEach { writeObject(it) }
             },
-            write(ITERABLE) { iter: Iterable<Any> ->
-                writeWithLength {
-                    iter.forEach { writeAny(it) }
-                }
+            builtInOf(ITERABLE) { iter: Iterable<Any> ->
+                iter.forEach { writeObject(it) }
+                writeFlag(END_OBJECT)
             },
-            write(PAIR) { pair: Pair<Any, Any> ->
-                writeAny(pair.first)
-                writeAny(pair.second)
+            builtInOf(PAIR) { pair: Pair<Any, Any> ->
+                writeObject(pair.first)
+                writeObject(pair.second)
             },
-            write(TRIPLE) { triple: Triple<Any, Any, Any> ->
-                writeAny(triple.first)
-                writeAny(triple.second)
-                writeAny(triple.third)
+            builtInOf(TRIPLE) { triple: Triple<Any, Any, Any> ->
+                writeObject(triple.first)
+                writeObject(triple.second)
+                writeObject(triple.third)
             },
-            write(MAP_ENTRY) { entry: Map.Entry<Any, Any> ->
-                writeAny(entry.key)
-                writeAny(entry.value)
+            builtInOf(MAP_ENTRY) { entry: Map.Entry<Any, Any> ->
+                writeObject(entry.key)
+                writeObject(entry.value)
             },
-            write(MAP) { map: Map<Any, Any> ->   // Multi-maps not supported by default
+            builtInOf(MAP) { map: Map<Any, Any> ->   // Multi-maps not supported by default
                 writeIntNoMark(map.size)
                 map.forEach { (key, value) ->
-                    writeAny(key)
-                    writeAny(value)
+                    writeObject(key)
+                    writeObject(value)
                 }
             }
         )
@@ -334,98 +377,87 @@ class OutputSerializer internal constructor(
         /* Exclusive to a single object
          * if an iterable is a list, it is written using write<List> { ... }
          */
-        val builtInWrites = linkedMapOf(
-            write(BOOLEAN) { value: Boolean ->
+        val nullableBuiltIns = linkedMapOf(
+            builtInOf<Unit>(UNIT) {},
+            builtInOf(BOOLEAN) { value: Boolean ->
                 writeBooleanNoMark(value)   // Separate function that prevents autoboxing
             },
-            write(BYTE) { value: Byte ->
+            builtInOf(BYTE) { value: Byte ->
                 writeByteNoMark(value)
             },
-            write(CHAR) { value: Char ->
+            builtInOf(CHAR) { value: Char ->
                 writeCharNoMark(value)
             },
-            write(SHORT) { value: Short ->
+            builtInOf(SHORT) { value: Short ->
                 writeShortNoMark(value)
             },
-            write(INT) { value: Int ->
+            builtInOf(INT) { value: Int ->
                 writeIntNoMark(value)
             },
-            write(LONG) { value: Long ->
+            builtInOf(LONG) { value: Long ->
                 writeLong(value)
             },
-            write(FLOAT) { value: Float ->
+            builtInOf(FLOAT) { value: Float ->
                 writeFloat(value)
             },
-            write(DOUBLE) { value: Double ->
+            builtInOf(DOUBLE) { value: Double ->
                 writeDouble(value)
             },
-            write(BOOLEAN_ARRAY) { array: BooleanArray ->
+            builtInOf(BOOLEAN_ARRAY) { array: BooleanArray ->
                 writeBytesNoMark(Int.SIZE_BYTES) { putInt(array.size) }
                 array.forEach { stream.write(if (it) 1 else 0) }
             },
-            write(BYTE_ARRAY) { array: ByteArray ->
+            builtInOf(BYTE_ARRAY) { array: ByteArray ->
                 writeBytesNoMark(Int.SIZE_BYTES) { putInt(array.size) }
                 array.forEach { stream.write(it.toInt()) }
             },
-            write(CHAR_ARRAY) { array: CharArray ->
+            builtInOf(CHAR_ARRAY) { array: CharArray ->
                 writeArrayNoMark(Char.SIZE_BYTES, array.size) { array.forEach { putChar(it) } }
             },
-            write(SHORT_ARRAY) { array: ShortArray ->
+            builtInOf(SHORT_ARRAY) { array: ShortArray ->
                 writeArrayNoMark(Short.SIZE_BYTES, array.size) { array.forEach { putShort(it) } }
             },
-            write(INT_ARRAY) { array: IntArray ->
+            builtInOf(INT_ARRAY) { array: IntArray ->
                 writeArrayNoMark(Int.SIZE_BYTES, array.size) { array.forEach { putInt(it) } }
             },
-            write(LONG_ARRAY) { array: LongArray ->
+            builtInOf(LONG_ARRAY) { array: LongArray ->
                 writeArrayNoMark(Long.SIZE_BYTES, array.size) { array.forEach { putLong(it) } }
             },
-            write(FLOAT_ARRAY) { array: FloatArray ->
+            builtInOf(FLOAT_ARRAY) { array: FloatArray ->
                 writeArrayNoMark(Float.SIZE_BYTES, array.size) { array.forEach { putFloat(it) } }
             },
-            write(DOUBLE_ARRAY) { array: DoubleArray ->
+            builtInOf(DOUBLE_ARRAY) { array: DoubleArray ->
                 writeArrayNoMark(Double.SIZE_BYTES, array.size) { array.forEach { putDouble(it) } }
             },
-            write(STRING) { s: String ->
+            builtInOf(STRING) { s: String ->
                 writeStringNoMark(s)
             },
-            write(OBJECT_ARRAY) { objArray: Array<*> ->
+            builtInOf(OBJECT_ARRAY) { objArray: Array<*> ->
                 writeIntNoMark(objArray.size)
                 objArray.forEach { write(it) }
             },
-            write(LIST) { list: List<*> ->
+            builtInOf(LIST) { list: List<*> ->
                 writeIntNoMark(list.size)
-                list.forEach { it?.let { write(it) } ?: run {
-                    writeFlag(NULL)
-                }
-                }
+                list.forEach { write(it) }
             },
-            write(ITERABLE) { iter: Iterable<*> ->
-                var size = 0
-                val intermediate = ArrayOutputStream()
-                val serializer = OutputSerializer(intermediate)
-                iter.forEach {
-                    it?.let { serializer.write(it) } ?: run {
-                        serializer.writeFlag(NULL)
-                    }
-                    ++size
-                }
-                writeIntNoMark(size)
-                intermediate.writeTo(stream)
+            builtInOf(ITERABLE) { iter: Iterable<*> ->
+                iter.forEach { write(it) }
+                writeFlag(END_OBJECT)
             },
-            write(PAIR) { pair: Pair<*, *> ->
+            builtInOf(PAIR) { pair: Pair<*, *> ->
                 write(pair.first)
                 write(pair.second)
             },
-            write(TRIPLE) { triple: Triple<*, *, *> ->
+            builtInOf(TRIPLE) { triple: Triple<*, *, *> ->
                 write(triple.first)
                 write(triple.second)
                 write(triple.third)
             },
-            write(MAP_ENTRY) { entry: Map.Entry<*, *> ->
+            builtInOf(MAP_ENTRY) { entry: Map.Entry<*, *> ->
                 write(entry.key)
                 write(entry.value)
             },
-            write(MAP) { map: Map<*, *> ->   // Multi-maps not supported
+            builtInOf(MAP) { map: Map<*, *> ->   // Multi-maps not supported
                 writeIntNoMark(map.size)
                 map.forEach { (key, value) ->
                     write(key)
@@ -435,12 +467,12 @@ class OutputSerializer internal constructor(
         )
 
         @Suppress("UNCHECKED_CAST")
-        inline fun <reified T : Any> write(
+        inline fun <reified T : Any> builtInOf(
             flag: TypeFlag,
             noinline write: OutputSerializer.(T) -> Unit
-        ): Pair<KClass<*>, BuiltInWriteSpecifier> =
-            T::class to BuiltInWriteSpecifier(flag, write as WriteOperation<Any>)
+        ): Pair<KClass<*>, BuiltInWriteHandle> =
+            T::class to BuiltInWriteHandle(flag, write as WriteOperation)
     }
 }
 
-private data class BuiltInWriteSpecifier(val flag: TypeFlag, val write: WriteOperation<*>)
+private data class BuiltInWriteHandle(val flag: TypeFlag, val write: WriteOperation)

@@ -1,3 +1,5 @@
+@file:Suppress("SpellCheckingInspection")
+
 import kanary.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -6,12 +8,12 @@ import java.io.FileOutputStream
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
-private inline fun useSerializer(testName: String, schema: Schema, use: (OutputSerializer) -> Unit) {
+private inline fun useSerializer(testName: String, schema: Schema, use: (Serializer) -> Unit) {
     val serializer = FileOutputStream("src/test/resources/$testName.bin").serializer(schema)
     use(serializer)
 }
 
-private inline fun <R> useDeserializer(testName: String, schema: Schema, use: (InputDeserializer) -> R): R {
+private inline fun <R> useDeserializer(testName: String, schema: Schema, use: (Deserializer) -> R): R {
     val deserializer = FileInputStream("src/test/resources/$testName.bin").deserializer(schema)
     return use(deserializer)
 }
@@ -37,15 +39,14 @@ data class SerializableData(
 
     val string: String,
     val objectArray: Array<Any>,
-    val list: List<*>,
-    val iterable: Iterable<*>,
-    val pair: Pair<*, *>,
-    val triple: Triple<*, *, *>,
-    val mapEntry: Map.Entry<*, *>,
-    val map: Map<*, *>,
+    val list: List<Any>,
+    val iterable: Iterable<Any>,
+    val pair: Pair<Any, Any>,
+    val triple: Triple<Any, Any, Any>,
+    val mapEntry: Map.Entry<Any, Any>,
+    val map: Map<Any, Any>,
     val unit: Unit,
     val anyObject: Any,
-    val simpleObject: Any,
     val function: () -> String, // Can be any type of function
     val nullValue: Nothing? = null
 ) {
@@ -80,7 +81,6 @@ data class SerializableData(
         if (mapEntry.key != other.mapEntry.key || mapEntry.value != other.mapEntry.value) return false
         if (map != other.map) return false
         if (anyObject != other.anyObject) return false
-        if (simpleObject != other.simpleObject) return false
         /* if (function != other.function) return false */  // Equality not supported
 
         return true
@@ -113,7 +113,6 @@ data class SerializableData(
         result = 31 * result + map.hashCode()
         result = 31 * result + unit.hashCode()
         result = 31 * result + anyObject.hashCode()
-        result = 31 * result + simpleObject.hashCode()
         result = 31 * result + function.hashCode()
         return result
     }
@@ -166,7 +165,6 @@ class KanaryTest {
                         read(),
                         read(),
                         read(),
-                        read(),
                         read()
                     )
                 }
@@ -197,7 +195,6 @@ class KanaryTest {
                     write(it.map)
                     write(it.unit)
                     write(it.anyObject)
-                    write(it.simpleObject)
                     write(it.function)
                     write(it.nullValue)
                 }
@@ -233,7 +230,6 @@ class KanaryTest {
             map = mapOf("A" to 1, "B" to 2),
             unit = Unit,
             anyObject = "Custom Object",
-            simpleObject = 42,
             function = { "Generated Function Result" },
             nullValue = null
         )
@@ -274,7 +270,8 @@ class KanaryTest {
         }
 
         val serialized = UniquePerson("Charlie Brown", 17)
-        useSerializer("fallback_read", schema) {    // It's recommended, but not necessary to define a protocol for a type with a fallback read
+        useSerializer("fallback_read",
+            schema) {    // It's recommended, but not necessary to define a protocol for a type with a fallback read
             it.write(serialized)
         }
         val deserialized: Person = useDeserializer("fallback_read", schema) {
@@ -284,10 +281,39 @@ class KanaryTest {
     }
 
     @Test
-    fun noinherit_read() = noinherit_and_static_reads("noinherit_read")
+    fun static_write() {
+        val schema = schema {
+            define<Phonebook> {
+                read = {
+                    Phonebook(
+                        mapOf(
+                            read<String>() to readInt(),
+                            read<String>() to readInt()
+                        )
+                    )
+                }
 
-    @Test
-    fun static_write() = noinherit_and_static_reads("static_write")
+                write = static {
+                    it.entries.forEach { (name, number) ->
+                        write(name)
+                        write(number)
+                    }
+                }
+            }
+            }
+        val serialized = Phonebook(mapOf(
+                "Caroll" to 717892111,
+                "John" to 2131241232
+            ))
+        useSerializer("static_write", schema) {
+                it.write(serialized)
+            }
+        val deserialized: Phonebook = useDeserializer("static_write", schema) {
+                it.read()
+
+            }
+        assertEquals(serialized.map, deserialized.map)
+    }
 
     @Test
     fun polymorphic_read() {
@@ -339,10 +365,10 @@ class KanaryTest {
     }
 
     @Test
-    fun default_write() {
+    fun writable() {
         val schema = schema {
             define<MyClass> {
-                read = noinherit {
+                read = {
                     assertEquals(read(), "Your data here")
                     MyClass()
                 }
@@ -351,57 +377,40 @@ class KanaryTest {
         }
 
         val serialized = MyClass()
-        useSerializer("default_write", schema) {
+        useSerializer("writable", schema) {
             it.write(serialized)
         }
-        useDeserializer("default_write", schema) {
+        useDeserializer("writable", schema) {
             it.read<MyClass>()
         }
     }
 
-    private fun noinherit_and_static_reads(testName: String) {
-        val schema = schema {
-            define<Phonebook> {
-                read = if (testName == "noinherit_read") {
-                    noinherit { // Faster and more memory-efficient!
-                        Phonebook(
-                            mapOf(
-                                read<String>() to readInt(),
-                                read<String>() to readInt()
-                            )
-                        )
-                    }
-                } else {
-                    {
-                        Phonebook(
-                            mapOf(
-                                read<String>() to readInt(),
-                                read<String>() to readInt()
-                            )
-                        )
-                    }
-                }
+    class MyOuterClass(val id: Int) {
+        inner class MyInnerClass {
+            val id get() = this@MyOuterClass.id
+        }
+    }
 
-                write = static {
-                    it.entries.forEach { (name, number) ->
-                        write(name)
-                        write(number)
-                    }
+    @Test
+    fun inner_class() {
+        val schema = schema {
+            define<MyOuterClass.MyInnerClass> {
+                read = {
+                    MyOuterClass(readInt()).MyInnerClass()
+                }
+                write = {
+                    writeInt(it.id)
                 }
             }
         }
 
-        val serialized = Phonebook(mapOf(
-            "Caroll" to 717892111,
-            "John" to 2131241232
-        ))
-        useSerializer(testName, schema) {
+        val serialized = MyOuterClass(17).MyInnerClass()
+        useSerializer("inner_class", schema) {
             it.write(serialized)
         }
-        val deserialized: Phonebook = useDeserializer(testName, schema) {
-            it.read()
-
+        val deserialized = useDeserializer("inner_class", schema) {
+            it.read<MyOuterClass.MyInnerClass>()
         }
-        assertEquals(serialized.map, deserialized.map)
+        assertEquals(serialized.id, deserialized.id)
     }
 }
