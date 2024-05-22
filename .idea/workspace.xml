@@ -9,15 +9,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Modified Kanary format to improve performance. Serialized objects are no longer first serialized to an ArrayOutputStream. Instead, to determine their length, a special type flag (TypeFlag.END_OBJECT) is used. During deserialization, supertype objects are now eagerly deserialized to determine where their bounds are. Because of this optimization, noinherit has become obsolete and has been removed. All tests passed. Next feature to implement is read delegates (similar to Writable).">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Deserializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Deserializer.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Operations.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Operations.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Protocol.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/TypeProtocol.kt" afterDir="false" />
+    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Bugfixes">
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Schema.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Schema.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Serializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Serializer.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/utils/Utilities.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/utils/Utilities.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/kotlin/KanaryTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/KanaryTest.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,6 +60,11 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="UPDATE_TYPE" value="REBASE" />
   </component>
@@ -111,7 +111,7 @@
     "Gradle.Test.executor": "Run",
     "Gradle.Test.test.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
+    "git-widget-placeholder": "dev",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
     "project.structure.last.edited": "Modules",
@@ -616,7 +616,15 @@
       <option name="project" value="LOCAL" />
       <updated>1716397112530</updated>
     </task>
-    <option name="localTasksCounter" value="43" />
+    <task id="LOCAL-00043" summary="Bugfixes">
+      <option name="closed" value="true" />
+      <created>1716410771342</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1716410771342</updated>
+    </task>
+    <option name="localTasksCounter" value="44" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -632,7 +640,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="Protocols are now resolved as an instance of their own class." />
     <MESSAGE value="1.2" />
     <MESSAGE value="Improved semantics" />
     <MESSAGE value="Suppressed warnings for unused functions" />
@@ -657,7 +664,8 @@
     <MESSAGE value="Added Dokka packages and generated test binaries" />
     <MESSAGE value="Added += operator for SchemaBuilder" />
     <MESSAGE value="Modified Kanary format to improve performance. Serialized objects are no longer first serialized to an ArrayOutputStream. Instead, to determine their length, a special type flag (TypeFlag.END_OBJECT) is used. During deserialization, supertype objects are now eagerly deserialized to determine where their bounds are. Because of this optimization, noinherit has become obsolete and has been removed. All tests passed. Next feature to implement is read delegates (similar to Writable)." />
-    <option name="LAST_COMMIT_MESSAGE" value="Modified Kanary format to improve performance. Serialized objects are no longer first serialized to an ArrayOutputStream. Instead, to determine their length, a special type flag (TypeFlag.END_OBJECT) is used. During deserialization, supertype objects are now eagerly deserialized to determine where their bounds are. Because of this optimization, noinherit has become obsolete and has been removed. All tests passed. Next feature to implement is read delegates (similar to Writable)." />
+    <MESSAGE value="Bugfixes" />
+    <option name="LAST_COMMIT_MESSAGE" value="Bugfixes" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
