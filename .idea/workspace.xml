@@ -9,7 +9,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Added += operator for SchemaBuilder" />
+    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Bugfixes">
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Schema.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Schema.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Serializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Serializer.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/utils/Utilities.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/utils/Utilities.kt" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -51,10 +55,16 @@
         <option value="Kotlin Object" />
         <option value="Kotlin Class" />
         <option value="Kotlin File" />
+        <option value="Kotlin Annotation" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="UPDATE_TYPE" value="REBASE" />
   </component>
@@ -71,7 +81,7 @@
   }
 }</component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="CurrentFile" />
+    <option name="selectedTabId" value="ProjectErrors" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 1
@@ -84,45 +94,49 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;Gradle.Download Sources.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.KanaryTest (1).executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.KanaryTest.deserialized_data_is_same_as_serialized_data.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.KanaryTest.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.KanaryTest.fallback_read.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.KanaryTest.kanaryTest.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.KanaryTest.malformed_protocol_throws.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.KanaryTest.polymorphic_read.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.KanaryTest.test (1).executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.KanaryTest.test.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.Test.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.Test.test.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
-    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "Gradle.Download Sources.executor": "Run",
+    "Gradle.KanaryTest (1).executor": "Run",
+    "Gradle.KanaryTest.deserialized_data_is_same_as_serialized_data.executor": "Debug",
+    "Gradle.KanaryTest.executor": "Run",
+    "Gradle.KanaryTest.fallback_read.executor": "Run",
+    "Gradle.KanaryTest.kanaryTest.executor": "Run",
+    "Gradle.KanaryTest.malformed_protocol_throws.executor": "Run",
+    "Gradle.KanaryTest.noinherit_read.executor": "Run",
+    "Gradle.KanaryTest.polymorphic_read.executor": "Run",
+    "Gradle.KanaryTest.test (1).executor": "Run",
+    "Gradle.KanaryTest.test.executor": "Run",
+    "Gradle.Test.executor": "Run",
+    "Gradle.Test.test.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "dev",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "preferences.lookFeel"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;kotlin-gradle-user-dirs&quot;: [
-      &quot;C:\\Users\\eckar\\.gradle&quot;
+  "keyToStringList": {
+    "kotlin-gradle-user-dirs": [
+      "C:\\Users\\eckar\\.gradle"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\eckar\IdeaProjects\kanary\src\main\kotlin\kanary\meta" />
       <recent name="C:\Users\eckar\IdeaProjects\kanary\docs" />
       <recent name="C:\Users\eckar\IdeaProjects\kanary\src\test\kotlin" />
       <recent name="C:\Users\eckar\IdeaProjects\kanary\src\main\kotlin\kanary\assign" />
       <recent name="C:\Users\eckar\IdeaProjects\kanary\src\main\kotlin\kanary" />
     </key>
     <key name="MoveKotlinTopLevelDeclarationsDialog.RECENTS_KEY">
+      <recent name="kanary.meta" />
+      <recent name="kanary.streams" />
       <recent name="kanary" />
     </key>
   </component>
@@ -199,7 +213,7 @@
       <RunAsTest>true</RunAsTest>
       <method v="2" />
     </configuration>
-    <configuration name="KanaryTest.malformed_protocol_throws" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="KanaryTest.noinherit_read" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -212,7 +226,7 @@
           <list>
             <option value=":test" />
             <option value="--tests" />
-            <option value="&quot;KanaryTest.malformed_protocol_throws&quot;" />
+            <option value="&quot;KanaryTest.noinherit_read&quot;" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -251,8 +265,8 @@
       <list>
         <item itemvalue="Gradle.KanaryTest (1)" />
         <item itemvalue="Gradle.KanaryTest.polymorphic_read" />
+        <item itemvalue="Gradle.KanaryTest.noinherit_read" />
         <item itemvalue="Gradle.KanaryTest.fallback_read" />
-        <item itemvalue="Gradle.KanaryTest.malformed_protocol_throws" />
         <item itemvalue="Gradle.KanaryTest.deserialized_data_is_same_as_serialized_data" />
       </list>
     </recent_temporary>
@@ -594,13 +608,38 @@
       <option name="project" value="LOCAL" />
       <updated>1715990292633</updated>
     </task>
-    <option name="localTasksCounter" value="42" />
+    <task id="LOCAL-00042" summary="Modified Kanary format to improve performance. Serialized objects are no longer first serialized to an ArrayOutputStream. Instead, to determine their length, a special type flag (TypeFlag.END_OBJECT) is used. During deserialization, supertype objects are now eagerly deserialized to determine where their bounds are. Because of this optimization, noinherit has become obsolete and has been removed. All tests passed. Next feature to implement is read delegates (similar to Writable).">
+      <option name="closed" value="true" />
+      <created>1716397112530</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1716397112530</updated>
+    </task>
+    <task id="LOCAL-00043" summary="Bugfixes">
+      <option name="closed" value="true" />
+      <created>1716410771342</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1716410771342</updated>
+    </task>
+    <option name="localTasksCounter" value="44" />
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="Fixed group ID" />
-    <MESSAGE value="Protocols are now resolved as an instance of their own class." />
     <MESSAGE value="1.2" />
     <MESSAGE value="Improved semantics" />
     <MESSAGE value="Suppressed warnings for unused functions" />
@@ -624,7 +663,9 @@
     <MESSAGE value="Updated to 3.2" />
     <MESSAGE value="Added Dokka packages and generated test binaries" />
     <MESSAGE value="Added += operator for SchemaBuilder" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added += operator for SchemaBuilder" />
+    <MESSAGE value="Modified Kanary format to improve performance. Serialized objects are no longer first serialized to an ArrayOutputStream. Instead, to determine their length, a special type flag (TypeFlag.END_OBJECT) is used. During deserialization, supertype objects are now eagerly deserialized to determine where their bounds are. Because of this optimization, noinherit has become obsolete and has been removed. All tests passed. Next feature to implement is read delegates (similar to Writable)." />
+    <MESSAGE value="Bugfixes" />
+    <option name="LAST_COMMIT_MESSAGE" value="Bugfixes" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

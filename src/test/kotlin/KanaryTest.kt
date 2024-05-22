@@ -358,31 +358,34 @@ class KanaryTest {
         assertEquals(names, listOf("parent", "subclass", "subclass of subclass"))
     }
 
-    class MyClass : Writable {
-        override fun Serializer.write() {
-            write("Your data here")
+    // TODO add suport for adding locally-defined protocols to a schema
+    class MyClass {
+        companion object : Protocol by define<MyClass>(
+            read = {
+                assertEquals(read(), "Your data here")
+                MyClass()
+            },
+            write = {
+                write("Your data here")
+            }
+        )
+    }
+
+    @Test
+    fun locally_defined_protocol() {
+        val schema = schema {}
+        val serialized = MyClass()
+        useSerializer("locally_defined_protocol", schema) {
+            it.write(serialized)
+        }
+        useDeserializer("locally_defined_protocol", schema) {
+            it.read<MyClass>()
         }
     }
 
     @Test
-    fun writable() {
-        val schema = schema {
-            define<MyClass> {
-                read = {
-                    assertEquals(read(), "Your data here")
-                    MyClass()
-                }
-                write = static()
-            }
-        }
-
-        val serialized = MyClass()
-        useSerializer("writable", schema) {
-            it.write(serialized)
-        }
-        useDeserializer("writable", schema) {
-            it.read<MyClass>()
-        }
+    fun protocol_mismatch_throws() {
+        // TODO
     }
 
     class MyOuterClass(val id: Int) {

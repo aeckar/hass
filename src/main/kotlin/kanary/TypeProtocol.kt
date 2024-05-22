@@ -3,7 +3,6 @@ package kanary
 import kanary.utils.jvmName
 import java.io.IOException
 import kotlin.reflect.KClass
-import kotlin.reflect.full.allSuperclasses
 
 private fun ProtocolBuilder<*>.throwMalformed(reason: String): Nothing {
     throw MalformedProtocolException(classRef, reason)
@@ -17,11 +16,11 @@ class MalformedProtocolException @PublishedApi internal constructor(classRef: KC
 
 @Suppress("UNCHECKED_CAST")
 @PublishedApi
-internal class Protocol(builder: ProtocolBuilder<*>) {
-    val hasFallback: Boolean
-    val hasStatic: Boolean
-    val read: ReadOperation?
-    val write: WriteOperation?
+internal class TypeProtocol(builder: ProtocolBuilder<*>) : Protocol {
+    override val hasFallback: Boolean
+    override val hasStatic: Boolean
+    override val read: ReadOperation?
+    override val write: WriteOperation?
 
     init {
         with(builder) {
@@ -126,32 +125,6 @@ class ProtocolBuilder<T : Any>(internal val classRef: KClass<*>) {
         }
         hasStatic = true
         return write
-    }
-
-    /**
-     * When assigned to [write], signals that serialization should be handled individually by each instance of [T],
-     * without also serializing information held by each superclass.
-     * Necessary for serializing private members.
-     * If a default protocol is not already defined for the types of these members, one must be defined.
-     */
-    fun static() = static {
-        val serializer = this
-        with(it as Writable) { serializer.write() }
-    }
-
-    /**
-     * Signals that serialization should be handled individually by each instance of [T].
-     * Necessary for serializing private members.
-     * If a default protocol is not already defined for the types of these members, one must be defined.
-     */
-    fun write() {
-        if (Writable::class !in classRef.allSuperclasses) {
-            throwMalformed("type does not implement Writable")
-        }
-        write = {
-            val serializer = this
-            with (it as Writable) { serializer.write() }
-        }
     }
 
     private var readableParams = false

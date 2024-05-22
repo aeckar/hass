@@ -1,5 +1,7 @@
 package kanary
 
+import kanary.utils.companion
+import kanary.utils.takeIf
 import kotlin.reflect.KClass
 import kotlin.reflect.full.allSuperclasses
 import kotlin.reflect.full.superclasses
@@ -14,7 +16,8 @@ import kotlin.reflect.full.superclasses
 typealias ReassignmentException = kanary.utils.ReassignmentException
 
 /**
- * Provides a scope wherein protocols for various classes may be defined. A schema with no protocols defined is legal.
+ * Provides a scope wherein protocols for various classes may be defined.
+ * A schema with no protocols defined is legal, and should be stored as a variable if used more than once.
  * @return a serialization schema, which can be passed to a
  * [serializer][java.io.OutputStream.serializer] or [deserializer][java.io.InputStream.deserializer]
  * to provide the directions for serializing the specified reference types
@@ -29,30 +32,32 @@ inline fun schema(builder: SchemaBuilder.() -> Unit): Schema {
  * Defines a set of protocols corresponding to how certain types should be written to and read from binary.
  */
 class Schema @PublishedApi internal constructor(builder: SchemaBuilder) {
-    /*
-      Keys contain:
-        - Write operations for each type serialized, organized in the order they are written
-        - Write of key as last member, if defined
-        - Possibly nothing
-      Subtypes come before supertypes, the final member being the exception
-      Does not include write operations of supertypes with built-in protocols
-     */
-    internal val writeSequences: Map<KClass<*>, List<WriteHandle>>
-
-    internal val definedProtocols: Map<KClass<*>, Protocol>
+    private val protocols: MutableMap<KClass<*>, Protocol>
 
     // Delegates read to that of defined protocol or 'fallback' read
-    private val actualReads: Map<KClass<*>, ReadOperation>
+    private val readOperations: MutableMap<KClass<*>, ReadOperation>
+
+    /*
+        Keys contain:
+            - Write operations for each type serialized, organized in the order they are written
+            - Write of key as last member, if defined
+            - Possibly nothing
+        Subtypes come before supertypes, the final member being the exception.
+        Does not include write operations of supertypes with built-in protocols.
+        Iteration order is preserved.
+    */
+    private val writeSequences: MutableMap<KClass<*>, Set<WriteHandle>>
 
     init {
-        fun MutableList<WriteHandle>.appendSuperclasses(
+        fun MutableSet<WriteHandle>.appendSuperclasses(
             builder: SchemaBuilder,
             superclasses: List<KClass<*>>
-        ): List<WriteHandle>? {
+        ): Set<WriteHandle>? {
             for (kClass in superclasses) {
                 val protocol = builder.definedProtocols[kClass] ?: continue
                 val writeOperation = protocol.write ?: continue
-                if (none { it.lambda === writeOperation }) {
+                val handle = WriteHandle.wrap(writeOperation)
+                if (handle !in this) {
                     this += WriteHandle(kClass, writeOperation)
                     if (protocol.hasStatic) {
                         return null // End search; static write overrides all others
@@ -78,31 +83,32 @@ class Schema @PublishedApi internal constructor(builder: SchemaBuilder) {
             }
             return null
         }
-        definedProtocols = builder.definedProtocols
-        writeSequences = buildMap {
-            for (classRef in definedProtocols.keys) {
-                val sequence = mutableListOf<WriteHandle>()
-                val protocol = definedProtocols.getValue(classRef)
+        protocols = builder.definedProtocols
+        writeSequences = hashMapOf<KClass<*>, Set<WriteHandle>>().apply {
+            for (classRef in protocols.keys) {
+                val sequence = mutableSetOf<WriteHandle>()
+                val protocol = protocols.getValue(classRef)
                 protocol.write?.let { sequence += WriteHandle(classRef, it) }
                 this[classRef] = sequence
                     .takeIf { !protocol.hasStatic }
                     ?.appendSuperclasses(builder, classRef.superclasses) ?: sequence
             }
         }
-        actualReads = buildMap {
-            builder.definedProtocols.forEach { (classRef, protocol) ->
+        readOperations = hashMapOf<KClass<*>, ReadOperation>().apply {
+            protocols.forEach { (classRef, protocol) ->
                 /*
                     Within this scope, since must be checked for every defined protocol.
                     Ensures no supertype has static write.
                  */
                 protocol.write.takeIf { !protocol.hasStatic }?.let {
-                    if (classRef.allSuperclasses.any { superclass -> definedProtocols[superclass]?.hasStatic == true }) {
+                    if (classRef.allSuperclasses.any { superclass -> protocols[superclass]?.hasStatic == true }) {
                         throw MalformedProtocolException(classRef, "non-static write defined with static supertype write")
                     }
                 }
 
-                if (protocol.read != null) {
-                    this[classRef] = protocol.read
+                val read = protocol.read
+                if (read != null) {
+                    this[classRef] = read
                     return@forEach
                 }
                 resolveRead(builder, classRef.superclasses)?.let {
@@ -125,41 +131,76 @@ class Schema @PublishedApi internal constructor(builder: SchemaBuilder) {
         }
     }
 
-    internal fun resolveDefinedWriteSequence(superclasses: List<KClass<*>>): List<WriteHandle>? {
-        for (kClass in superclasses) {
-            writeSequences[kClass]?.let { return it }
+    internal fun protocols(): Map<KClass<*>, Protocol> = protocols
+
+    /*
+        In kotlin.reflect.full, there is a bug where LinkedHashSet::class.companionObjectInstance
+        throws an IllegalStateException instead of null.
+        To avoid this, companion objects are not checked for any class in
+     */
+    internal fun protocolOrNull(classRef: KClass<*>): Protocol? {
+        return protocols[classRef]
+            ?: classRef.companion?.takeIf<Protocol>()?.also { protocols[classRef] = it }
+    }
+
+    internal fun writeSequenceOf(classRef: KClass<*>): Set<WriteHandle> {
+        return writeSequences[classRef]
+            ?: resolveWriteSequence(classRef)
+            ?: throw MissingOperationException("Write operation for '${classRef.qualifiedName}' expected, but not found")
+    }
+
+    internal fun readOperationOf(classRef: KClass<*>): TypedReadOperation<*> {
+        return readOperations[classRef]
+            ?: resolveReadOperation(classRef)
+            ?: throw MalformedProtocolException(classRef,
+                    "read or 'fallback' read for '${classRef.qualifiedName}'expected, but not found")
+    }
+
+    private fun resolveReadOperation(classRef: KClass<*>, curKClass: KClass<*> = classRef): TypedReadOperation<*>? {
+        val superclasses = curKClass.superclasses
+        protocolOrNull(classRef)?.read?.let {
+            readOperations[classRef] = it
+            return it
         }
         for (kClass in superclasses) {
-            resolveDefinedWriteSequence(kClass.superclasses)?.let { return it }
+            protocolOrNull(kClass)?.takeIf { it.hasFallback }?.read?.let {
+                readOperations[classRef] = it
+                return it
+            }
+        }
+        for (kClass in superclasses) {
+            resolveReadOperation(classRef, kClass)?.let { return it }
         }
         return null
     }
 
-    internal fun resolveRead(classRef: KClass<*>): TypedReadOperation<*> {
-        actualReads[classRef]?.let { return it }
-        resolveFallbackRead(classRef.superclasses)?.let { return it }
-        throw MalformedProtocolException(classRef, "read or 'fallback' read for '${classRef.qualifiedName}' not found")
-    }
-
-    private fun resolveFallbackRead(superclasses: List<KClass<*>>): TypedReadOperation<*>? {
+    private fun resolveWriteSequence(
+        classRef: KClass<*>,
+        curKClass: KClass<*> = classRef,
+        localWriteSequence: MutableSet<WriteHandle> = mutableSetOf()
+    ): Set<WriteHandle>? {
+        val superclasses = curKClass.superclasses
+        protocolOrNull(curKClass)?.write?.let { localWriteSequence += WriteHandle(curKClass, it) }
         for (kClass in superclasses) {
-            definedProtocols[kClass]?.let { if (it.hasFallback) return it.read }
+            writeSequences[kClass]?.let {
+                writeSequences[classRef] = it
+                return it
+            }
+            protocolOrNull(kClass)?.write?.let { localWriteSequence += WriteHandle(kClass, it) }
         }
         for (kClass in superclasses) {
-            resolveFallbackRead(kClass.superclasses)?.let { return it }
+            resolveWriteSequence(classRef, kClass, localWriteSequence)?.let { return it }
         }
-        return null
-    }
-
-    internal companion object {
-        val EMPTY = Schema(SchemaBuilder())
+        return localWriteSequence
+            .takeIf { classRef == curKClass && it.isNotEmpty() }
+            ?.also { writeSequences[classRef] = it }
     }
 }
 
 /**
  * The scope wherein binary I/O protocols may be [defined][define].
  */
-class SchemaBuilder @PublishedApi internal constructor() {  // No intent to add versioning support
+class SchemaBuilder @PublishedApi internal constructor() {  // No intent to add explicit versioning support
     @PublishedApi
     internal val definedProtocols = HashMap<KClass<*>, Protocol>()
 
@@ -184,7 +225,7 @@ class SchemaBuilder @PublishedApi internal constructor() {  // No intent to add 
         } catch (_: ReassignmentException) {
             throw ReassignmentException("Read or write operation defined more than once")
         }
-        definedProtocols[classRef] = Protocol(builderScope)
+        definedProtocols[classRef] = TypeProtocol(builderScope)
     }
 
     /**
@@ -193,14 +234,29 @@ class SchemaBuilder @PublishedApi internal constructor() {  // No intent to add 
      * @throws ReassignmentException there exist conflicting declarations of a given protocol
      */
     operator fun plusAssign(other: Schema) {
-        val otherClassRefs = other.definedProtocols.keys
+        val otherClassRefs = other.protocols().keys
         for (classRef in definedProtocols.keys) {
             if (classRef in otherClassRefs) {
-                throw ReassignmentException("Conflicting declarations for protocol of class '${classRef.qualifiedName!!}'")
+                throw ReassignmentException(
+                        "Conflicting declarations for protocol of class '${classRef.qualifiedName!!}'")
             }
         }
-        definedProtocols += other.definedProtocols
+        definedProtocols += other.protocols()
     }
 }
 
-internal data class WriteHandle(val kClass: KClass<*>, val lambda: WriteOperation)
+// Equal to another handle iff lambdas are equal
+internal data class WriteHandle(val kClass: KClass<*>, val lambda: WriteOperation) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        other as WriteHandle
+        return lambda == other.lambda
+    }
+
+    override fun hashCode() = lambda.hashCode()
+
+    companion object {
+        fun wrap(lambda: WriteOperation) = WriteHandle(Nothing::class, lambda)
+    }
+}
