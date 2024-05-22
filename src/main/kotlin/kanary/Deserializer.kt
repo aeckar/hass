@@ -11,13 +11,13 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.full.superclasses
 
-private val EMPTY_DESERIALIZER: Deserializer = InputDeserializer(InputStream.nullInputStream(), Schema.EMPTY)
+private val EMPTY_DESERIALIZER: Deserializer = InputDeserializer(InputStream.nullInputStream(), schema {})
 
 /**
  * @return a new deserializer capable of reading primitives, primitive arrays, strings, and
  * instances of any type with a defined protocol from Kanary format
  */
-fun InputStream.deserializer(protocols: Schema = Schema.EMPTY): Deserializer = InputDeserializer(this, protocols)
+fun InputStream.deserializer(protocols: Schema): Deserializer = InputDeserializer(this, protocols)
 
 /**
  * Reads serialized data from a stream in Kanary format.
@@ -133,7 +133,7 @@ class ObjectDeserializer internal constructor( // Each instance used to read a s
 
     internal fun resolveObject(): Any? {
         return try {
-            source.schema.resolveRead(classRef)(this).also { source.readFlag() /* END_OBJECT */ }
+            source.schema.readOperationOf(classRef)(this).also { source.readFlag() /* END_OBJECT */ }
         } catch (_: NoSuchElementException) {
             throw MalformedProtocolException(classRef,
                     "attempted read of object after object deserializer was exhausted")
@@ -234,7 +234,7 @@ internal class InputDeserializer(
             emptyMap()
         } else {
             val source = this
-            buildMap<KClass<*>, Deserializer>(superCount) {
+            HashMap<KClass<*>, Deserializer>(superCount).apply {
                 repeat(superCount) {
                     val superFlag = readFlag()
                     val supertype: KClass<*>
