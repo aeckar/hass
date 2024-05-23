@@ -19,6 +19,7 @@ fun OutputStream.serializer(protocols: Schema) = OutputSerializer(this, protocol
 
 /**
  * Writes the objects in binary format according to the protocol of each type.
+ *
  * Null objects are accepted, however their non-nullable type information is erased.
  * If an object is not null and its type does not have a defined protocol, the protocol of its superclass or
  * the first interface declared in source code with a protocol is chosen.

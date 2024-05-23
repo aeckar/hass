@@ -62,6 +62,7 @@ interface Protocol {
 
 /**
  * The scope wherein a protocol's [read] and [write] operations are defined.
+ *
  * If the protocol of a nested class is defined and its package contains any uppercase letters,
  * attempting to read it from binary will throw [ClassNotFoundException].
  */

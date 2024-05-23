@@ -8,7 +8,7 @@ import java.io.IOException
 typealias TypedReadOperation<T> = ObjectDeserializer.() -> T
 
 /**
- * Lambda specified by [write operation][ProtocolBuilder].
+ * Lambda specified by [write operation][ProtocolBuilder.write].
  */
 typealias TypedWriteOperation<T> = Serializer.(T) -> Unit
 
