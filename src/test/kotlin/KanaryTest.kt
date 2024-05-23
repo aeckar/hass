@@ -230,7 +230,7 @@ class KanaryTest {
             map = mapOf("A" to 1, "B" to 2),
             unit = Unit,
             anyObject = "Custom Object",
-            function = { "Generated Function Result" },
+            function = @JvmSerializableLambda { "Generated Function Result" },
             nullValue = null
         )
 

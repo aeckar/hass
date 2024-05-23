@@ -2,12 +2,10 @@ package kanary
 
 import kanary.TypeFlag.*
 import kanary.utils.jvmName
-import java.io.Closeable
-import java.io.Flushable
-import java.io.ObjectOutputStream
-import java.io.OutputStream
+import java.io.*
 import java.nio.ByteBuffer
 import kotlin.reflect.KClass
+import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.isSubclassOf
 
 /**
@@ -30,6 +28,12 @@ fun OutputStream.serializer(protocols: Schema) = OutputSerializer(this, protocol
 fun Serializer.write(vararg objs: Any?) {
     objs.forEach { write(it) }
 }
+
+/**
+ * Thrown when an attempt is made to serialize an object that cannot be serialized due to the nature of its type.
+ * The type may be local, anonymous, or a lambda not annotated with [JvmSerializableLambda].
+ */
+class NotSerializableException(message: String) : IOException(message)
 
 /**
  * Serializes data to a stream in Kanary format.
@@ -311,14 +315,17 @@ class OutputSerializer(
             }
         }
 
+        val classRef = obj::class
         if (obj is Function<*>) {   // Necessary because lambdas lack qualified names
             writeFlag(FUNCTION)
+            if (KotlinVersion.CURRENT.major >= 2 && obj !is Serializable) {
+                throw NotSerializableException("Lambdas must be annotated with @JvmSerializableLambda to be serialized")
+            }
             ObjectOutputStream(stream).writeObject(obj)
             return
         }
-        val classRef = obj::class
         val className = classRef.jvmName
-            ?: throw MissingOperationException("Serialization of local and anonymous class instances not supported")
+            ?: throw NotSerializableException("Serialization of local and anonymous class instances not supported")
         var protocol = schema.protocolOrNull(classRef)
         val builtIns = if (nonNullElements) nonNullBuiltIns else nullableBuiltIns
         val builtInKClass: KClass<*>?

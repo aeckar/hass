@@ -7,6 +7,7 @@ import kotlin.reflect.KClass
 @PublishedApi
 internal fun Protocol(read: ReadOperation?, write: WriteOperation?): Protocol = TypeProtocol(read, write)
 
+@JvmName("ProtocolWithCast")
 @Suppress("UNCHECKED_CAST")
 @PublishedApi
 internal fun Protocol(read: ReadOperation?, write: TypedWriteOperation<*>?): Protocol {

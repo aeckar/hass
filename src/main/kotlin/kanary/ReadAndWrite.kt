@@ -26,27 +26,27 @@ internal typealias WriteOperation = Serializer.(Any?) -> Unit
  * @return a locally defined [protocol][Protocol]
  */
 inline fun <reified T> define(
-    noinline read: TypedReadOperation<out T>? = null,
-    noinline write: TypedWriteOperation<in T>? = null
+    noinline read: TypedReadOperation<T>? = null,
+    noinline write: TypedWriteOperation<T>? = null
 ) = Protocol(read, write)
 
 /**
  * Applies the 'static' modifier to the given write operation.
  * @return the supplied write operation
  */
-fun <T> static(write: TypedWriteOperation<in T>): TypedWriteOperation<in T> = StaticWriteOperation(write)
+fun <T> static(write: TypedWriteOperation<T>): TypedWriteOperation<T> = StaticWriteOperation(write)
 
 /**
  * Applies the '[fallback][ProtocolBuilder.fallback]' modifier to the given read operation.
  * @return the supplied [read operation][ProtocolBuilder.read]
  */
-fun <T> fallback(read: TypedReadOperation<out T>): TypedReadOperation<out T> = FallbackReadOperation(read)
+fun <T> fallback(read: TypedReadOperation<T>): TypedReadOperation<T> = FallbackReadOperation(read)
 
 /**
  * Thrown when a [read][ProtocolBuilder.read] or [write][ProtocolBuilder.write] operation is expected, but not found.
  */
 class MissingOperationException @PublishedApi internal constructor(message: String) : IOException(message)
 
-internal class FallbackReadOperation<T>(read: TypedReadOperation<out T>): (ObjectDeserializer) -> T by read
+internal class FallbackReadOperation<T>(read: TypedReadOperation<T>): (ObjectDeserializer) -> T by read
 
-internal class StaticWriteOperation<T>(write: TypedWriteOperation<in T>) : (Serializer, T) -> Unit by write
+internal class StaticWriteOperation<T>(write: TypedWriteOperation<T>) : (Serializer, T) -> Unit by write
