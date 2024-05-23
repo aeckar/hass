@@ -5,7 +5,9 @@
 [jvm]\
 class [InputDeserializer](index.md)(stream: [InputStream](https://docs.oracle.com/javase/8/docs/api/java/io/InputStream.html), schema: [Schema](../-schema/index.md)) : [Deserializer](../-deserializer/index.md), [Closeable](https://docs.oracle.com/javase/8/docs/api/java/io/Closeable.html)
 
-Reads serialized data from a stream in Kanary format. Can be used to determine whether there is more data that can be read from this object. Does not need to be closed so long as the underlying stream is closed. Calling [close](close.md) also closes the underlying stream.
+Reads serialized data from a stream in Kanary format.
+
+Does not need to be closed so long as the underlying stream is closed. Calling [close](close.md) also closes the underlying stream.
 
 ## Constructors
 

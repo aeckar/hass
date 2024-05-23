@@ -133,9 +133,9 @@ sealed interface Serializer {
 
 /**
  * Writes serialized data to a stream in Kanary format.
+ *
  * Does not need to be closed so long as the underlying stream is closed.
- * Because no protocols are defined, no instances of any reference types may be written.
- * Calling [close] also closes the underlying stream.
+ * Calling [close] also closes the underlying stream; [flush] works similarly.
  */
 class OutputSerializer(
     private val stream: OutputStream,

@@ -144,7 +144,7 @@ class ObjectDeserializer internal constructor( // Each instance used to read a s
 
 /**
  * Reads serialized data from a stream in Kanary format.
- * Can be used to determine whether there is more data that can be read from this object.
+ *
  * Does not need to be closed so long as the underlying stream is closed.
  * Calling [close] also closes the underlying stream.
  */

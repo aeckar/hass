@@ -5,7 +5,9 @@
 [jvm]\
 class [OutputSerializer](index.md)(stream: [OutputStream](https://docs.oracle.com/javase/8/docs/api/java/io/OutputStream.html), schema: [Schema](../-schema/index.md)) : [Closeable](https://docs.oracle.com/javase/8/docs/api/java/io/Closeable.html), [Flushable](https://docs.oracle.com/javase/8/docs/api/java/io/Flushable.html), [Serializer](../-serializer/index.md)
 
-Writes serialized data to a stream in Kanary format. Does not need to be closed so long as the underlying stream is closed. Because no protocols are defined, no instances of any reference types may be written. Calling [close](close.md) also closes the underlying stream.
+Writes serialized data to a stream in Kanary format.
+
+Does not need to be closed so long as the underlying stream is closed. Calling [close](close.md) also closes the underlying stream; [flush](flush.md) works similarly.
 
 ## Constructors
 
