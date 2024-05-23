@@ -4,6 +4,35 @@ import io.github.aeckar.kanary.utils.jvmName
 import java.io.IOException
 import kotlin.reflect.KClass
 
+/**
+ * Provides a delegate by which the [read][ProtocolBuilder.read] and [write][ProtocolBuilder.write]
+ * operations of [T] may be locally defined.
+ *
+ * For every instance of T, these operations will be defined.
+ * This is in contrast to a protocol [definition][SchemaBuilder.define] within a [schema], which only apply
+ * when that schema is passed to a [serializer] or [deserializer].
+ *
+ * The protocol returned *must* be delegated to the companion of T implementing [Protocol].
+ * Otherwise, the protocol will be unable to be resolved during reading/writing.
+ * @return a local protocol
+ */
+inline fun <reified T> define(
+    noinline read: TypedReadOperation<T>? = null,
+    noinline write: TypedWriteOperation<T>? = null
+) = Protocol(read, write)
+
+/**
+ * Applies the '[static][ProtocolBuilder.static]' modifier to the given write operation.
+ * @return the supplied [write operation][ProtocolBuilder.write]
+ */
+fun <T> static(write: TypedWriteOperation<T>): TypedWriteOperation<T> = StaticWriteOperation(write)
+
+/**
+ * Applies the '[fallback][ProtocolBuilder.fallback]' modifier to the given read operation.
+ * @return the supplied [read operation][ProtocolBuilder.read]
+ */
+fun <T> fallback(read: TypedReadOperation<T>): TypedReadOperation<T> = FallbackReadOperation(read)
+
 @PublishedApi
 internal fun Protocol(read: ReadOperation?, write: WriteOperation?): Protocol = TypeProtocol(read, write)
 
@@ -76,13 +105,10 @@ interface Protocol {
 
 /**
  * The scope wherein a protocol's [read] and [write] operations are defined.
- *
- * If the protocol of a nested class is defined and its package contains any uppercase letters,
- * attempting to read it from binary will throw [ClassNotFoundException].
  */
 class ProtocolBuilder<T : Any>(internal val classRef: KClass<*>) {
     init {
-        if (classRef in builtInTypes) {
+        if (classRef in TYPES_WITH_BUILTIN_PROTOCOLS) {
             throw MalformedProtocolException(classRef, "built-in protocol already exists")
         }
         if (classRef.jvmName == null) {

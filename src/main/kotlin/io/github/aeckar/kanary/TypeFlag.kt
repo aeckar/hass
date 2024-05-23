@@ -8,7 +8,7 @@ import kotlin.reflect.KFunction
  * Types specified by [Schema] as having pre-defined protocols.
  */
 @PublishedApi
-internal val builtInTypes = TypeFlag.entries.asSequence().map { it.kClass }.toHashSet()
+internal val TYPES_WITH_BUILTIN_PROTOCOLS = TypeFlag.entries.asSequence().map { it.kClass }.toSet()
 
 /**
  * Thrown when an attempt is made to read serialized data of a certain flagged type, but another type is encountered.
@@ -16,12 +16,10 @@ internal val builtInTypes = TypeFlag.entries.asSequence().map { it.kClass }.toHa
 class TypeFlagMismatchException internal constructor(message: String) : IOException(message)
 
 /**
- * Special bytes emitted to serialized data to:
- * - Enforce type-safety
- * - Determine relative position during deserialization
+ * Special [bytes][ordinal] emitted to serialized data to enforce type-safety
+ * and determine relative position during deserialization.
  */
 internal enum class TypeFlag(val kClass: KClass<*> = Nothing::class) {
-    // Primitive types
     BOOLEAN(Boolean::class),
     BYTE(Byte::class),
     CHAR(Char::class),
@@ -30,8 +28,6 @@ internal enum class TypeFlag(val kClass: KClass<*> = Nothing::class) {
     LONG(Long::class),
     FLOAT(Float::class),
     DOUBLE(Double::class),
-
-    // Primitive array types
     BOOLEAN_ARRAY(BooleanArray::class),
     BYTE_ARRAY(ByteArray::class),
     CHAR_ARRAY(CharArray::class),
@@ -40,8 +36,6 @@ internal enum class TypeFlag(val kClass: KClass<*> = Nothing::class) {
     LONG_ARRAY(LongArray::class),
     FLOAT_ARRAY(FloatArray::class),
     DOUBLE_ARRAY(DoubleArray::class),
-
-    // Object types
     STRING(String::class),
     OBJECT_ARRAY(Array<Any>::class),
     LIST(List::class),
@@ -54,7 +48,6 @@ internal enum class TypeFlag(val kClass: KClass<*> = Nothing::class) {
     OBJECT(Any::class),
     FUNCTION(KFunction::class),
     NULL,
-
     END_OBJECT;
 
     companion object {

@@ -9,7 +9,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Package name now reflects GitHub Pages site." />
+    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Re-added documentation.">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Deserializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Deserializer.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Protocol.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Protocol.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/ReadAndWrite.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/ReadAndWrite.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Schema.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Schema.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Serializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Serializer.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/TypeFlag.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/TypeFlag.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/utils/Utilities.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/utils/Utilities.kt" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -42,6 +52,12 @@
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="kanary" type="f1a62948:ProjectNode" />
                 <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="build" type="c8890929:TasksNode$1" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="kanary" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
                 <item name="documentation" type="c8890929:TasksNode$1" />
               </path>
               <path>
@@ -61,8 +77,8 @@
       <list>
         <option value="Kotlin Object" />
         <option value="Kotlin Class" />
-        <option value="Kotlin File" />
         <option value="module-info" />
+        <option value="Kotlin File" />
       </list>
     </option>
   </component>
@@ -107,39 +123,40 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "Gradle.Download Sources.executor": "Run",
-    "Gradle.KanaryTest (1).executor": "Run",
-    "Gradle.KanaryTest.deserialized_data_is_same_as_serialized_data.executor": "Run",
-    "Gradle.KanaryTest.executor": "Run",
-    "Gradle.KanaryTest.fallback_read.executor": "Run",
-    "Gradle.KanaryTest.kanaryTest.executor": "Run",
-    "Gradle.KanaryTest.malformed_protocol_throws.executor": "Run",
-    "Gradle.KanaryTest.polymorphic_read.executor": "Run",
-    "Gradle.KanaryTest.test (1).executor": "Run",
-    "Gradle.KanaryTest.test.executor": "Run",
-    "Gradle.Test.executor": "Run",
-    "Gradle.Test.test.executor": "Run",
-    "Gradle.kanary [dokkaHtml].executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "master",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "preferences.lookFeel"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;Gradle.Download Sources.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest (1).executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.deserialized_data_is_same_as_serialized_data.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.fallback_read.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.kanaryTest.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.malformed_protocol_throws.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.polymorphic_read.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.test (1).executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.test.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Test.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Test.test.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.kanary [dokkaHtml].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.kanary [jar].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;
   },
-  "keyToStringList": {
-    "kotlin-gradle-user-dirs": [
-      "C:\\Users\\eckar\\.gradle"
+  &quot;keyToStringList&quot;: {
+    &quot;kotlin-gradle-user-dirs&quot;: [
+      &quot;C:\\Users\\eckar\\.gradle&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\eckar\IdeaProjects\kanary\docs" />
@@ -151,7 +168,7 @@
       <recent name="kanary" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.kanary [dokkaHtml]">
+  <component name="RunManager" selected="Gradle.kanary [jar]">
     <configuration name="KanaryTest (1)" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -190,30 +207,6 @@
             <option value=":test" />
             <option value="--tests" />
             <option value="&quot;KanaryTest.fallback_read&quot;" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <RunAsTest>true</RunAsTest>
-      <method v="2" />
-    </configuration>
-    <configuration name="KanaryTest.malformed_protocol_throws" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" value="" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value=":test" />
-            <option value="--tests" />
-            <option value="&quot;KanaryTest.malformed_protocol_throws&quot;" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -270,13 +263,35 @@
       <RunAsTest>false</RunAsTest>
       <method v="2" />
     </configuration>
+    <configuration name="kanary [jar]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="jar" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>false</RunAsTest>
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.kanary [jar]" />
         <item itemvalue="Gradle.kanary [dokkaHtml]" />
         <item itemvalue="Gradle.KanaryTest (1)" />
         <item itemvalue="Gradle.KanaryTest.polymorphic_read" />
         <item itemvalue="Gradle.KanaryTest.fallback_read" />
-        <item itemvalue="Gradle.KanaryTest.malformed_protocol_throws" />
       </list>
     </recent_temporary>
   </component>
@@ -288,14 +303,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1714597578047</updated>
-    </task>
-    <task id="LOCAL-00006" summary="Added flush()">
-      <option name="closed" value="true" />
-      <created>1714626405033</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1714626405033</updated>
     </task>
     <task id="LOCAL-00007" summary="Inlined internal type aliases">
       <option name="closed" value="true" />
@@ -681,12 +688,19 @@
       <option name="project" value="LOCAL" />
       <updated>1716441331228</updated>
     </task>
-    <option name="localTasksCounter" value="55" />
+    <task id="LOCAL-00055" summary="Re-added documentation.">
+      <option name="closed" value="true" />
+      <created>1716441871310</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1716441871310</updated>
+    </task>
+    <option name="localTasksCounter" value="56" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="Polymorphic write test is now passing." />
     <MESSAGE value="Rework II" />
     <MESSAGE value="Rework III" />
     <MESSAGE value="Rework IV" />
@@ -711,7 +725,8 @@
     <MESSAGE value="Converted documentation to HTML" />
     <MESSAGE value="Disabled HTML inspections" />
     <MESSAGE value="Package name now reflects GitHub Pages site." />
-    <option name="LAST_COMMIT_MESSAGE" value="Package name now reflects GitHub Pages site." />
+    <MESSAGE value="Re-added documentation." />
+    <option name="LAST_COMMIT_MESSAGE" value="Re-added documentation." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
