@@ -1,10 +1,6 @@
 $dokka.format:html-v1
 $dokka.linkExtension:html
 $dokka.location:io.github.aeckar.kanary.utils////PointingToDeclaration/kanary/io.github.aeckar.kanary.utils/index.html
-$dokka.location:io.github.aeckar.kanary.utils//KClass/#kotlin.String/PointingToDeclaration/kanary/io.github.aeckar.kanary.utils/-k-class.html
-$dokka.location:io.github.aeckar.kanary.utils//companion/kotlin.reflect.KClass[*]#/PointingToDeclaration/kanary/io.github.aeckar.kanary.utils/companion.html
-$dokka.location:io.github.aeckar.kanary.utils//jvmName/kotlin.reflect.KClass[*]#/PointingToDeclaration/kanary/io.github.aeckar.kanary.utils/jvm-name.html
-$dokka.location:io.github.aeckar.kanary.utils//takeIf/kotlin.Any?#/PointingToDeclaration/kanary/io.github.aeckar.kanary.utils/take-if.html
 $dokka.location:io.github.aeckar.kanary.utils/ReassignmentException///PointingToDeclaration/kanary/io.github.aeckar.kanary.utils/-reassignment-exception/index.html
 $dokka.location:io.github.aeckar.kanary.utils/ReassignmentException/ReassignmentException/#kotlin.String/PointingToDeclaration/kanary/io.github.aeckar.kanary.utils/-reassignment-exception/-reassignment-exception.html
 $dokka.location:io.github.aeckar.kanary////PointingToDeclaration/kanary/io.github.aeckar.kanary/index.html

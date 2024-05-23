@@ -34,8 +34,10 @@ tasks.dokkaHtml {
     pluginsMapConfiguration.set(
         mapOf("org.jetbrains.dokka.base.DokkaBase" to "{ \"footerMessage\": \"© 2024 Angel Eckardt\" }")
     )
+
     dokkaSourceSets {
         configureEach {
+            outputDirectory.set(file("docs/"))
             reportUndocumented.set(true)
             includes.from(project.files(), "packages.md")
         }
