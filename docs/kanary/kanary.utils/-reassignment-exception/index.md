@@ -1,11 +1,17 @@
-//[kanary](../../../index.md)/[kanary](../index.md)/[TypeFlagMismatchException](index.md)
+//[kanary](../../../index.md)/[kanary.utils](../index.md)/[ReassignmentException](index.md)
 
-# TypeFlagMismatchException
+# ReassignmentException
 
 [jvm]\
-class [TypeFlagMismatchException](index.md) : [IOException](https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html)
+class [ReassignmentException](index.md)(message: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)) : [Exception](https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html)
 
-Thrown when an attempt is made to read serialized data of a certain flagged type, but another type is encountered.
+Thrown when there is an attempt to assign a value to a property that has already been given a value and can only be assigned a value once.
+
+## Constructors
+
+| | |
+|---|---|
+| [ReassignmentException](-reassignment-exception.md) | [jvm]<br>constructor(message: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)) |
 
 ## Properties
 

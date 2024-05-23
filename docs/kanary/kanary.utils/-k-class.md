@@ -1,4 +1,4 @@
-//[kanary](../../index.md)/[kanary](index.md)/[KClass](-k-class.md)
+//[kanary](../../index.md)/[kanary.utils](index.md)/[KClass](-k-class.md)
 
 # KClass
 
