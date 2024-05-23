@@ -5,7 +5,6 @@ import kanary.utils.jvmName
 import java.io.*
 import java.nio.ByteBuffer
 import kotlin.reflect.KClass
-import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.isSubclassOf
 
 /**
