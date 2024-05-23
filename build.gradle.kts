@@ -4,8 +4,8 @@ plugins {
     `maven-publish`
 }
 
-group = "com.github.aeckar"
-version = "3.2"
+group = "io.github.aeckar"
+version = "1.0"
 
 dependencies {
     implementation(kotlin("reflect"))
@@ -17,9 +17,9 @@ dependencies {
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            groupId = "com.github.aeckar"
+            groupId = "io.github.aeckar"
             artifactId = "kanary"
-            version = "3.2"
+            version = "1.0"
 
             from(components["kotlin"])
         }
@@ -28,6 +28,18 @@ publishing {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+tasks.dokkaHtml {
+    pluginsMapConfiguration.set(
+        mapOf("org.jetbrains.dokka.base.DokkaBase" to "{ \"footerMessage\": \"© 2024 Angel Eckardt\" }")
+    )
+    dokkaSourceSets {
+        configureEach {
+            reportUndocumented.set(true)
+            includes.from(project.files(), "packages.md")
+        }
+    }
 }
 
 kotlin {
