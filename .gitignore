@@ -42,4 +42,3 @@ bin/
 .DS_Store
 
 src/test/resources
-docs/kanary/package-list

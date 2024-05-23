@@ -9,17 +9,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Updated to Kotlin 2.0.">
+    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Changed package name to &quot;com.github.aeckar.kanary&quot;.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Deserializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/github/aeckar/kanary/Deserializer.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Protocol.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/github/aeckar/kanary/Protocol.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/ReadAndWrite.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/github/aeckar/kanary/ReadAndWrite.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Schema.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/github/aeckar/kanary/Schema.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Serializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/github/aeckar/kanary/Serializer.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/TypeFlag.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/github/aeckar/kanary/TypeFlag.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/utils/Utilities.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/github/aeckar/kanary/utils/Utilities.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/kotlin/KanaryTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/KanaryTest.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -287,14 +278,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1714597578047</updated>
-    </task>
-    <task id="LOCAL-00002" summary="- Made protocol require type parameter again (enforces thread-safety)&#10;- Created MissingProtocolException&#10;- Made exceptions more specific&#10;- General code cleanup">
-      <option name="closed" value="true" />
-      <created>1714624049858</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1714624049858</updated>
     </task>
     <task id="LOCAL-00003" summary="Inlined type aliases in ProtocolBuilderScope functions">
       <option name="closed" value="true" />
@@ -680,12 +663,19 @@
       <option name="project" value="LOCAL" />
       <updated>1716432180576</updated>
     </task>
-    <option name="localTasksCounter" value="51" />
+    <task id="LOCAL-00051" summary="Changed package name to &quot;com.github.aeckar.kanary&quot;.">
+      <option name="closed" value="true" />
+      <created>1716435676091</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1716435676092</updated>
+    </task>
+    <option name="localTasksCounter" value="52" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="Continued development I" />
     <MESSAGE value="Updated Serializer.kt" />
     <MESSAGE value="Reworked entire API" />
     <MESSAGE value="Documented PolymorphicDeserializer and updated serialized composite types in companion of StaticDeserializer." />
@@ -710,7 +700,8 @@
     <MESSAGE value="Updated InputDeserializer and OutputSerializer documentation." />
     <MESSAGE value="Added spacing to documentation." />
     <MESSAGE value="Updated to Kotlin 2.0." />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated to Kotlin 2.0." />
+    <MESSAGE value="Changed package name to &quot;com.github.aeckar.kanary&quot;." />
+    <option name="LAST_COMMIT_MESSAGE" value="Changed package name to &quot;com.github.aeckar.kanary&quot;." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
