@@ -13,6 +13,12 @@ import kotlin.reflect.full.superclasses
     All other class references are simply named 'kClass'.
  */
 
+/**
+ * Thrown when there is an attempt to assign a value to a
+ * [read/write operation][ProtocolBuilder] that has already been given a value.
+ *
+ * If creating a new instance, the import [kanary.utils.ReassignmentException] should be used instead.
+ */
 typealias ReassignmentException = kanary.utils.ReassignmentException
 
 /**
@@ -30,6 +36,21 @@ inline fun schema(builder: SchemaBuilder.() -> Unit): Schema {
 
 /**
  * Defines a set of protocols corresponding to how certain types should be written to and read from binary.
+ *
+ * The following types have pre-defined protocols:
+ *
+ * |               |             |           |
+ * |---------------|-------------|-----------|
+ * | BooleanArray  | DoubleArray | Map.Entry |
+ * | ByteArray     | String      | Map       |
+ * | CharArray     | Array       | Unit      |
+ * | ShortArray    | List        | (lambda)  |
+ * | IntArray      | Iterable    | (null)    |
+ * | LongArray     | Pair        |           |
+ * | FloatArray    | Triple      |           |
+ *
+ * Any built-in read operation designated to an open or abstract type is
+ * given the '[fallback][ProtocolBuilder.fallback]' modifier.
  */
 class Schema @PublishedApi internal constructor(builder: SchemaBuilder) {
     private val protocols: MutableMap<KClass<*>, Protocol>
@@ -49,7 +70,7 @@ class Schema @PublishedApi internal constructor(builder: SchemaBuilder) {
     private val writeSequences: MutableMap<KClass<*>, Set<WriteHandle>>
 
     init {
-        fun MutableSet<WriteHandle>.appendSuperclasses(
+        fun MutableSet<WriteHandle>.appendSuperclassHandles(
             builder: SchemaBuilder,
             superclasses: List<KClass<*>>
         ): Set<WriteHandle>? {
@@ -65,12 +86,12 @@ class Schema @PublishedApi internal constructor(builder: SchemaBuilder) {
                 }
             }
             for (kClass in superclasses) {
-                appendSuperclasses(builder, kClass.superclasses) ?: return this
+                appendSuperclassHandles(builder, kClass.superclasses) ?: return this
             }
             return this
         }
 
-        fun resolveRead(builder: SchemaBuilder, superclasses: List<KClass<*>>): TypedReadOperation<*>? {
+        fun resolveReadOrFallback(builder: SchemaBuilder, superclasses: List<KClass<*>>): TypedReadOperation<*>? {
             for (kClass in superclasses) {
                 builder.definedProtocols[kClass]?.let { protocol ->
                     if (protocol.hasFallback) {
@@ -79,10 +100,11 @@ class Schema @PublishedApi internal constructor(builder: SchemaBuilder) {
                 }
             }
             for (kClass in superclasses) {
-                resolveRead(builder, kClass.superclasses)?.let { return it }
+                resolveReadOrFallback(builder, kClass.superclasses)?.let { return it }
             }
             return null
         }
+
         protocols = builder.definedProtocols
         writeSequences = hashMapOf<KClass<*>, Set<WriteHandle>>().apply {
             for (classRef in protocols.keys) {
@@ -91,7 +113,7 @@ class Schema @PublishedApi internal constructor(builder: SchemaBuilder) {
                 protocol.write?.let { sequence += WriteHandle(classRef, it) }
                 this[classRef] = sequence
                     .takeIf { !protocol.hasStatic }
-                    ?.appendSuperclasses(builder, classRef.superclasses) ?: sequence
+                    ?.appendSuperclassHandles(builder, classRef.superclasses) ?: sequence
             }
         }
         readOperations = hashMapOf<KClass<*>, ReadOperation>().apply {
@@ -111,7 +133,7 @@ class Schema @PublishedApi internal constructor(builder: SchemaBuilder) {
                     this[classRef] = read
                     return@forEach
                 }
-                resolveRead(builder, classRef.superclasses)?.let {
+                resolveReadOrFallback(builder, classRef.superclasses)?.let {
                     this[classRef] = it
                 }
             }
@@ -133,11 +155,6 @@ class Schema @PublishedApi internal constructor(builder: SchemaBuilder) {
 
     internal fun protocols(): Map<KClass<*>, Protocol> = protocols
 
-    /*
-        In kotlin.reflect.full, there is a bug where LinkedHashSet::class.companionObjectInstance
-        throws an IllegalStateException instead of null.
-        To avoid this, companion objects are not checked for any class in
-     */
     internal fun protocolOrNull(classRef: KClass<*>): Protocol? {
         return protocols[classRef]
             ?: classRef.companion?.takeIf<Protocol>()?.also { protocols[classRef] = it }
@@ -153,7 +170,7 @@ class Schema @PublishedApi internal constructor(builder: SchemaBuilder) {
         return readOperations[classRef]
             ?: resolveReadOperation(classRef)
             ?: throw MalformedProtocolException(classRef,
-                    "read or 'fallback' read for '${classRef.qualifiedName}'expected, but not found")
+                    "read or 'fallback' read for '${classRef.qualifiedName}' expected, but not found")
     }
 
     private fun resolveReadOperation(classRef: KClass<*>, curKClass: KClass<*> = classRef): TypedReadOperation<*>? {
@@ -202,7 +219,7 @@ class Schema @PublishedApi internal constructor(builder: SchemaBuilder) {
  */
 class SchemaBuilder @PublishedApi internal constructor() {  // No intent to add explicit versioning support
     @PublishedApi
-    internal val definedProtocols = HashMap<KClass<*>, Protocol>()
+    internal val definedProtocols: MutableMap<KClass<*>, Protocol> = HashMap()
 
     /**
      * Provides a scope wherein the [read][ProtocolBuilder.read] and [write][ProtocolBuilder.write]
@@ -211,6 +228,7 @@ class SchemaBuilder @PublishedApi internal constructor() {  // No intent to add 
      * @throws ReassignmentException either of the operations are defined twice,
      * or this is called more than once for type [T]
      */
+    @Suppress("UNCHECKED_CAST")
     inline fun <reified T : Any> define(builder: ProtocolBuilder<T>.() -> Unit) {
         val classRef = T::class
         if (classRef in builtInTypes) {
@@ -225,7 +243,9 @@ class SchemaBuilder @PublishedApi internal constructor() {  // No intent to add 
         } catch (_: ReassignmentException) {
             throw ReassignmentException("Read or write operation defined more than once")
         }
-        definedProtocols[classRef] = TypeProtocol(builderScope)
+        definedProtocols[classRef] = classRef.companion?.takeIf<Protocol>()?.let { Protocol.merge(builderScope, it) }
+            ?: Protocol(builderScope.read, builderScope.write as WriteOperation?)
+
     }
 
     /**
@@ -245,7 +265,10 @@ class SchemaBuilder @PublishedApi internal constructor() {  // No intent to add 
     }
 }
 
-// Equal to another handle iff lambdas are equal
+/**
+ * Specifies the [class][kClass] from where the given [write operation][lambda] originates from.
+ * Equal to another handle if, and only if, their write operations are equal.
+ */
 internal data class WriteHandle(val kClass: KClass<*>, val lambda: WriteOperation) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

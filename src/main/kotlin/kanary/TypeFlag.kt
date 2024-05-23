@@ -4,6 +4,9 @@ import java.io.IOException
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 
+/**
+ * Types specified by [Schema] as having pre-defined protocols.
+ */
 @PublishedApi
 internal val builtInTypes = TypeFlag.entries.asSequence().map { it.kClass }.toHashSet()
 
@@ -12,6 +15,11 @@ internal val builtInTypes = TypeFlag.entries.asSequence().map { it.kClass }.toHa
  */
 class TypeFlagMismatchException internal constructor(message: String) : IOException(message)
 
+/**
+ * Special bytes emitted to serialized data to:
+ * - Enforce type-safety
+ * - Determine relative position during deserialization
+ */
 internal enum class TypeFlag(val kClass: KClass<*> = Nothing::class) {
     // Primitive types
     BOOLEAN(Boolean::class),

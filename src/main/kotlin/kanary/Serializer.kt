@@ -11,11 +11,11 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.isSubclassOf
 
 /**
- * See [Schema] for the types with pre-defined binary I/O protocols.
+ * See [Schema] for a list of types that can be serialized by default.
  * @return a new serializer capable of writing primitives, primitive arrays,
  * and instances of any type with a defined protocol to Kanary format
  */
-fun OutputStream.serializer(protocols: Schema): Serializer = OutputSerializer(this, protocols)
+fun OutputStream.serializer(protocols: Schema) = OutputSerializer(this, protocols)
 
 /**
  * Writes the objects in binary format according to the protocol of each type.
@@ -136,9 +136,8 @@ sealed interface Serializer {
  * Does not need to be closed so long as the underlying stream is closed.
  * Because no protocols are defined, no instances of any reference types may be written.
  * Calling [close] also closes the underlying stream.
- * Until closed, instances are blocking.
  */
-private class OutputSerializer(
+class OutputSerializer(
     private val stream: OutputStream,
     private val schema: Schema
 ) : Closeable, Flushable, Serializer {
@@ -245,12 +244,22 @@ private class OutputSerializer(
     override fun close() = stream.close()
     override fun flush() = stream.flush()
 
-    fun writeStringNoMark(s: String) {
+    /**
+     * ```
+     * noMarkString := (size: i32)(bytes: byte[]?)
+     * ```
+     */
+    private fun writeStringNoMark(s: String) {
         val bytes = s.toByteArray(Charsets.UTF_8)
         writeIntNoMark(bytes.size)
         stream.write(bytes)
     }
 
+    /**
+     * ```
+     * flag := (ordinal: i8)
+     * ```
+     */
     private fun writeFlag(flag: TypeFlag) {
         stream.write(flag.ordinal)
     }
@@ -270,7 +279,11 @@ private class OutputSerializer(
     private fun writeFloatNoMark(fp: Float) = writeBytesNoMark(Float.SIZE_BYTES) { putFloat(fp) }
     private fun writeDoubleNoMark(fp: Double) = writeBytesNoMark(Double.SIZE_BYTES) { putDouble(fp) }
 
-    // flag size element*
+    /**
+     * ```
+     * noMarkArray := (size: i32)(element: object*)
+     * ```
+     */
     private inline fun writeArrayNoMark(elementBytes: Int, size: Int, bulkWrite: ByteBuffer.() -> Unit) {
         val buffer = ByteBuffer.allocate(1 * Int.SIZE_BYTES + size * elementBytes)
         buffer.putInt(size)
@@ -278,6 +291,17 @@ private class OutputSerializer(
         stream.write(buffer.array())
     }
 
+    /**
+     * ```
+     * builtIn := (marker: flag)(builtIn: ...?)
+     *
+     * superData := (begin: flag = OBJECT)(className: noMarkString)(userData: ...)
+     * (end: flag = END_OBJECT)
+     *
+     * object := (begin: flag = OBJECT)(className: noMarkString)(superCount: i8)
+     * (supers: superData*)(builtInSuper: builtIn?)(userData: ...)(end: flag = END_OBJECT)
+     * ```
+     */
     private fun writeObject(obj: Any, nonNullElements: Boolean = false) {
         fun KClass<*>.writeBuiltIn(obj: Any, builtIns: Map<KClass<*>, BuiltInWriteHandle>) {
             builtIns.getValue(this).let { (flag, lambda) ->
@@ -334,7 +358,11 @@ private class OutputSerializer(
     }
 
     private companion object {
-        // Optimizations for built-in composite types avoiding null-checks for elements
+        /**
+         * Built-in write operations for objects with non-null elements.
+         * Optimized to avoid unnecessary null checks.
+         * @see nullableBuiltIns
+         */
         val nonNullBuiltIns = linkedMapOf(
             builtInOf(OBJECT_ARRAY) { objArray: Array<Any> ->
                 writeIntNoMark(objArray.size)
@@ -370,13 +398,14 @@ private class OutputSerializer(
             }
         )
 
-        /* Exclusive to a single object
-         * if an iterable is a list, it is written using write<List> { ... }
+        /**
+         * Built-in write operations.
+         * @see nonNullBuiltIns
          */
         val nullableBuiltIns = linkedMapOf(
             builtInOf<Unit>(UNIT) {},
             builtInOf(BOOLEAN) { value: Boolean ->
-                writeBooleanNoMark(value)   // Separate function that prevents autoboxing
+                writeBooleanNoMark(value)
             },
             builtInOf(BYTE) { value: Byte ->
                 writeByteNoMark(value)
@@ -453,7 +482,7 @@ private class OutputSerializer(
                 write(entry.key)
                 write(entry.value)
             },
-            builtInOf(MAP) { map: Map<*, *> ->   // Multi-maps not supported
+            builtInOf(MAP) { map: Map<*, *> ->
                 writeIntNoMark(map.size)
                 map.forEach { (key, value) ->
                     write(key)
@@ -471,4 +500,7 @@ private class OutputSerializer(
     }
 }
 
-private data class BuiltInWriteHandle(val flag: TypeFlag, val write: WriteOperation)
+/**
+ * Specifies the [flag] from where the given [write operation][lambda] originates from.
+ */
+private data class BuiltInWriteHandle(val flag: TypeFlag, val lambda: WriteOperation)

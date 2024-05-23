@@ -14,10 +14,11 @@ import kotlin.reflect.full.superclasses
 private val EMPTY_DESERIALIZER: Deserializer = InputDeserializer(InputStream.nullInputStream(), schema {})
 
 /**
+ * See [Schema] for a list of types that can be deserialized by default.
  * @return a new deserializer capable of reading primitives, primitive arrays, strings, and
  * instances of any type with a defined protocol from Kanary format
  */
-fun InputStream.deserializer(protocols: Schema): Deserializer = InputDeserializer(this, protocols)
+fun InputStream.deserializer(protocols: Schema) = InputDeserializer(this, protocols)
 
 /**
  * Reads serialized data from a stream in Kanary format.
@@ -147,7 +148,7 @@ class ObjectDeserializer internal constructor( // Each instance used to read a s
  * Does not need to be closed so long as the underlying stream is closed.
  * Calling [close] also closes the underlying stream.
  */
-internal class InputDeserializer(
+class InputDeserializer(
     private val stream: InputStream,
     internal val schema: Schema
 ) : Deserializer, Closeable {
@@ -256,21 +257,24 @@ internal class InputDeserializer(
     private fun InputStream.readCheckedRaw(): Byte {
         val readSize = read(byteWrapper)
         if (readSize == -1) {
-            throwEOF()
+            throwEOFException()
         }
         return byteWrapper.single()
     }
 
-    private fun InputStream.readChecked() = read().also { if (it == -1) throwEOF() }
-    private fun InputStream.readNBytesChecked(len: Int) = readNBytes(len).also { if (it.isEmpty()) throwEOF() }
+    private fun InputStream.readChecked() = read().also { if (it == -1) throwEOFException() }
+    private fun InputStream.readNBytesChecked(len: Int) = readNBytes(len).also { if (it.isEmpty()) throwEOFException() }
 
-    private fun throwEOF(): Nothing {
+    private fun throwEOFException(): Nothing {
         throw EOFException(
                 "Attempted read of object after deserializer was exhausted. " +
                 "Ensure supertype write operations are not overridden by 'static' write")
     }
 
     private companion object {
+        /**
+         * Built-in read operations.
+         */
         val builtIns = hashMapOf(
             builtInOf(END_OBJECT) {
                 throw NoSuchElementException("No object serialized in the current position")

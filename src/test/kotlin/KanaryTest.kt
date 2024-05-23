@@ -359,13 +359,13 @@ class KanaryTest {
     }
 
     // TODO add suport for adding locally-defined protocols to a schema
-    class MyClass {
+    open /* <- allow fallback */ class MyClass {
         companion object : Protocol by define<MyClass>(
-            read = {
+            read = fallback {
                 assertEquals(read(), "Your data here")
                 MyClass()
             },
-            write = {
+            write = static {
                 write("Your data here")
             }
         )
@@ -383,13 +383,32 @@ class KanaryTest {
         }
     }
 
+    open class Kenny {
+        companion object : Protocol by define(
+            read = { Kenny() }
+        )
+    }
+
     @Test
-    fun protocol_mismatch_throws() {
-        // TODO
+    fun mixed_local_and_schema_protocol() {
+        val schema = schema {
+            define<Kenny> {
+                write = { write("Oh my god, they killed Kenny!") }
+            }
+        }
+
+        val serialized = Kenny()
+        useSerializer("mixed_local_and_schema_protocol", schema) {
+            it.write(serialized)
+        }
+        val deserialized = useDeserializer("mixed_local_and_schema_protocol", schema) {
+            it.read<Kenny>()
+        }
+        assertIs<Kenny>(deserialized)
     }
 
     class MyOuterClass(val id: Int) {
-        open /* <- allow fallback */ inner class MyInnerClass {
+        inner class MyInnerClass {
             val id get() = this@MyOuterClass.id
         }
     }
@@ -398,10 +417,10 @@ class KanaryTest {
     fun inner_class() {
         val schema = schema {
             define<MyOuterClass.MyInnerClass> {
-                read = fallback {
+                read = {
                     MyOuterClass(readInt()).MyInnerClass()
                 }
-                write = static {
+                write = {
                     writeInt(it.id)
                 }
             }

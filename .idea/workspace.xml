@@ -9,8 +9,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Added += operator for SchemaBuilder">
+    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Added fallback and static to local protocol test.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Deserializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Deserializer.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Operations.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/ReadAndWrite.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Schema.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Schema.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Serializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Serializer.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/TypeFlag.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/TypeFlag.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/TypeProtocol.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Protocol.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/kotlin/KanaryTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/KanaryTest.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -97,37 +105,37 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;Gradle.Download Sources.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.KanaryTest (1).executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.KanaryTest.deserialized_data_is_same_as_serialized_data.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.KanaryTest.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.KanaryTest.fallback_read.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.KanaryTest.kanaryTest.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.KanaryTest.malformed_protocol_throws.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.KanaryTest.polymorphic_read.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.KanaryTest.test (1).executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.KanaryTest.test.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.Test.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.Test.test.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
-    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "Gradle.Download Sources.executor": "Run",
+    "Gradle.KanaryTest (1).executor": "Debug",
+    "Gradle.KanaryTest.deserialized_data_is_same_as_serialized_data.executor": "Run",
+    "Gradle.KanaryTest.executor": "Run",
+    "Gradle.KanaryTest.fallback_read.executor": "Run",
+    "Gradle.KanaryTest.kanaryTest.executor": "Run",
+    "Gradle.KanaryTest.malformed_protocol_throws.executor": "Run",
+    "Gradle.KanaryTest.polymorphic_read.executor": "Run",
+    "Gradle.KanaryTest.test (1).executor": "Run",
+    "Gradle.KanaryTest.test.executor": "Run",
+    "Gradle.Test.executor": "Run",
+    "Gradle.Test.test.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "master",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "preferences.lookFeel"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;kotlin-gradle-user-dirs&quot;: [
-      &quot;C:\\Users\\eckar\\.gradle&quot;
+  "keyToStringList": {
+    "kotlin-gradle-user-dirs": [
+      "C:\\Users\\eckar\\.gradle"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\eckar\IdeaProjects\kanary\docs" />
@@ -607,13 +615,27 @@
       <option name="project" value="LOCAL" />
       <updated>1715990292633</updated>
     </task>
-    <option name="localTasksCounter" value="42" />
+    <task id="LOCAL-00042" summary="Added proper variances to type parameters in Operations.kt.">
+      <option name="closed" value="true" />
+      <created>1716421108101</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1716421108101</updated>
+    </task>
+    <task id="LOCAL-00043" summary="Added fallback and static to local protocol test.">
+      <option name="closed" value="true" />
+      <created>1716421290328</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1716421290328</updated>
+    </task>
+    <option name="localTasksCounter" value="44" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="Fixed group ID" />
-    <MESSAGE value="Protocols are now resolved as an instance of their own class." />
     <MESSAGE value="1.2" />
     <MESSAGE value="Improved semantics" />
     <MESSAGE value="Suppressed warnings for unused functions" />
@@ -637,7 +659,9 @@
     <MESSAGE value="Updated to 3.2" />
     <MESSAGE value="Added Dokka packages and generated test binaries" />
     <MESSAGE value="Added += operator for SchemaBuilder" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added += operator for SchemaBuilder" />
+    <MESSAGE value="Added proper variances to type parameters in Operations.kt." />
+    <MESSAGE value="Added fallback and static to local protocol test." />
+    <option name="LAST_COMMIT_MESSAGE" value="Added fallback and static to local protocol test." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
