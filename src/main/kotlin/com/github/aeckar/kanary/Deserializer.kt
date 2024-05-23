@@ -1,7 +1,7 @@
-package kanary
+package com.github.aeckar.kanary
 
-import kanary.TypeFlag.*
-import kanary.utils.KClass
+import com.github.aeckar.kanary.TypeFlag.*
+import com.github.aeckar.kanary.utils.KClass
 import java.io.Closeable
 import java.io.EOFException
 import java.io.InputStream

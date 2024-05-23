@@ -1,4 +1,4 @@
-package kanary
+package com.github.aeckar.kanary
 
 import java.io.IOException
 import kotlin.reflect.KClass

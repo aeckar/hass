@@ -1,7 +1,7 @@
-package kanary
+package com.github.aeckar.kanary
 
-import kanary.utils.companion
-import kanary.utils.takeIf
+import com.github.aeckar.kanary.utils.companion
+import com.github.aeckar.kanary.utils.takeIf
 import kotlin.reflect.KClass
 import kotlin.reflect.full.allSuperclasses
 import kotlin.reflect.full.superclasses
@@ -17,9 +17,9 @@ import kotlin.reflect.full.superclasses
  * Thrown when there is an attempt to assign a value to a
  * [read/write operation][ProtocolBuilder] that has already been given a value.
  *
- * If creating a new instance, the import [kanary.utils.ReassignmentException] should be used instead.
+ * If creating a new instance, the import [com.github.aeckar.kanary.utils.ReassignmentException] should be used instead.
  */
-typealias ReassignmentException = kanary.utils.ReassignmentException
+typealias ReassignmentException = com.github.aeckar.kanary.utils.ReassignmentException
 
 /**
  * Provides a scope wherein protocols for various classes may be defined.
@@ -51,6 +51,7 @@ inline fun schema(builder: SchemaBuilder.() -> Unit): Schema {
  *
  * Any built-in read operation designated to an open or abstract type is
  * given the '[fallback][ProtocolBuilder.fallback]' modifier.
+ * Serialized lambdas must be annotated with [JvmSerializableLambda].
  */
 class Schema @PublishedApi internal constructor(builder: SchemaBuilder) {
     private val protocols: MutableMap<KClass<*>, Protocol>
@@ -241,7 +242,7 @@ class SchemaBuilder @PublishedApi internal constructor() {  // No intent to add 
         try {
             builder(builderScope)
         } catch (_: ReassignmentException) {
-            throw ReassignmentException("Read or write operation defined more than once")
+            throw com.github.aeckar.kanary.ReassignmentException("Read or write operation defined more than once")
         }
         definedProtocols[classRef] = classRef.companion?.takeIf<Protocol>()?.let { Protocol.merge(builderScope, it) }
             ?: Protocol(builderScope.read, builderScope.write as WriteOperation?)
@@ -257,8 +258,8 @@ class SchemaBuilder @PublishedApi internal constructor() {  // No intent to add 
         val otherClassRefs = other.protocols().keys
         for (classRef in definedProtocols.keys) {
             if (classRef in otherClassRefs) {
-                throw ReassignmentException(
-                        "Conflicting declarations for protocol of class '${classRef.qualifiedName!!}'")
+                throw com.github.aeckar.kanary.ReassignmentException(
+                    "Conflicting declarations for protocol of class '${classRef.qualifiedName!!}'")
             }
         }
         definedProtocols += other.protocols()

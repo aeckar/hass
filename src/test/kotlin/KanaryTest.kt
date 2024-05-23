@@ -1,6 +1,6 @@
 @file:Suppress("SpellCheckingInspection")
 
-import kanary.*
+import com.github.aeckar.kanary.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.io.FileInputStream

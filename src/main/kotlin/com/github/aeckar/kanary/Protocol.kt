@@ -1,6 +1,6 @@
-package kanary
+package com.github.aeckar.kanary
 
-import kanary.utils.jvmName
+import com.github.aeckar.kanary.utils.jvmName
 import java.io.IOException
 import kotlin.reflect.KClass
 

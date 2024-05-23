@@ -1,7 +1,7 @@
-package kanary
+package com.github.aeckar.kanary
 
-import kanary.TypeFlag.*
-import kanary.utils.jvmName
+import com.github.aeckar.kanary.TypeFlag.*
+import com.github.aeckar.kanary.utils.jvmName
 import java.io.*
 import java.nio.ByteBuffer
 import kotlin.reflect.KClass

@@ -9,12 +9,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Added spacing to documentation.">
+    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Updated to Kotlin 2.0.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Protocol.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Protocol.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/ReadAndWrite.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/ReadAndWrite.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Serializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/kanary/Serializer.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Deserializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/github/aeckar/kanary/Deserializer.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Protocol.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/github/aeckar/kanary/Protocol.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/ReadAndWrite.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/github/aeckar/kanary/ReadAndWrite.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Schema.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/github/aeckar/kanary/Schema.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/Serializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/github/aeckar/kanary/Serializer.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/TypeFlag.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/github/aeckar/kanary/TypeFlag.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/kanary/utils/Utilities.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/github/aeckar/kanary/utils/Utilities.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/kotlin/KanaryTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/KanaryTest.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -102,37 +106,37 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "Gradle.Download Sources.executor": "Run",
-    "Gradle.KanaryTest (1).executor": "Run",
-    "Gradle.KanaryTest.deserialized_data_is_same_as_serialized_data.executor": "Run",
-    "Gradle.KanaryTest.executor": "Run",
-    "Gradle.KanaryTest.fallback_read.executor": "Run",
-    "Gradle.KanaryTest.kanaryTest.executor": "Run",
-    "Gradle.KanaryTest.malformed_protocol_throws.executor": "Run",
-    "Gradle.KanaryTest.polymorphic_read.executor": "Run",
-    "Gradle.KanaryTest.test (1).executor": "Run",
-    "Gradle.KanaryTest.test.executor": "Run",
-    "Gradle.Test.executor": "Run",
-    "Gradle.Test.test.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "preferences.lookFeel"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;Gradle.Download Sources.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest (1).executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.deserialized_data_is_same_as_serialized_data.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.fallback_read.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.kanaryTest.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.malformed_protocol_throws.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.polymorphic_read.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.test (1).executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.test.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Test.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Test.test.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;
   },
-  "keyToStringList": {
-    "kotlin-gradle-user-dirs": [
-      "C:\\Users\\eckar\\.gradle"
+  &quot;keyToStringList&quot;: {
+    &quot;kotlin-gradle-user-dirs&quot;: [
+      &quot;C:\\Users\\eckar\\.gradle&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\eckar\IdeaProjects\kanary\docs" />
@@ -283,14 +287,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1714597578047</updated>
-    </task>
-    <task id="LOCAL-00001" summary="Explicit type annotation no longer needed for protocol">
-      <option name="closed" value="true" />
-      <created>1714622136680</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1714622136680</updated>
     </task>
     <task id="LOCAL-00002" summary="- Made protocol require type parameter again (enforces thread-safety)&#10;- Created MissingProtocolException&#10;- Made exceptions more specific&#10;- General code cleanup">
       <option name="closed" value="true" />
@@ -668,12 +664,27 @@
       <option name="project" value="LOCAL" />
       <updated>1716429970612</updated>
     </task>
-    <option name="localTasksCounter" value="49" />
+    <task id="LOCAL-00049" summary="Updated to Kotlin 2.0.">
+      <option name="closed" value="true" />
+      <created>1716432156664</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1716432156664</updated>
+    </task>
+    <task id="LOCAL-00050" summary="Updated to Kotlin 2.0.">
+      <option name="closed" value="true" />
+      <created>1716432180576</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1716432180576</updated>
+    </task>
+    <option name="localTasksCounter" value="51" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="Removed unused imports" />
     <MESSAGE value="Continued development I" />
     <MESSAGE value="Updated Serializer.kt" />
     <MESSAGE value="Reworked entire API" />
@@ -698,7 +709,8 @@
     <MESSAGE value="Added 'kanary' package to docs." />
     <MESSAGE value="Updated InputDeserializer and OutputSerializer documentation." />
     <MESSAGE value="Added spacing to documentation." />
-    <option name="LAST_COMMIT_MESSAGE" value="Added spacing to documentation." />
+    <MESSAGE value="Updated to Kotlin 2.0." />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated to Kotlin 2.0." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

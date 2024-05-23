@@ -1,4 +1,4 @@
-package kanary.utils
+package com.github.aeckar.kanary.utils
 
 import kotlin.reflect.KClass
 import kotlin.reflect.full.companionObjectInstance
