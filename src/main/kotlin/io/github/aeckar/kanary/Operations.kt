@@ -1,6 +1,6 @@
+@file:JvmMultifileClass
+@file:JvmName("KanaryKt")
 package io.github.aeckar.kanary
-
-import java.io.IOException
 
 /**
  * Lambda specified by [read operation][ProtocolBuilder.read].
@@ -23,9 +23,18 @@ internal typealias ReadOperation = ObjectDeserializer.() -> Any?
 internal typealias WriteOperation = Serializer.(Any?) -> Unit
 
 /**
- * Thrown when a [read][ProtocolBuilder.read] or [write][ProtocolBuilder.write] operation is expected, but not found.
+ * Instantiates a read operation.
+ * @return the given [read operation][ProtocolBuilder.read]
  */
-class MissingOperationException @PublishedApi internal constructor(message: String) : IOException(message)
+@Suppress("NOTHING_TO_INLINE")
+inline fun <T> readOf(noinline read: TypedReadOperation<T>) = read
+
+/**
+ * Instantiates a write operation.
+ * @return the given [write operation][ProtocolBuilder.write]
+ */
+@Suppress("NOTHING_TO_INLINE")
+inline fun <T> writeOf(noinline write: TypedWriteOperation<T>) = write
 
 internal class FallbackReadOperation<T>(read: TypedReadOperation<T>): (ObjectDeserializer) -> T by read
 

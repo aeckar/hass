@@ -1,24 +1,13 @@
 package io.github.aeckar.kanary
 
-import java.io.IOException
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
-
-/**
- * Types specified by [Schema] as having pre-defined protocols.
- */
-@PublishedApi
-internal val TYPES_WITH_BUILTIN_PROTOCOLS = TypeFlag.entries.asSequence().map { it.kClass }.toSet()
-
-/**
- * Thrown when an attempt is made to read serialized data of a certain flagged type, but another type is encountered.
- */
-class TypeFlagMismatchException internal constructor(message: String) : IOException(message)
 
 /**
  * Special [bytes][ordinal] emitted to serialized data to enforce type-safety
  * and determine relative position during deserialization.
  */
+@PublishedApi
 internal enum class TypeFlag(val kClass: KClass<*> = Nothing::class) {
     BOOLEAN(Boolean::class),
     BYTE(Byte::class),
@@ -50,7 +39,11 @@ internal enum class TypeFlag(val kClass: KClass<*> = Nothing::class) {
     NULL,
     END_OBJECT;
 
-    companion object {
-        fun nameOf(ordinal: Int) = entries.find { it.ordinal == ordinal }?.name ?: "UNKNOWN"
+    @PublishedApi
+    internal companion object {
+        /**
+         * Types specified by [Schema] as having pre-defined protocols.
+         */
+        val K_CLASSES = TypeFlag.entries.asSequence().map { it.kClass }.toSet()
     }
 }

@@ -300,7 +300,7 @@ class KanaryTest {
                     }
                 }
             }
-            }
+        }
         val serialized = Phonebook(mapOf(
                 "Caroll" to 717892111,
                 "John" to 2131241232
@@ -358,22 +358,26 @@ class KanaryTest {
         assertEquals(names, listOf("parent", "subclass", "subclass of subclass"))
     }
 
-    // TODO add suport for adding locally-defined protocols to a schema
     open /* <- allow fallback */ class MyClass {
-        companion object : Protocol by define<MyClass>(
-            read = fallback {
+        companion object {
+            val READ = readOf {
                 assertEquals(read(), "Your data here")
                 MyClass()
-            },
-            write = static {
+            }
+            val WRITE = writeOf<MyClass> {
                 write("Your data here")
             }
-        )
+        }
     }
 
     @Test
     fun locally_defined_protocol() {
-        val schema = schema {}
+        val schema = schema {
+            define<MyClass> {
+                read = fallback(MyClass.READ)
+                write = static(MyClass.WRITE)
+            }
+        }
         val serialized = MyClass()
         useSerializer("locally_defined_protocol", schema) {
             it.write(serialized)
@@ -384,15 +388,16 @@ class KanaryTest {
     }
 
     open class Kenny {
-        companion object : Protocol by define(
-            read = { Kenny() }
-        )
+        companion object {
+            val READ = readOf { Kenny() }
+        }
     }
 
     @Test
     fun mixed_local_and_schema_protocol() {
         val schema = schema {
             define<Kenny> {
+                read = Kenny.READ
                 write = { write("Oh my god, they killed Kenny!") }
             }
         }
