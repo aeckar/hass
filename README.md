@@ -15,10 +15,10 @@ To learn more, online [documentation](https://aeckar.github.io/kanary/) is provi
 ## Getting Started
 
 ```kotlin
-import com.github.aeckar.kanary.Schema
-import com.github.aeckar.kanary.deserializer
-import com.github.aeckar.kanary.schema
-import com.github.aeckar.kanary.serializer
+import io.github.aeckar.kanary.Schema
+import io.github.aeckar.kanary.deserializer
+import io.github.aeckar.kanary.schema
+import io.github.aeckar.kanary.serializer
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
