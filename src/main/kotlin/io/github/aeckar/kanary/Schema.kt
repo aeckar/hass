@@ -1,13 +1,11 @@
 package io.github.aeckar.kanary
 
-import io.github.aeckar.kanary.utils.CheckedInputStream
-import io.github.aeckar.kanary.utils.SingletonByteArray
-import kotlin.reflect.KClass
+import io.github.aeckar.kanary.reflect.Type
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.full.superclasses
 
-internal typealias WriteMap = Map<KClass<*>, WriteOperation>
-
-private typealias MutableWriteMap = MutableMap<KClass<*>, WriteOperation>
+internal typealias WriteMap = Map<Type, WriteOperation>
+private typealias MutableWriteMap = MutableMap<Type, WriteOperation>
 
 /**
  * Provides a scope wherein protocols for various classes may be defined.
@@ -18,10 +16,15 @@ private typealias MutableWriteMap = MutableMap<KClass<*>, WriteOperation>
  * [serializer][java.io.OutputStream.serializer] or [deserializer][java.io.InputStream.deserializer]
  * to provide the directions for serializing the specified reference types
  */
-inline fun schema(builder: SchemaBuilder.() -> Unit): Schema {
+inline fun schema(threadSafe: Boolean = true, builder: SchemaBuilder.() -> Unit): Schema {
     val builderScope = SchemaBuilder()
     builder(builderScope)
-    return Schema(builderScope)
+    val protocols = builderScope.definedProtocols
+    return if (threadSafe) {
+        Schema(protocols, ConcurrentHashMap(), ConcurrentHashMap())
+    } else {
+        Schema(protocols, hashMapOf(), hashMapOf())
+    }
 }
 
 /**
@@ -43,16 +46,12 @@ inline fun schema(builder: SchemaBuilder.() -> Unit): Schema {
  * given the '[fallback][ProtocolBuilder.fallback]' modifier.
  * Serialized lambdas must be annotated with [JvmSerializableLambda].
  */
-class Schema @PublishedApi internal constructor(builder: SchemaBuilder) {
-    internal val protocols: Map<KClass<*>, Protocol> = builder.definedProtocols
-
-    /**
-     * @see CheckedInputStream.readRaw
-     */
-    internal val rawBuffer = SingletonByteArray()
-
-    private val readsOrFallbacks: MutableMap<KClass<*>, ReadOperation> = hashMapOf()
-    private val writeSequences: MutableMap<KClass<*>, WriteMap> = hashMapOf()
+class Schema @PublishedApi internal constructor(
+    internal val protocols: Map<Type, Protocol>,
+    private val readsOrFallbacks: MutableMap<Type, ReadOperation>,
+    private val writeSequences: MutableMap<Type, WriteMap>
+) {
+    // ------------------------------ public API ------------------------------
 
     /**
      * Returns a new schema containing the protocols of both.
@@ -68,11 +67,13 @@ class Schema @PublishedApi internal constructor(builder: SchemaBuilder) {
         }
     }
 
-    internal fun writeMapOf(classRef: KClass<*>): WriteMap {
+    // ------------------------------------------------------------------------
+
+    internal fun writeMapOf(classRef: Type): WriteMap {
         return writeSequences[classRef] ?: resolveWriteMap(classRef).also { writeSequences[classRef] = it }
     }
 
-    internal fun readOrFallbackOf(classRef: KClass<*>): TypedReadOperation<*> {
+    internal fun readOrFallbackOf(classRef: Type): TypedReadOperation<*> {
         return readsOrFallbacks[classRef] ?: resolveReadOrFallback(classRef).also { readsOrFallbacks[classRef] = it }
     }
 
@@ -82,8 +83,8 @@ class Schema @PublishedApi internal constructor(builder: SchemaBuilder) {
             - For a given type, its supertypes in the order that they are declared in source code
      */
 
-    private fun resolveReadOrFallback(classRef: KClass<*>): TypedReadOperation<*> {
-        fun resolveFallback(classRef: KClass<*>, superclasses: List<KClass<*>>): TypedReadOperation<*>? {
+    private fun resolveReadOrFallback(classRef: Type): TypedReadOperation<*> {
+        fun resolveFallback(classRef: Type, superclasses: List<Type>): TypedReadOperation<*>? {
             for (kClass in superclasses) {
                 protocols[kClass]?.takeIf { it.hasFallback }?.read?.let { return it }
             }
@@ -95,9 +96,9 @@ class Schema @PublishedApi internal constructor(builder: SchemaBuilder) {
             "Read operation or 'fallback' read operation for '${classRef.qualifiedName}' expected, but not found")
     }
 
-    private fun resolveWriteMap(classRef: KClass<*>): WriteMap {
+    private fun resolveWriteMap(classRef: Type): WriteMap {
         fun MutableWriteMap.appendMappings(
-            superclasses: List<KClass<*>>,
+            superclasses: List<Type>,
         ): WriteMap? {
             for (kClass in superclasses) {
                 val protocol = protocols[kClass]
@@ -105,9 +106,9 @@ class Schema @PublishedApi internal constructor(builder: SchemaBuilder) {
                 if (kClass !in this) {
                     this[kClass] = lambda
                     if (protocol.hasStatic) {
-                        if (this.isNotEmpty()) {
+                        if (this.size > 1) {
                             throw MalformedProtocolException(entries.first().key,
-                                    "non-static write defined with static supertype write")
+                                    "Non-static write defined with static supertype write")
                         }
                         return this // End search; static write overrides all others
                     }
@@ -127,4 +128,22 @@ class Schema @PublishedApi internal constructor(builder: SchemaBuilder) {
             throw MissingOperationException("Write operation for '${classRef.qualifiedName}' expected, but not found")
         }
     }
+    
+    companion object {
+        val READ = readOf {
+            val threadSafe = readBoolean()
+            if (threadSafe) {
+                Schema(read(), read<Map<Type, ReadOperation>>().asMutableMap(), read<Map<Type, WriteMap>>().asMutableMap())
+            } else {
+                Schema(read(), ConcurrentHashMap(read<Map<Type, ReadOperation>>()), ConcurrentHashMap(read<Map<Type, WriteMap>>()))
+            }
+        }
+        val WRITE = writeOf<Schema> {
+            writeBoolean(it.writeSequences is ConcurrentHashMap)
+            write(it.protocols)
+            write(it.readsOrFallbacks)
+            write(it.writeSequences)
+        }
+    }
 }
+

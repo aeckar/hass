@@ -1,10 +1,13 @@
 @file:Suppress("SpellCheckingInspection")
 
-import io.github.aeckar.kanary.*
-import org.junit.jupiter.api.Test
+package io.github.aeckar.kanary
+
+import io.github.aeckar.kanary.reflect.Type
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.assertThrows
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import kotlin.reflect.jvm.jvmName
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
@@ -119,7 +122,7 @@ data class SerializableData(
 }
 
 class Phonebook(val map: Map<String,Int>) : Map<String,Int> by map
-
+lateinit var serializedDataSchema: Schema
 open class ParentClass
 open class SubClass : ParentClass()
 class SubSubClass : SubClass()
@@ -132,9 +135,42 @@ class KanaryTest {
 
     class UniquePerson(override val name: String, override val id: Int) : Person
 
+    private val serializedData = SerializableData(
+        boolean = true,
+        byte = 42,
+        char = 'X',
+        short = 1000,
+        int = 12345,
+        long = 9876543210L,
+        float = 3.14f,
+        double = 2.71828,
+
+        booleanArray = booleanArrayOf(true, false, true),
+        byteArray = byteArrayOf(10, 20, 30),
+        charArray = charArrayOf('A', 'B', 'C'),
+        shortArray = shortArrayOf(100, 200, 300),
+        intArray = intArrayOf(1000, 2000, 3000),
+        longArray = longArrayOf(100000L, 200000L, 300000L),
+        floatArray = floatArrayOf(1.23f, 4.56f, 7.89f),
+        doubleArray = doubleArrayOf(0.1, 0.2, 0.3),
+
+        string = "Hello, World!",
+        objectArray = arrayOf("Apple", 42, true),
+        list = listOf(1, 2, 3),
+        iterable = setOf('a', 'b', 'c'),
+        pair = Pair("Key", 123),
+        triple = Triple(1, 2, 3),
+        mapEntry = mapOf("Name" to "Alice").entries.first(),
+        map = mapOf("A" to 1, "B" to 2),
+        unit = Unit,
+        anyObject = "Custom Object",
+        function = @JvmSerializableLambda { "Generated Function Result" },
+        nullValue = null
+    )
+
     @Test
     fun deserialized_data_is_same_as_serialized_data() {
-        val schema = schema {
+        val serializableData = schema(threadSafe = false) {
             define<SerializableData> {
                 read = {
                     SerializableData(
@@ -200,53 +236,33 @@ class KanaryTest {
                 }
             }
         }
-
-        val serialized = SerializableData(
-            boolean = true,
-            byte = 42,
-            char = 'X',
-            short = 1000,
-            int = 12345,
-            long = 9876543210L,
-            float = 3.14f,
-            double = 2.71828,
-
-            booleanArray = booleanArrayOf(true, false, true),
-            byteArray = byteArrayOf(10, 20, 30),
-            charArray = charArrayOf('A', 'B', 'C'),
-            shortArray = shortArrayOf(100, 200, 300),
-            intArray = intArrayOf(1000, 2000, 3000),
-            longArray = longArrayOf(100000L, 200000L, 300000L),
-            floatArray = floatArrayOf(1.23f, 4.56f, 7.89f),
-            doubleArray = doubleArrayOf(0.1, 0.2, 0.3),
-
-            string = "Hello, World!",
-            objectArray = arrayOf("Apple", 42, true),
-            list = listOf(1, 2, 3),
-            iterable = setOf('a', 'b', 'c'),
-            pair = Pair("Key", 123),
-            triple = Triple(1, 2, 3),
-            mapEntry = mapOf("Name" to "Alice").entries.first(),
-            map = mapOf("A" to 1, "B" to 2),
-            unit = Unit,
-            anyObject = "Custom Object",
-            function = @JvmSerializableLambda { "Generated Function Result" },
-            nullValue = null
-        )
-
-        useSerializer("deserialized_data_is_same_as_serialized_data", schema) {
-            it.write(serialized)
+        useSerializer("deserialized_data_is_same_as_serialized_data", serializableData) {
+            it.write(serializedData)
         }
-        val deserialized: SerializableData = useDeserializer("deserialized_data_is_same_as_serialized_data", schema) {
+        val deserialized: SerializableData = useDeserializer("deserialized_data_is_same_as_serialized_data", serializableData) {
             it.read()
         }
-        assertEquals(serialized, deserialized)
+        assertEquals(serializedData, deserialized)
+    }
+
+    @Test
+    fun with_serialized_schema() {
+        val schema: Schema = useDeserializer("serialize_schema", metaSchema) {
+            it.read()
+        }
+        useSerializer("with_serialized_schema", schema) {
+            it.write(serializedData)
+        }
+        val deserialized: SerializableData = useDeserializer("with_serialized_schema", schema) {
+            it.read()
+        }
+        assertEquals(serializedData, deserialized)
     }
 
     @Test
     fun malformed_protocol_throws() {
         assertThrows<MalformedProtocolException> {
-            schema {
+            schema(threadSafe = false) {
                 define<String> {}
             }
         }
@@ -254,9 +270,9 @@ class KanaryTest {
 
     @Test
     fun fallback_read() {
-        val schema = schema {
+        val schema = schema(threadSafe = false) {
             define<Person> {
-                read = fallback {
+                fallback read {
                     object : Person {
                         override val name = "Joe Schmoe"
                         override val id = 1969
@@ -282,7 +298,7 @@ class KanaryTest {
 
     @Test
     fun static_write() {
-        val schema = schema {
+        val schema = schema(threadSafe = false) {
             define<Phonebook> {
                 read = {
                     Phonebook(
@@ -293,7 +309,7 @@ class KanaryTest {
                     )
                 }
 
-                write = static {
+                static write {
                     it.entries.forEach { (name, number) ->
                         write(name)
                         write(number)
@@ -319,7 +335,7 @@ class KanaryTest {
     fun polymorphic_read() {
         val names = mutableListOf<String>()
 
-        val schema = schema {
+        val schema = schema(threadSafe = false) {
             define<ParentClass> {
                 write = {
                     write("parent")
@@ -372,10 +388,10 @@ class KanaryTest {
 
     @Test
     fun locally_defined_protocol() {
-        val schema = schema {
+        val schema = schema(threadSafe = false) {
             define<MyClass> {
-                read = fallback(MyClass.READ)
-                write = static(MyClass.WRITE)
+                fallback read MyClass.READ
+                static write MyClass.WRITE
             }
         }
         val serialized = MyClass()
@@ -395,7 +411,7 @@ class KanaryTest {
 
     @Test
     fun mixed_local_and_schema_protocol() {
-        val schema = schema {
+        val schema = schema(threadSafe = false) {
             define<Kenny> {
                 read = Kenny.READ
                 write = { write("Oh my god, they killed Kenny!") }
@@ -420,7 +436,7 @@ class KanaryTest {
 
     @Test
     fun inner_class() {
-        val schema = schema {
+        val schema = schema(threadSafe = false) {
             define<MyOuterClass.MyInnerClass> {
                 read = {
                     MyOuterClass(readInt()).MyInnerClass()
@@ -439,5 +455,107 @@ class KanaryTest {
             it.read<MyOuterClass.MyInnerClass>()
         }
         assertEquals(serialized.id, deserialized.id)
+    }
+
+    companion object {
+        @JvmStatic
+        @BeforeAll
+        fun serialize_schema() {
+            serializedDataSchema = schema(threadSafe = false) {
+                define<SerializableData> {
+                    read = {
+                        SerializableData(
+                            readBoolean(),
+                            readByte(),
+                            readChar(),
+                            readShort(),
+                            readInt(),
+                            readLong(),
+                            readFloat(),
+                            readDouble(),
+                            read(),
+                            read(),
+                            read(),
+                            read(),
+                            read(),
+                            read(),
+                            read(),
+                            read(),
+                            read(),
+                            read(),
+                            read(),
+                            read(),
+                            read(),
+                            read(),
+                            read(),
+                            read(),
+                            read(),
+                            read(),
+                            read(),
+                            read()
+                        )
+                    }
+                    write = {
+                        writeBoolean(it.boolean)    // Thanks copilot :)
+                        writeByte(it.byte)
+                        writeChar(it.char)
+                        writeShort(it.short)
+                        writeInt(it.int)
+                        writeLong(it.long)
+                        writeFloat(it.float)
+                        writeDouble(it.double)
+                        write(it.booleanArray)
+                        write(it.byteArray)
+                        write(it.charArray)
+                        write(it.shortArray)
+                        write(it.intArray)
+                        write(it.longArray)
+                        write(it.floatArray)
+                        write(it.doubleArray)
+                        write(it.string)
+                        write(it.objectArray)
+                        write(it.list)
+                        write(it.iterable)
+                        write(it.pair)
+                        write(it.triple)
+                        write(it.mapEntry)
+                        write(it.map)
+                        write(it.unit)
+                        write(it.anyObject)
+                        write(it.function)
+                        write(it.nullValue)
+                    }
+                }
+            }
+            val schema = metaSchema
+
+            useSerializer("serialize_schema", schema) {
+                it.write(serializedDataSchema)
+            }
+        }
+    }
+}
+
+val metaSchema = schema {
+    define<Type> {
+        fallback read {
+            Type(read())
+        }
+        static write {
+            write(it.jvmName)
+        }
+    }
+    define<Protocol> {
+        read = {
+            Protocol(read(), read())
+        }
+        static write {
+            write(it.read)
+            write(it.write)
+        }
+    }
+    define<Schema> {
+        read Schema.READ
+        write = Schema.WRITE
     }
 }

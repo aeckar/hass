@@ -1,5 +1,3 @@
-@file:JvmMultifileClass
-@file:JvmName("KanaryKt")
 package io.github.aeckar.kanary
 
 import java.io.OutputStream

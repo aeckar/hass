@@ -1,9 +1,7 @@
-@file:JvmMultifileClass
-@file:JvmName("KanaryKt")
 package io.github.aeckar.kanary
 
+import io.github.aeckar.kanary.reflect.Type
 import java.io.InputStream
-import kotlin.reflect.KClass
 import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.full.superclasses
 
@@ -14,15 +12,17 @@ private val EMPTY_DESERIALIZER: Deserializer = InputDeserializer(InputStream.nul
  * a defined [write operation][ProtocolBuilder.write].
  */
 class ObjectDeserializer internal constructor( // Each instance used to read a single OBJECT
-    private val classRef: KClass<*>,
-    private val supertypes: Map<KClass<*>, Deserializer>,
-    private val source: InputDeserializer
-) : Deserializer by source {
+    private val classRef: Type,
+    private val supertypes: Map<Type, Deserializer /* is SupertypeDeserializer */>,
+    private val parent: InputDeserializer
+) : CollectionDeserializer(parent), Deserializer by parent {
     /**
      * A supertype deserializer corresponding to the data serialized by the immediate superclass.
      * If the superclass does not have a defined write operation, is assigned a deserializer containing no data.
      */
     val superclass: Deserializer by lazy { supertype(classRef.superclasses.first()) }
+
+    // ------------------------------ public API ------------------------------
 
     /**
      * @return a supertype deserializer corresponding to the data serialized by given supertype.
@@ -31,22 +31,24 @@ class ObjectDeserializer internal constructor( // Each instance used to read a s
      */
     inline fun <reified T : Any> supertype() = supertype(T::class)
 
+    // ------------------------------------------------------------------------
+
     @PublishedApi
-    internal fun supertype(classRef: KClass<*>): Deserializer {
+    internal fun supertype(classRef: Type): Deserializer {
         return supertypes[classRef] ?: if (classRef.isSuperclassOf(classRef)) {
             EMPTY_DESERIALIZER
         } else {
-            throw MalformedProtocolException(classRef,
-                "type '${classRef.qualifiedName ?: "<local or anonymous>"}' is not a supertype")
+            throw MalformedProtocolException(this.classRef,
+                    "Type '${classRef.qualifiedName ?: "<local or anonymous>"}' is not a supertype")
         }
     }
 
     internal fun resolveObject(): Any? {
         return try {
-            source.schema.readOrFallbackOf(classRef)(this).also { source.readFlag() /* END_OBJECT */ }
+            parent.schema.readOrFallbackOf(classRef)(this).also { parent.stream.readTypeFlag() /* = END_OBJECT */ }
         } catch (_: NoSuchElementException) {
             throw MalformedProtocolException(classRef,
-                "attempted read of object after object deserializer was exhausted")
+                    "Attempted read of object after object deserializer was exhausted")
         }
     }
 }

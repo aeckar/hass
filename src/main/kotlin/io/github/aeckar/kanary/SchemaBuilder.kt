@@ -1,17 +1,16 @@
-@file:JvmMultifileClass
-@file:JvmName("KanaryKt")
 package io.github.aeckar.kanary
 
-import io.github.aeckar.kanary.utils.companion
-import io.github.aeckar.kanary.utils.takeIf
-import kotlin.reflect.KClass
+import io.github.aeckar.kanary.io.TypeFlag
+import io.github.aeckar.kanary.reflect.Type
 
 /**
  * The scope wherein binary I/O protocols may be [defined][define].
  */
 class SchemaBuilder @PublishedApi internal constructor() {  // No intent to add explicit versioning support
     @PublishedApi
-    internal val definedProtocols: MutableMap<KClass<*>, Protocol> = HashMap()
+    internal val definedProtocols: MutableMap<Type, Protocol> = HashMap()
+
+    // ------------------------------ public API ------------------------------
 
     /**
      * Provides a scope wherein the [read][ProtocolBuilder.read] and [write][ProtocolBuilder.write]
@@ -23,16 +22,15 @@ class SchemaBuilder @PublishedApi internal constructor() {  // No intent to add 
      */
     inline fun <reified T : Any> define(builder: ProtocolBuilder<T>.() -> Unit) {
         val classRef = T::class
-        if (classRef in TypeFlag.K_CLASSES) {
-            throw MalformedProtocolException(classRef, "defined by default")
+        if (classRef in TypeFlag.TYPES) {
+            throw MalformedProtocolException(classRef, "Protocol defined by default")
         }
         if (classRef in definedProtocols) {
-            throw MalformedProtocolException(classRef, "defined more than once")
+            throw MalformedProtocolException(classRef, "Protocol defined more than once")
         }
         val builderScope = ProtocolBuilder<T>(classRef)
         builder(builderScope)
-        definedProtocols[classRef] = classRef.companion?.takeIf<Protocol>()?.let { mergeProtocols(builderScope, it) }
-            ?: Protocol(builderScope.readOrNull(), builderScope.writeOrNull())
+        definedProtocols[classRef] = Protocol(builderScope.readOrNull(), builderScope.writeOrNull())
 
     }
 
@@ -46,31 +44,11 @@ class SchemaBuilder @PublishedApi internal constructor() {  // No intent to add 
         val otherClassRefs = other.protocols.keys
         for (classRef in definedProtocols.keys) {
             if (classRef in otherClassRefs) {
-                throw MalformedProtocolException(classRef,
-                        "Conflicting declarations for protocol of class '${classRef.qualifiedName!!}'")
+                throw MalformedProtocolException(classRef, "Conflicting protocol declarations")
             }
         }
         definedProtocols += other.protocols
     }
 
-    @PublishedApi
-    internal fun mergeProtocols(builder: ProtocolBuilder<*>, localProtocol: Protocol): Protocol {
-        val read = if (builder.readOrNull() != null) {
-            localProtocol.read?.let {
-                throw MalformedProtocolException(builder.classRef, "conflicting definitions of read operation")
-            }
-            builder.readOrNull()
-        } else {
-            localProtocol.read
-        }
-        val write = if (builder.writeOrNull() != null) {
-            localProtocol.write?.let {
-                throw MalformedProtocolException(builder.classRef, "conflicting definitions of write operation")
-            }
-            builder.writeOrNull()
-        } else {
-            localProtocol.write
-        }
-        return Protocol(read, write)
-    }
+    // ------------------------------------------------------------------------
 }

@@ -1,14 +1,14 @@
-package io.github.aeckar.kanary
+package io.github.aeckar.kanary.io
 
-import kotlin.reflect.KClass
+import io.github.aeckar.kanary.reflect.Type
 import kotlin.reflect.KFunction
 
 /**
- * Special [bytes][ordinal] emitted to serialized data to enforce type-safety
+ * Special [bytes][ordinal] emitted throughout serialized data to enforce type-safety
  * and determine relative position during deserialization.
  */
 @PublishedApi
-internal enum class TypeFlag(val kClass: KClass<*> = Nothing::class) {
+internal enum class TypeFlag(val kClass: Type = Nothing::class) {
     BOOLEAN(Boolean::class),
     BYTE(Byte::class),
     CHAR(Char::class),
@@ -33,6 +33,7 @@ internal enum class TypeFlag(val kClass: KClass<*> = Nothing::class) {
     TRIPLE(Triple::class),
     MAP_ENTRY(Map.Entry::class),
     MAP(Map::class),
+    SET(Set::class),
     UNIT(Unit::class),
     OBJECT(Any::class),
     FUNCTION(KFunction::class),
@@ -42,8 +43,8 @@ internal enum class TypeFlag(val kClass: KClass<*> = Nothing::class) {
     @PublishedApi
     internal companion object {
         /**
-         * Types specified by [Schema] as having pre-defined protocols.
+         * Types specified by [Schema][io.github.aeckar.kanary.Schema] as having pre-defined protocols.
          */
-        val K_CLASSES = TypeFlag.entries.asSequence().map { it.kClass }.toSet()
+        val TYPES = TypeFlag.entries.asSequence().map { it.kClass }.toSet()
     }
 }

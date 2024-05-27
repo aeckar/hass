@@ -1,5 +1,3 @@
-@file:JvmMultifileClass
-@file:JvmName("KanaryKt")
 package io.github.aeckar.kanary
 
 /**
@@ -26,15 +24,23 @@ internal typealias WriteOperation = Serializer.(Any?) -> Unit
  * Instantiates a read operation.
  * @return the given [read operation][ProtocolBuilder.read]
  */
-@Suppress("NOTHING_TO_INLINE")
-inline fun <T> readOf(noinline read: TypedReadOperation<T>) = read
+// TODO make return api-specific
+// TODO read = fallback {} => fallback read {}; write = static {} => static write {}
+inline fun <T> readOf(crossinline readObject: TypedReadOperation<T>): TypedReadOperation<T> {
+    return (@JvmSerializableLambda { readObject() })
+}
 
 /**
  * Instantiates a write operation.
  * @return the given [write operation][ProtocolBuilder.write]
  */
-@Suppress("NOTHING_TO_INLINE")
-inline fun <T> writeOf(noinline write: TypedWriteOperation<T>) = write
+inline fun <T> writeOf(crossinline writeObject: TypedWriteOperation<T>): TypedWriteOperation<T> {
+    return (@JvmSerializableLambda { writeObject(it) })
+}
+
+fun interface IWriteOperation {
+    operator fun Serializer.invoke(obj: Any?)
+}
 
 internal class FallbackReadOperation<T>(read: TypedReadOperation<T>): (ObjectDeserializer) -> T by read
 

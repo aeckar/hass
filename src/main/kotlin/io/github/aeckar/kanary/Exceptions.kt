@@ -1,16 +1,21 @@
 package io.github.aeckar.kanary
 
+import io.github.aeckar.kanary.reflect.Type
 import java.io.IOException
-import kotlin.reflect.KClass
-
 /**
- * Thrown when an attempt is made to define a protocol for a class that is not top-level.
+ * Thrown when the definition of a protocol is invalid.
  */
-class MalformedProtocolException @PublishedApi internal constructor(classRef: KClass<*>, reason: String)
-        : IOException("Protocol for type '${classRef.qualifiedName}' is malformed ($reason)")
+class MalformedProtocolException @PublishedApi internal constructor(classRef: Type, reason: String)
+        : IllegalArgumentException("$reason (in protocol of '${classRef.qualifiedName}')")
 
 /**
- * Thrown when a [read][ProtocolBuilder.read] or [write][ProtocolBuilder.write] operation is expected, but not found.
+ * Thrown when an object is read as a certain type, but was serialized as a different type.
+ */
+class ObjectMismatchException internal constructor(message: String) : TypeCastException(message)
+
+/**
+ * Thrown when an applicable [read][ProtocolBuilder.read] or [write][ProtocolBuilder.write]
+ * operation is expected, but not found.
  */
 class MissingOperationException internal constructor(message: String) : IOException(message)
 
@@ -22,11 +27,9 @@ class MissingOperationException internal constructor(message: String) : IOExcept
 class NotSerializableException internal constructor(message: String) : IOException(message)
 
 /**
- * Thrown when an attempt is made to read serialized data of a certain flagged type, but another type is encountered.
+ * Thrown when an attempt is made to read serialized data of a certain type flag, but another type flag is encountered.
+ *
+ * These flags are emitted as bytes throughout serialized data to enforce type-safety
+ * and determine relative position during deserialization.
  */
-class TypeFlagMismatchException internal constructor(expected: TypeFlag, found: Int)
-        : IOException("Type flag '$expected' expected, but found '${found.name ?: "UNKNOWN"}'") {
-    private companion object {
-        val Int.name inline get() = TypeFlag.entries.find { it.ordinal == this }?.name
-    }
-}
+class TypeFlagMismatchException internal constructor(message: String) : IOException(message)
