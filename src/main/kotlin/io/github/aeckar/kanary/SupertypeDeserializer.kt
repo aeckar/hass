@@ -44,7 +44,7 @@ internal class SupertypeDeserializer(
 
     private fun <T> nextObject(): T {
         return try {
-            objects[cursor].castTo<T>(classRef).also { ++cursor }
+            objects[cursor].matchCast<T>(classRef).also { ++cursor }
         } catch (_: IndexOutOfBoundsException) {
             throw EOFException(
                 "Attempted read of object in supertype '$supertype' after" +

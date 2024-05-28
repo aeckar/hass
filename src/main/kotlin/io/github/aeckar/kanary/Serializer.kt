@@ -60,15 +60,26 @@ sealed interface Serializer {
     /**
      * Serializes the value without autoboxing.
      */
-    fun writeFloat(fp: Float)
+    fun writeFloat(n: Float)
 
     /**
      * Serializes the value without autoboxing.
      */
-    fun writeDouble(fp: Double)
+    fun writeDouble(n: Double)
 
     /**
      * Serializes the object or boxed primitive value.
+     *
+     * Serialized lambdas must be annotated with [JvmSerializableLambda].
+     * [SAM conversions](https://kotlinlang.org/docs/fun-interfaces.html#sam-conversions)
+     * may be deserialized as the functional interface they implement or their exact function type (e.g. () -> Unit).
+     *
+     * Iterables, unless they have another applicable protocol, are deserialized as lists.
+     *
+     * Schemas may, optionally, be serialized to reduce
+     * any overhead caused by their initialization.
+     *
+     * See [Schema] for the full list of types with pre-defined protocols.
      * @throws MissingOperationException obj is not an instance of a top-level or nested class,
      * or a suitable write operation cannot be determined
      */

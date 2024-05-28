@@ -1,7 +1,10 @@
 package io.github.aeckar.kanary.io
 
+import io.github.aeckar.kanary.reflect.Type
+import java.io.ObjectOutputStream
 import java.io.OutputStream
 import java.nio.ByteBuffer
+import kotlin.reflect.jvm.jvmName
 
 /**
  * Provides type-specific operations for [OutputStream].
@@ -22,6 +25,8 @@ internal class OutputDataStream(override val raw: OutputStream) : DataStream() {
     // ------------------------------ object write operations ------------------------------
 
     fun writeTypeFlag(flag: TypeFlag) = raw.write(flag.ordinal)
+    fun writeFunction(f: Any) = ObjectOutputStream(raw).writeObject(f)
+    fun writeType(kClass: Type) = writeString(kClass.jvmName)
 
     fun writeString(s: String) {
         val byteArray = s.toByteArray(Charsets.UTF_8)

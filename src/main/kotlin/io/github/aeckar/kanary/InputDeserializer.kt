@@ -6,13 +6,13 @@ import io.github.aeckar.kanary.io.InputDataStream
 import io.github.aeckar.kanary.reflect.Type
 import java.io.Closeable
 import java.io.InputStream
-import java.io.ObjectInputStream
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Performs an unchecked cast to [T], throwing [ObjectMismatchException] if the cast fails.
  */
 @Suppress("UNCHECKED_CAST")
-internal fun <T> Any?.castTo(classRef: Type? = null): T {
+internal fun <T> Any?.matchCast(classRef: Type? = null): T {
     return try {
         this as T
     } catch (e: TypeCastException) {
@@ -78,7 +78,7 @@ class InputDeserializer internal constructor(
         return stream.readDouble()
     }
 
-    override fun <T> read() = readObject().castTo<T>()
+    override fun <T> read() = readObject().matchCast<T>()
 
     /**
      * Closes the underlying stream and releases any system resources associated with it.
@@ -90,9 +90,9 @@ class InputDeserializer internal constructor(
 
     // Accessed by SupertypeDeserializer
     internal fun readObject(flag: TypeFlag = stream.readTypeFlag()): Any? {
-        BuiltInReadOperations()[flag]?.let { return this.it() }
+        BuiltInReadOperations()[flag]?.let { return it() }
         // flag == OBJECT
-        val classRef = Type(className = stream.readString())
+        val classRef = stream.readType()    // Serialized as string data
         val superCount = stream.readRawByte()
         val supertypes = if (superCount == 0) {
             emptyMap()
@@ -106,7 +106,7 @@ class InputDeserializer internal constructor(
                         superFlag.kClass
                     } else {
                         // superFlag == OBJECT
-                        Type(className = stream.readString())
+                        stream.readType()
                     }
                     this[supertype] = SupertypeDeserializer(classRef, supertype, superFlag, source, isBuiltIn)
                 }
@@ -117,16 +117,6 @@ class InputDeserializer internal constructor(
 
     private object BuiltInReadOperations {
         private val builtInReads: Map<TypeFlag, InputDeserializer.() -> Any?> = hashMapOf(
-            builtInReadOf(END_OBJECT) {
-                throw NoSuchElementException("No object serialized in the current position")
-            },
-            builtInReadOf(UNIT) { /* noop */ },
-            builtInReadOf(FUNCTION) {
-                ObjectInputStream(stream.raw).readObject()
-            },
-            builtInReadOf(NULL) {
-                null
-            },
             builtInReadOf(BOOLEAN) {
                 stream.readBoolean()
             },
@@ -218,7 +208,7 @@ class InputDeserializer internal constructor(
             },
             builtInReadOf(MAP) {
                 val size = stream.readInt()
-                val mutable = LinkedHashMap<Any?,Any?>(size)
+                val mutable = LinkedHashMap<Any?,Any?>(size.coerceAtLeast(MIN_MAP_SIZE))
                 repeat(size) { mutable[readObject()] = readObject() }
                 DeserializedMap(mutable, source = this)
             },
@@ -227,8 +217,71 @@ class InputDeserializer internal constructor(
                 val mutable = LinkedHashSet<Any?>(size)
                 repeat(size) { mutable += readObject() }
                 DeserializedSet(mutable, source = this)
-            }
+            },
+            builtInReadOf(SCHEMA) {
+                with(stream) {
+                    val threadSafe = readBoolean()
+                    val totalProtocols = readInt()
+                    val protocols = if (totalProtocols > 0 ) {
+                        val protocolMap = HashMap<Type, Protocol>(totalProtocols.coerceAtLeast(MIN_MAP_SIZE))
+                        repeat(totalProtocols) {
+                            val type = readType()
+                            var hasFallback = false
+                            var hasStatic = false
+                            val read: ReadOperation? = if (readBoolean()) {
+                                hasFallback = readBoolean()
+                                readFunction()
+                            } else {
+                                null
+                            }
+                            val write: WriteOperation? = if (readBoolean()) {
+                                hasStatic = readBoolean()
+                                readFunction()
+                            } else {
+                                null
+                            }
+                            protocolMap[type] = Protocol(read, write, hasFallback, hasStatic)
+                        }
+                        protocolMap
+                    } else {
+                        mapOf() // Mutability not necessary
+                    }
+                    val totalReadsOrFallbacks = readInt()
+                    val totalWriteMaps = readInt()
+                    val readsOrFallbacksCapacity = totalReadsOrFallbacks.coerceAtLeast(MIN_MAP_SIZE)
+                    val writeMapsCapacity = totalReadsOrFallbacks.coerceAtLeast(MIN_MAP_SIZE)
+                    val readsOrFallbacks: MutableMap<Type, ReadOperation>
+                    val writeMaps: MutableMap<Type, WriteMap>
+                    if (threadSafe) {
+                        readsOrFallbacks = ConcurrentHashMap(readsOrFallbacksCapacity)
+                        writeMaps = ConcurrentHashMap(writeMapsCapacity)
+                    } else {
+                        readsOrFallbacks = HashMap(readsOrFallbacksCapacity)
+                        writeMaps = HashMap(writeMapsCapacity)
+                    }
+                    repeat(totalReadsOrFallbacks) { readsOrFallbacks[readType()] = readFunction() }
+                    repeat(totalWriteMaps) {    // Each can never be empty
+                        val type = readType()
+                        val writeMap: MutableWriteMap = hashMapOf()
+                        repeat(readInt()) { writeMap[readType()] = readFunction() }
+                        writeMaps[type] = writeMap
+                    }
+                    Schema(protocols, readsOrFallbacks, writeMaps)
+                }
+            },
+            builtInReadOf(UNIT) { /* noop */ },
+            builtInReadOf(FUNCTION) {
+                stream.readFunction()
+            },
+            builtInReadOf(NULL) {
+                null
+            },
+            builtInReadOf(END_OBJECT) { // Impossible under normal circumstances
+                throw NoSuchElementException("No object serialized in the current position")
+            },
         )
+
+        private const val MIN_MAP_SIZE = 16
 
         operator fun invoke() = builtInReads
 

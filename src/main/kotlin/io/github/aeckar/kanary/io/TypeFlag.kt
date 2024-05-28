@@ -1,5 +1,6 @@
 package io.github.aeckar.kanary.io
 
+import io.github.aeckar.kanary.Schema
 import io.github.aeckar.kanary.reflect.Type
 import kotlin.reflect.KFunction
 
@@ -35,6 +36,7 @@ internal enum class TypeFlag(val kClass: Type = Nothing::class) {
     MAP(Map::class),
     SET(Set::class),
     UNIT(Unit::class),
+    SCHEMA(Schema::class),
     OBJECT(Any::class),
     FUNCTION(KFunction::class),
     NULL,

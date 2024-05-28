@@ -26,10 +26,10 @@ data class Person(val name: String, val age: Int)
 
 val schema: Schema = schema {
     define<Person> {
-        read = {
+        read {
             Person(read(), readInt())
         }
-        write = {
+        write {
             write(it.name)
             write(it.age)
         }
@@ -38,7 +38,7 @@ val schema: Schema = schema {
 
 fun main() {
     FileOutputStream("myKanaryFile.bin").serializer(schema).use { it.write(Person("John Doe", 34)) }
-    val myPerson = FileInputStream("myKanaryFile.bin").deserializer(schema).use { it.read<Person>() }
+    val myPerson: Person = FileInputStream("myKanaryFile.bin").deserializer(schema).use { it.read() }
     println(myPerson)
 }
 ```

@@ -2,12 +2,10 @@
 
 package io.github.aeckar.kanary
 
-import io.github.aeckar.kanary.reflect.Type
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.assertThrows
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import kotlin.reflect.jvm.jvmName
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
@@ -172,7 +170,7 @@ class KanaryTest {
     fun deserialized_data_is_same_as_serialized_data() {
         val serializableData = schema(threadSafe = false) {
             define<SerializableData> {
-                read = {
+                read {
                     SerializableData(
                         readBoolean(),
                         readByte(),
@@ -204,7 +202,7 @@ class KanaryTest {
                         read()
                     )
                 }
-                write = {
+                write {
                     writeBoolean(it.boolean)    // Thanks copilot :)
                     writeByte(it.byte)
                     writeChar(it.char)
@@ -247,7 +245,7 @@ class KanaryTest {
 
     @Test
     fun with_serialized_schema() {
-        val schema: Schema = useDeserializer("serialize_schema", metaSchema) {
+        val schema: Schema = useDeserializer("serialize_schema", schema {}) {
             it.read()
         }
         useSerializer("with_serialized_schema", schema) {
@@ -278,7 +276,7 @@ class KanaryTest {
                         override val id = 1969
                     }
                 }
-                write = {
+                write {
                     write(it.name)
                     write(it.id)
                 }
@@ -300,7 +298,7 @@ class KanaryTest {
     fun static_write() {
         val schema = schema(threadSafe = false) {
             define<Phonebook> {
-                read = {
+                read {
                     Phonebook(
                         mapOf(
                             read<String>() to readInt(),
@@ -337,27 +335,27 @@ class KanaryTest {
 
         val schema = schema(threadSafe = false) {
             define<ParentClass> {
-                write = {
+                write {
                     write("parent")
                 }
             }
             define<SubClass> {
-                read = {
+                read {
                     SubClass()
                 }
-                write = {
+                write {
                     write("subclass")
                 }
             }
             define<SubSubClass> {
-                read = {
+                read {
                     names += supertype<ParentClass>().read<String>()
                     names += superclass.read<String>()
                     names += read<String>()
                     assertIs<SubClass>(read())
                     SubSubClass()
                 }
-                write = {
+                write {
                     write("subclass of subclass")
                     write(SubClass())
                 }
@@ -376,11 +374,11 @@ class KanaryTest {
 
     open /* <- allow fallback */ class MyClass {
         companion object {
-            val READ = readOf {
+            val READ = read {
                 assertEquals(read(), "Your data here")
                 MyClass()
             }
-            val WRITE = writeOf<MyClass> {
+            val WRITE = write<MyClass> {
                 write("Your data here")
             }
         }
@@ -405,7 +403,7 @@ class KanaryTest {
 
     open class Kenny {
         companion object {
-            val READ = readOf { Kenny() }
+            val READ = read { Kenny() }
         }
     }
 
@@ -413,8 +411,8 @@ class KanaryTest {
     fun mixed_local_and_schema_protocol() {
         val schema = schema(threadSafe = false) {
             define<Kenny> {
-                read = Kenny.READ
-                write = { write("Oh my god, they killed Kenny!") }
+                default read Kenny.READ
+                write { write("Oh my god, they killed Kenny!") }
             }
         }
 
@@ -438,10 +436,10 @@ class KanaryTest {
     fun inner_class() {
         val schema = schema(threadSafe = false) {
             define<MyOuterClass.MyInnerClass> {
-                read = {
+                read {
                     MyOuterClass(readInt()).MyInnerClass()
                 }
-                write = {
+                write {
                     writeInt(it.id)
                 }
             }
@@ -463,7 +461,7 @@ class KanaryTest {
         fun serialize_schema() {
             serializedDataSchema = schema(threadSafe = false) {
                 define<SerializableData> {
-                    read = {
+                    read {
                         SerializableData(
                             readBoolean(),
                             readByte(),
@@ -495,7 +493,7 @@ class KanaryTest {
                             read()
                         )
                     }
-                    write = {
+                    write {
                         writeBoolean(it.boolean)    // Thanks copilot :)
                         writeByte(it.byte)
                         writeChar(it.char)
@@ -527,35 +525,11 @@ class KanaryTest {
                     }
                 }
             }
-            val schema = metaSchema
 
-            useSerializer("serialize_schema", schema) {
+            useSerializer("serialize_schema", schema {}) {
                 it.write(serializedDataSchema)
             }
         }
     }
 }
 
-val metaSchema = schema {
-    define<Type> {
-        fallback read {
-            Type(read())
-        }
-        static write {
-            write(it.jvmName)
-        }
-    }
-    define<Protocol> {
-        read = {
-            Protocol(read(), read())
-        }
-        static write {
-            write(it.read)
-            write(it.write)
-        }
-    }
-    define<Schema> {
-        read Schema.READ
-        write = Schema.WRITE
-    }
-}

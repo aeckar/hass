@@ -81,7 +81,9 @@ sealed interface Deserializer {
 
     /**
      * If [T] is a primitive type, is capable of reading a primitive value.
-     * Can be null.
+     *
+     * Can be null. If the serialized object is null and [T] is a nullable type, it cannot be guaranteed
+     * that the object passed to [Serializer.write] agrees with the specified type parameter.
      * @return the serialized object of the given type
      * @throws TypeFlagMismatchException the value was not serialized as a singular object or null
      * @throws TypeCastException the object is not an instance of type [T]

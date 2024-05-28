@@ -5,9 +5,16 @@ import io.github.aeckar.kanary.io.TypeFlag.*
 import io.github.aeckar.kanary.io.OutputDataStream
 import io.github.aeckar.kanary.reflect.Type
 import io.github.aeckar.kanary.reflect.isLocalOrAnonymous
+import io.github.aeckar.kanary.reflect.isSAMConversion
 import java.io.*
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.jvmName
+
+private fun interface BuiltInWriteOperation<T> : TypedWriteOperation<T> {
+    fun OutputSerializer.writeOperation(obj: T)
+    override fun Serializer.writeOperation(obj: T) = (this as OutputSerializer).writeOperation(obj)
+}
 
 @Suppress("NOTHING_TO_INLINE")
 private inline infix fun Int.incIf(predicate: Boolean) = if (predicate) this + 1 else this
@@ -24,8 +31,9 @@ private inline infix fun Int.decIf(predicate: Boolean) = if (predicate) this - 1
 class OutputSerializer internal constructor(
     stream: OutputStream,
     private val schema: Schema
-) : Closeable, Flushable, Serializer {
+) : Serializer, Closeable, Flushable {
     private val stream = OutputDataStream(stream)
+    private val serializer inline get() = this  // Used to invoke defined write operation
 
     // ------------------------------ public API ------------------------------
 
@@ -59,14 +67,14 @@ class OutputSerializer internal constructor(
         stream.writeLong(n)
     }
 
-    override fun writeFloat(fp: Float) {
+    override fun writeFloat(n: Float) {
         stream.writeTypeFlag(FLOAT)
-        stream.writeFloat(fp)
+        stream.writeFloat(n)
     }
 
-    override fun writeDouble(fp: Double) {
+    override fun writeDouble(n: Double) {
         stream.writeTypeFlag(DOUBLE)
-        stream.writeDouble(fp)
+        stream.writeDouble(n)
     }
 
     /**
@@ -162,23 +170,36 @@ class OutputSerializer internal constructor(
      * (supers: superData*)(builtInSuper: builtIn?)(userData: ...)(end: flag = END_OBJECT)
      * ```
      */
-    private fun writeObject(obj: Any, nonNullElements: Boolean = false) {
+    private fun writeObject(obj: Any, nonNullElements: Boolean = false): Unit = with (stream) {
         fun Type.writeBuiltIn(obj: Any, builtIns: Map<Type, WriteHandle>) {
-            builtIns.getValue(this).let { (flag, lambda) ->
-                stream.writeTypeFlag(flag)
-                this@OutputSerializer.lambda(obj)
+            builtIns.getValue(this).let { (flag, write) ->
+                writeTypeFlag(flag)
+                write.apply { serializer.writeOperation(obj) }
             }
         }
 
-        if (obj is Function<*>) {   // Necessary because lambdas lack qualified names
-            stream.writeTypeFlag(FUNCTION)
+        fun writeFunction(obj: Any, notSerializableMessage: String) {
             if (obj !is Serializable) {
-                throw NotSerializableException("Lambdas must be annotated with @JvmSerializableLambda to be serialized")
+                throw NotSerializableException(notSerializableMessage)
             }
-            ObjectOutputStream(stream.raw).writeObject(obj)
+            writeTypeFlag(FUNCTION)
+            writeFunction(obj)
+            return
+        }
+
+        /*
+            Necessary because lambdas lack qualified names
+            Only recognizes pre-Kotlin-2.0-style lambdas
+         */
+        if (obj is Function<*>) {
+            writeFunction(obj, "Lambdas must be annotated with @JvmSerializableLambda to be serialized")
             return
         }
         val classRef = obj::class
+        if (classRef.isSAMConversion) {
+            writeFunction(obj, "Functional interfaces of SAM conversions must implement Serializable to be serialized")
+            return
+        }
         val className = classRef.takeIf { !it.isLocalOrAnonymous }?.jvmName
             ?: throw NotSerializableException("Serialization of local and anonymous class instances not supported")
         val protocol = schema.protocols[classRef]
@@ -196,26 +217,26 @@ class OutputSerializer internal constructor(
                 schema.writeMapOf(classRef)
             }
         }
-        val (kClass, lambda) = writeMap.entries.first()
+        val (kClass, write) = writeMap.entries.first()
         val hasWrite = kClass == classRef   // If true, first entry in map is class, write operation of 'obj'
         val nonBuiltInSupers = writeMap.size decIf hasWrite
         val totalSupers = nonBuiltInSupers incIf (builtInKClass != null)
-        stream.writeTypeFlag(OBJECT)
-        stream.writeString(className)
-        stream.raw.write(totalSupers)
+        writeTypeFlag(OBJECT)
+        writeString(className)
+        raw.write(totalSupers)
         if (nonBuiltInSupers != 0) {
             val entries = writeMap.iterator().also { if (hasWrite) it.next() }
             repeat(nonBuiltInSupers) {
-                val (superKClass, superLambda) = entries.next()
-                stream.writeTypeFlag(OBJECT)
-                stream.writeString(superKClass.jvmName)
-                this.superLambda(obj)
-                stream.writeTypeFlag(END_OBJECT)
+                val (superKClass, superWrite) = entries.next()
+                writeTypeFlag(OBJECT)
+                writeType(superKClass)
+                superWrite.apply { serializer.writeOperation(obj) }
+                writeTypeFlag(END_OBJECT)
             }
             builtInKClass?.writeBuiltIn(obj, builtIns) // Marks stream with appropriate built-in flag
         }
-        this.lambda(obj)
-        stream.writeTypeFlag(END_OBJECT)
+        write.apply { serializer.writeOperation(obj) }
+        writeTypeFlag(END_OBJECT)
     }
 
     private object BuiltInWriteOperations {
@@ -259,7 +280,6 @@ class OutputSerializer internal constructor(
         )
 
         private val nullableBuiltInWrites = mapOf(
-            builtInWriteOf<Unit>(UNIT) { /* noop */ },
             builtInWriteOf(BOOLEAN) { value: Boolean ->
                 stream.writeBoolean(value)
             },
@@ -354,6 +374,48 @@ class OutputSerializer internal constructor(
             builtInWriteOf(SET) { set: Set<*> ->
                 stream.writeInt(set.size)
                 set.forEach { write(it) }
+            },
+            builtInWriteOf<Unit>(UNIT) { /* noop */ },
+            builtInWriteOf(SCHEMA) { schema: Schema ->
+                with (stream) {
+                    val readsOrFallbacks = schema.readsOrFallBacks()
+                    val writeMaps = schema.writeMaps()
+                    writeBoolean(schema.readsOrFallBacks() is ConcurrentHashMap)
+                    writeInt(schema.protocols.size)
+                    schema.protocols.forEach { (classRef, protocol) ->
+                        val read = protocol.read
+                        val write = protocol.write
+                        writeType(classRef)
+                        if (read != null) { // Enables smart cast
+                            writeBoolean(true)
+                            writeBoolean(protocol.hasFallback)
+                            writeFunction(read)
+                        } else {
+                            writeBoolean(false)
+                        }
+                        if (write != null) { // Enables smart cast
+                            writeBoolean(true)
+                            writeBoolean(protocol.hasStatic)
+                            writeFunction(write)
+                        } else {
+                            writeBoolean(false)
+                        }
+                    }
+                    writeInt(readsOrFallbacks.size)
+                    writeInt(writeMaps.size)
+                    readsOrFallbacks.forEach { (kClass, readOrFallback) ->
+                        writeType(kClass)
+                        writeFunction(readOrFallback)
+                    }
+                    writeMaps.forEach { (kClass, writeMap) ->
+                        writeType(kClass)
+                        writeInt(writeMap.size)
+                        writeMap.forEach { (type, write) ->
+                            writeType(type)
+                            writeFunction(write)
+                        }
+                    }
+                }
             }
         )
 
@@ -370,7 +432,7 @@ class OutputSerializer internal constructor(
         @Suppress("UNCHECKED_CAST")
         private inline fun <reified T : Any> builtInWriteOf(
             flag: TypeFlag,
-            noinline write: OutputSerializer.(T) -> Unit
+            write: BuiltInWriteOperation<T>
         ): Pair<Type, WriteHandle> =
             T::class to WriteHandle(flag, write as WriteOperation)
     }

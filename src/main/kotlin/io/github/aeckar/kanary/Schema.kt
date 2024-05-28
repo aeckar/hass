@@ -4,8 +4,9 @@ import io.github.aeckar.kanary.reflect.Type
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.full.superclasses
 
+internal typealias ProtocolMap = Map<Type, Protocol>
 internal typealias WriteMap = Map<Type, WriteOperation>
-private typealias MutableWriteMap = MutableMap<Type, WriteOperation>
+internal typealias MutableWriteMap = MutableMap<Type, WriteOperation>
 
 /**
  * Provides a scope wherein protocols for various classes may be defined.
@@ -30,26 +31,30 @@ inline fun schema(threadSafe: Boolean = true, builder: SchemaBuilder.() -> Unit)
 /**
  * Defines a set of protocols corresponding to how certain types should be written to and read from binary.
  *
- * The following types have pre-defined protocols:
+ * The table below includes the types with pre-defined protocols.
+ * Any built-in read operation designated to an open or abstract type within the table
+ * given the [fallback][ProtocolBuilder.fallback] modifier.
  *
  * |               |             |           |
  * |---------------|-------------|-----------|
  * | BooleanArray  | DoubleArray | Map.Entry |
  * | ByteArray     | String      | Map       |
  * | CharArray     | Array       | Unit      |
- * | ShortArray    | List        | (lambda)  |
- * | IntArray      | Iterable    | (null)    |
+ * | ShortArray    | List        | Schema    |
+ * | IntArray      | Iterable    |           |
  * | LongArray     | Pair        |           |
  * | FloatArray    | Triple      |           |
  *
- * Any built-in read operation designated to an open or abstract type is
- * given the '[fallback][ProtocolBuilder.fallback]' modifier.
- * Serialized lambdas must be annotated with [JvmSerializableLambda].
+ * The following categories are also serializable:
+ *  - Lambda expressions (requires [@JvmSerializableLambda][JvmSerializableLambda])
+ *  - [SAM conversions](https://kotlinlang.org/docs/fun-interfaces.html#sam-conversions)
+ *  (requires functional interface to implement [Serializable])
+ *  - `null`
  */
 class Schema @PublishedApi internal constructor(
-    internal val protocols: Map<Type, Protocol>,
+    internal val protocols: ProtocolMap,
     private val readsOrFallbacks: MutableMap<Type, ReadOperation>,
-    private val writeSequences: MutableMap<Type, WriteMap>
+    private val writeMaps: MutableMap<Type, WriteMap>
 ) {
     // ------------------------------ public API ------------------------------
 
@@ -69,8 +74,12 @@ class Schema @PublishedApi internal constructor(
 
     // ------------------------------------------------------------------------
 
+    internal fun readsOrFallBacks(): Map<Type, ReadOperation> = readsOrFallbacks
+
+    internal fun writeMaps(): Map<Type, WriteMap> = writeMaps
+
     internal fun writeMapOf(classRef: Type): WriteMap {
-        return writeSequences[classRef] ?: resolveWriteMap(classRef).also { writeSequences[classRef] = it }
+        return writeMaps[classRef] ?: resolveWriteMap(classRef).also { writeMaps[classRef] = it }
     }
 
     internal fun readOrFallbackOf(classRef: Type): TypedReadOperation<*> {
@@ -83,6 +92,11 @@ class Schema @PublishedApi internal constructor(
             - For a given type, its supertypes in the order that they are declared in source code
      */
 
+    // TODO FEATURE: if kanary.noreflect is used, check for in generated first
+    // TODO FEATURE: the names of read resolutions should be serialized to avoid having to create another read()
+    // TODO FEATURE: write maps will be resolved by using the generated <T : @StaticResolution> write(obj: T)
+    // TODO FEATURE: <T : @StaticResolution> write(obj: T) will provide a specific write map further down the call chain
+
     private fun resolveReadOrFallback(classRef: Type): TypedReadOperation<*> {
         fun resolveFallback(classRef: Type, superclasses: List<Type>): TypedReadOperation<*>? {
             for (kClass in superclasses) {
@@ -90,7 +104,6 @@ class Schema @PublishedApi internal constructor(
             }
             return superclasses.firstNotNullOfOrNull { resolveFallback(classRef, it.superclasses) }
         }
-
         protocols[classRef]?.read?.let { return it }
         return resolveFallback(classRef, classRef.superclasses) ?: throw MissingOperationException(
             "Read operation or 'fallback' read operation for '${classRef.qualifiedName}' expected, but not found")
@@ -126,23 +139,6 @@ class Schema @PublishedApi internal constructor(
         }
         return writeMap.ifEmpty {
             throw MissingOperationException("Write operation for '${classRef.qualifiedName}' expected, but not found")
-        }
-    }
-    
-    companion object {
-        val READ = readOf {
-            val threadSafe = readBoolean()
-            if (threadSafe) {
-                Schema(read(), read<Map<Type, ReadOperation>>().asMutableMap(), read<Map<Type, WriteMap>>().asMutableMap())
-            } else {
-                Schema(read(), ConcurrentHashMap(read<Map<Type, ReadOperation>>()), ConcurrentHashMap(read<Map<Type, WriteMap>>()))
-            }
-        }
-        val WRITE = writeOf<Schema> {
-            writeBoolean(it.writeSequences is ConcurrentHashMap)
-            write(it.protocols)
-            write(it.readsOrFallbacks)
-            write(it.writeSequences)
         }
     }
 }
