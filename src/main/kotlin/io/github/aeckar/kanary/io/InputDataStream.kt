@@ -8,7 +8,9 @@ import java.nio.ByteBuffer
 
 /**
  * Provides checked, type-specific operations for [InputStream], throwing [EOFException] if stream is exhausted.
+ *
  * Operations return the appropriate primitive value, primitive array, string, or [TypeFlag].
+ * This class is analogous to a decoder.
  */
 internal class InputDataStream(override val raw: InputStream) : DataStream() {
     /**

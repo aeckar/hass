@@ -8,7 +8,9 @@ import kotlin.reflect.jvm.jvmName
 
 /**
  * Provides type-specific operations for [OutputStream].
+ *
  * Operations write the appropriate primitive value, string, or [TypeFlag] to the underlying stream.
+ * This class is analogous to an encoder.
  */
 internal class OutputDataStream(override val raw: OutputStream) : DataStream() {
     // ------------------------------ primitive write operations ------------------------------
