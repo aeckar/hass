@@ -2,7 +2,6 @@ package io.github.aeckar.kanary.io
 
 import io.github.aeckar.kanary.Schema
 import io.github.aeckar.kanary.reflect.Type
-import kotlin.reflect.KFunction
 
 /**
  * Special [bytes][ordinal] emitted throughout serialized data to enforce type-safety
@@ -38,7 +37,8 @@ internal enum class TypeFlag(val kClass: Type = Nothing::class) {
     UNIT(Unit::class),
     SCHEMA(Schema::class),
     OBJECT(Any::class),
-    FUNCTION(KFunction::class),
+    CONTAINER,
+    FUNCTION,
     NULL,
     END_OBJECT;
 

@@ -20,13 +20,6 @@ class ObjectMismatchException internal constructor(message: String) : TypeCastEx
 class MissingOperationException internal constructor(message: String) : IOException(message)
 
 /**
- * Thrown when an attempt is made to serialize an object that cannot be serialized due to the nature of its type.
- *
- * The type may be local, anonymous, or a lambda not annotated with [JvmSerializableLambda].
- */
-class NotSerializableException internal constructor(message: String) : IOException(message)
-
-/**
  * Thrown when an attempt is made to read serialized data of a certain type flag, but another type flag is encountered.
  *
  * These flags are emitted as bytes throughout serialized data to enforce type-safety

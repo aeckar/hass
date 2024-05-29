@@ -531,5 +531,21 @@ class KanaryTest {
             }
         }
     }
+
+    @Container
+    data class MyData(val n: Int, val s: String, val fp: Double)
+
+    @Test
+    fun container_class() {
+        val schema = schema {}
+        val data = MyData(1, "Hello, world!", 3.14159)
+        useSerializer("container_class", schema) {
+            it.write(data)
+        }
+        val deserialized: MyData = useDeserializer("container_class", schema) {
+            it.read()
+        }
+        assertEquals(data, deserialized)
+    }
 }
 

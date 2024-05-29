@@ -3,11 +3,13 @@ package io.github.aeckar.kanary
 import io.github.aeckar.kanary.io.TypeFlag
 import io.github.aeckar.kanary.io.TypeFlag.*
 import io.github.aeckar.kanary.io.OutputDataStream
+import io.github.aeckar.kanary.reflect.*
 import io.github.aeckar.kanary.reflect.Type
 import io.github.aeckar.kanary.reflect.isLocalOrAnonymous
 import io.github.aeckar.kanary.reflect.isSAMConversion
 import java.io.*
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.jvmName
 
@@ -183,7 +185,7 @@ class OutputSerializer internal constructor(
                 throw NotSerializableException(notSerializableMessage)
             }
             writeTypeFlag(FUNCTION)
-            writeFunction(obj)
+            writeSerializable(obj)
             return
         }
 
@@ -192,12 +194,21 @@ class OutputSerializer internal constructor(
             Only recognizes pre-Kotlin-2.0-style lambdas
          */
         if (obj is Function<*>) {
-            writeFunction(obj, "Lambdas must be annotated with @JvmSerializableLambda to be serialized")
+            writeFunction(obj, "Lambdas must be annotated with @JvmSerializableLambda")
             return
         }
         val classRef = obj::class
+        if (classRef.hasAnnotation<Container>()) {
+            val parameters = classRef.containedProperties
+                ?: throw NotSerializableException("Containers must declare a public primary constructor")
+            stream.writeTypeFlag(CONTAINER)
+            stream.writeByte(parameters.size.toByte())
+            stream.writeString(classRef.jvmName)
+            parameters.forEach { write(it.call(obj)) }
+            return
+        }
         if (classRef.isSAMConversion) {
-            writeFunction(obj, "Functional interfaces of SAM conversions must implement Serializable to be serialized")
+            writeFunction(obj, "Functional interfaces of SAM conversions must implement Serializable")
             return
         }
         val className = classRef.takeIf { !it.isLocalOrAnonymous }?.jvmName
@@ -389,14 +400,14 @@ class OutputSerializer internal constructor(
                         if (read != null) { // Enables smart cast
                             writeBoolean(true)
                             writeBoolean(protocol.hasFallback)
-                            writeFunction(read)
+                            writeSerializable(read)
                         } else {
                             writeBoolean(false)
                         }
                         if (write != null) { // Enables smart cast
                             writeBoolean(true)
                             writeBoolean(protocol.hasStatic)
-                            writeFunction(write)
+                            writeSerializable(write)
                         } else {
                             writeBoolean(false)
                         }
@@ -405,14 +416,14 @@ class OutputSerializer internal constructor(
                     writeInt(writeMaps.size)
                     readsOrFallbacks.forEach { (kClass, readOrFallback) ->
                         writeType(kClass)
-                        writeFunction(readOrFallback)
+                        writeSerializable(readOrFallback)
                     }
                     writeMaps.forEach { (kClass, writeMap) ->
                         writeType(kClass)
                         writeInt(writeMap.size)
                         writeMap.forEach { (type, write) ->
                             writeType(type)
-                            writeFunction(write)
+                            writeSerializable(write)
                         }
                     }
                 }

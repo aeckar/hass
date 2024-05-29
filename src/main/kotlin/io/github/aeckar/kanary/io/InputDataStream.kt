@@ -53,7 +53,7 @@ internal class InputDataStream(override val raw: InputStream) : DataStream() {
     fun readPrimitiveArray(sizeBytes: Int) = raw.readNBytes(readInt() * sizeBytes).asByteBuffer()
 
     @Suppress("UNCHECKED_CAST")
-    fun <F> readFunction() = ObjectInputStream(raw).readObject() as F
+    fun <F> readSerializable() = ObjectInputStream(raw).readObject() as F
 
     fun readType() = Class.forName(readString()).kotlin
 

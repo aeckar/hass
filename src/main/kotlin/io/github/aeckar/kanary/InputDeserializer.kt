@@ -7,6 +7,8 @@ import io.github.aeckar.kanary.reflect.Type
 import java.io.Closeable
 import java.io.InputStream
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.reflect.KFunction
+import kotlin.reflect.full.primaryConstructor
 
 /**
  * Performs an unchecked cast to [T], throwing [ObjectMismatchException] if the cast fails.
@@ -230,13 +232,13 @@ class InputDeserializer internal constructor(
                             var hasStatic = false
                             val read: ReadOperation? = if (readBoolean()) {
                                 hasFallback = readBoolean()
-                                readFunction()
+                                readSerializable()
                             } else {
                                 null
                             }
                             val write: WriteOperation? = if (readBoolean()) {
                                 hasStatic = readBoolean()
-                                readFunction()
+                                readSerializable()
                             } else {
                                 null
                             }
@@ -259,19 +261,26 @@ class InputDeserializer internal constructor(
                         readsOrFallbacks = HashMap(readsOrFallbacksCapacity)
                         writeMaps = HashMap(writeMapsCapacity)
                     }
-                    repeat(totalReadsOrFallbacks) { readsOrFallbacks[readType()] = readFunction() }
+                    repeat(totalReadsOrFallbacks) { readsOrFallbacks[readType()] = readSerializable() }
                     repeat(totalWriteMaps) {    // Each can never be empty
                         val type = readType()
                         val writeMap: MutableWriteMap = hashMapOf()
-                        repeat(readInt()) { writeMap[readType()] = readFunction() }
+                        repeat(readInt()) { writeMap[readType()] = readSerializable() }
                         writeMaps[type] = writeMap
                     }
                     Schema(protocols, readsOrFallbacks, writeMaps)
                 }
             },
+            builtInReadOf(CONTAINER) {
+                val totalParameters = stream.readByte().toInt()
+                val constructor = Class.forName(stream.readString()).kotlin.primaryConstructor!!
+                val parameters = Array<Any?>(totalParameters) {}
+                repeat(totalParameters) { parameters[it] = read() }
+                constructor.call(*parameters)
+            },
             builtInReadOf(UNIT) { /* noop */ },
             builtInReadOf(FUNCTION) {
-                stream.readFunction()
+                stream.readSerializable()
             },
             builtInReadOf(NULL) {
                 null
