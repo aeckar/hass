@@ -62,13 +62,21 @@ class Schema @PublishedApi internal constructor(
      * Returns a new schema containing the protocols of both.
      *
      * Should be used if the union is used only once.
-     * If used more than once, a new [schema] should be defined with both [added][SchemaBuilder.plusAssign] to it.
+     * If used more than once, a new [schema] should be defined with both [added][SchemaBuilder.import] to it.
+     *
+     * This function is shorthand for:
+     * ```kotlin
+     * schema(threadSafe = true) {
+     *     import from this@Schema
+     *     import from other
+     * }
+     * ```
      * @throws MalformedProtocolException there exist conflicting declarations of a given protocol
      */
     operator fun plus(other: Schema): Schema {
         return schema {
-            this += this@Schema
-            this += other
+            import from this@Schema
+            import from other
         }
     }
 

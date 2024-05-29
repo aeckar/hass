@@ -7,6 +7,11 @@ import io.github.aeckar.kanary.reflect.Type
  * The scope wherein binary I/O protocols may be [defined][define].
  */
 class SchemaBuilder @PublishedApi internal constructor() {  // No intent to add explicit versioning support
+    /**
+     * Enables the adding of all protocols from another [Schema] to this one.
+     */
+    val import inline get() = ImportStatement(this)
+
     @PublishedApi
     internal val definedProtocols: MutableMap<Type, Protocol> = HashMap()
 
@@ -40,19 +45,25 @@ class SchemaBuilder @PublishedApi internal constructor() {  // No intent to add 
     }
 
     /**
-     * Adds all protocols from the given schema to this one.
-     *
-     * If the union of two schemas is used only sparingly, [Schema.plus] should be used instead.
-     * @throws MalformedProtocolException there exist conflicting declarations of a given protocol
+     * An [import][SchemaBuilder.import] statement.
      */
-    operator fun plusAssign(other: Schema) {
-        val otherClassRefs = other.protocols.keys
-        for (classRef in definedProtocols.keys) {
-            if (classRef in otherClassRefs) {
-                throw MalformedProtocolException(classRef, "Conflicting protocol declarations")
+    @JvmInline
+    value class ImportStatement @PublishedApi internal constructor(private val parent: SchemaBuilder) {
+        /**
+         * Adds all protocols from the given schema to this one.
+         *
+         * If the union of two schemas is used only sparingly, [Schema.plus] should be used instead.
+         * @throws MalformedProtocolException there exist conflicting declarations of a given protocol
+         */
+        infix fun from(other: Schema) {
+            val otherClassRefs = other.protocols.keys
+            for (classRef in parent.definedProtocols.keys) {
+                if (classRef in otherClassRefs) {
+                    throw MalformedProtocolException(classRef, "Conflicting protocol declarations")
+                }
             }
+            parent.definedProtocols += other.protocols
         }
-        definedProtocols += other.protocols
     }
 
     // ------------------------------------------------------------------------

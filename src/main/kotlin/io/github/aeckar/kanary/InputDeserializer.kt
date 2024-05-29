@@ -7,7 +7,6 @@ import io.github.aeckar.kanary.reflect.Type
 import java.io.Closeable
 import java.io.InputStream
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.reflect.KFunction
 import kotlin.reflect.full.primaryConstructor
 
 /**
