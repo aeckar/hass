@@ -2,11 +2,16 @@ $dokka.format:html-v1
 $dokka.linkExtension:html
 $dokka.location:io.github.aeckar.kanary////PointingToDeclaration/kanary/io.github.aeckar.kanary/index.html
 $dokka.location:io.github.aeckar.kanary//deserializer/java.io.InputStream#io.github.aeckar.kanary.Schema/PointingToDeclaration/kanary/io.github.aeckar.kanary/deserializer.html
-$dokka.location:io.github.aeckar.kanary//readOf/#kotlin.Function1[io.github.aeckar.kanary.ObjectDeserializer,TypeParam(bounds=[kotlin.Any?])]/PointingToDeclaration/kanary/io.github.aeckar.kanary/read-of.html
-$dokka.location:io.github.aeckar.kanary//schema/#kotlin.Function1[io.github.aeckar.kanary.SchemaBuilder,kotlin.Unit]/PointingToDeclaration/kanary/io.github.aeckar.kanary/schema.html
+$dokka.location:io.github.aeckar.kanary//read/#io.github.aeckar.kanary.TypedReadOperation[TypeParam(bounds=[kotlin.Any?])]/PointingToDeclaration/kanary/io.github.aeckar.kanary/read.html
+$dokka.location:io.github.aeckar.kanary//schema/#kotlin.Boolean#kotlin.Function1[io.github.aeckar.kanary.SchemaBuilder,kotlin.Unit]/PointingToDeclaration/kanary/io.github.aeckar.kanary/schema.html
 $dokka.location:io.github.aeckar.kanary//serializer/java.io.OutputStream#io.github.aeckar.kanary.Schema/PointingToDeclaration/kanary/io.github.aeckar.kanary/serializer.html
+$dokka.location:io.github.aeckar.kanary//write/#io.github.aeckar.kanary.TypedWriteOperation[TypeParam(bounds=[kotlin.Any?])]/PointingToDeclaration/kanary/io.github.aeckar.kanary/write.html
 $dokka.location:io.github.aeckar.kanary//write/io.github.aeckar.kanary.Serializer#kotlin.Array[kotlin.Any?]/PointingToDeclaration/kanary/io.github.aeckar.kanary/write.html
-$dokka.location:io.github.aeckar.kanary//writeOf/#kotlin.Function2[io.github.aeckar.kanary.Serializer,TypeParam(bounds=[kotlin.Any?]),kotlin.Unit]/PointingToDeclaration/kanary/io.github.aeckar.kanary/write-of.html
+$dokka.location:io.github.aeckar.kanary/CollectionDeserializer///PointingToDeclaration/kanary/io.github.aeckar.kanary/-collection-deserializer/index.html
+$dokka.location:io.github.aeckar.kanary/CollectionDeserializer/asMutableList/kotlin.collections.List[TypeParam(bounds=[kotlin.Any?])]#/PointingToDeclaration/kanary/io.github.aeckar.kanary/-collection-deserializer/as-mutable-list.html
+$dokka.location:io.github.aeckar.kanary/CollectionDeserializer/asMutableMap/kotlin.collections.Map[TypeParam(bounds=[kotlin.Any?]),TypeParam(bounds=[kotlin.Any?])]#/PointingToDeclaration/kanary/io.github.aeckar.kanary/-collection-deserializer/as-mutable-map.html
+$dokka.location:io.github.aeckar.kanary/CollectionDeserializer/asMutableSet/kotlin.collections.Set[TypeParam(bounds=[kotlin.Any?])]#/PointingToDeclaration/kanary/io.github.aeckar.kanary/-collection-deserializer/as-mutable-set.html
+$dokka.location:io.github.aeckar.kanary/Container///PointingToDeclaration/kanary/io.github.aeckar.kanary/-container/index.html
 $dokka.location:io.github.aeckar.kanary/Deserializer///PointingToDeclaration/kanary/io.github.aeckar.kanary/-deserializer/index.html
 $dokka.location:io.github.aeckar.kanary/Deserializer/read/#/PointingToDeclaration/kanary/io.github.aeckar.kanary/-deserializer/read.html
 $dokka.location:io.github.aeckar.kanary/Deserializer/readBoolean/#/PointingToDeclaration/kanary/io.github.aeckar.kanary/-deserializer/read-boolean.html
@@ -18,7 +23,6 @@ $dokka.location:io.github.aeckar.kanary/Deserializer/readInt/#/PointingToDeclara
 $dokka.location:io.github.aeckar.kanary/Deserializer/readLong/#/PointingToDeclaration/kanary/io.github.aeckar.kanary/-deserializer/read-long.html
 $dokka.location:io.github.aeckar.kanary/Deserializer/readShort/#/PointingToDeclaration/kanary/io.github.aeckar.kanary/-deserializer/read-short.html
 $dokka.location:io.github.aeckar.kanary/InputDeserializer///PointingToDeclaration/kanary/io.github.aeckar.kanary/-input-deserializer/index.html
-$dokka.location:io.github.aeckar.kanary/InputDeserializer/InputDeserializer/#java.io.InputStream#io.github.aeckar.kanary.Schema/PointingToDeclaration/kanary/io.github.aeckar.kanary/-input-deserializer/-input-deserializer.html
 $dokka.location:io.github.aeckar.kanary/InputDeserializer/close/#/PointingToDeclaration/kanary/io.github.aeckar.kanary/-input-deserializer/close.html
 $dokka.location:io.github.aeckar.kanary/InputDeserializer/read/#/PointingToDeclaration/kanary/io.github.aeckar.kanary/-input-deserializer/read.html
 $dokka.location:io.github.aeckar.kanary/InputDeserializer/readBoolean/#/PointingToDeclaration/kanary/io.github.aeckar.kanary/-input-deserializer/read-boolean.html
@@ -29,14 +33,14 @@ $dokka.location:io.github.aeckar.kanary/InputDeserializer/readFloat/#/PointingTo
 $dokka.location:io.github.aeckar.kanary/InputDeserializer/readInt/#/PointingToDeclaration/kanary/io.github.aeckar.kanary/-input-deserializer/read-int.html
 $dokka.location:io.github.aeckar.kanary/InputDeserializer/readLong/#/PointingToDeclaration/kanary/io.github.aeckar.kanary/-input-deserializer/read-long.html
 $dokka.location:io.github.aeckar.kanary/InputDeserializer/readShort/#/PointingToDeclaration/kanary/io.github.aeckar.kanary/-input-deserializer/read-short.html
+$dokka.location:io.github.aeckar.kanary/MalformedContainerException///PointingToDeclaration/kanary/io.github.aeckar.kanary/-malformed-container-exception/index.html
 $dokka.location:io.github.aeckar.kanary/MalformedProtocolException///PointingToDeclaration/kanary/io.github.aeckar.kanary/-malformed-protocol-exception/index.html
 $dokka.location:io.github.aeckar.kanary/MissingOperationException///PointingToDeclaration/kanary/io.github.aeckar.kanary/-missing-operation-exception/index.html
-$dokka.location:io.github.aeckar.kanary/NotSerializableException///PointingToDeclaration/kanary/io.github.aeckar.kanary/-not-serializable-exception/index.html
 $dokka.location:io.github.aeckar.kanary/ObjectDeserializer///PointingToDeclaration/kanary/io.github.aeckar.kanary/-object-deserializer/index.html
 $dokka.location:io.github.aeckar.kanary/ObjectDeserializer/superclass/#/PointingToDeclaration/kanary/io.github.aeckar.kanary/-object-deserializer/superclass.html
 $dokka.location:io.github.aeckar.kanary/ObjectDeserializer/supertype/#/PointingToDeclaration/kanary/io.github.aeckar.kanary/-object-deserializer/supertype.html
+$dokka.location:io.github.aeckar.kanary/ObjectMismatchException///PointingToDeclaration/kanary/io.github.aeckar.kanary/-object-mismatch-exception/index.html
 $dokka.location:io.github.aeckar.kanary/OutputSerializer///PointingToDeclaration/kanary/io.github.aeckar.kanary/-output-serializer/index.html
-$dokka.location:io.github.aeckar.kanary/OutputSerializer/OutputSerializer/#java.io.OutputStream#io.github.aeckar.kanary.Schema/PointingToDeclaration/kanary/io.github.aeckar.kanary/-output-serializer/-output-serializer.html
 $dokka.location:io.github.aeckar.kanary/OutputSerializer/close/#/PointingToDeclaration/kanary/io.github.aeckar.kanary/-output-serializer/close.html
 $dokka.location:io.github.aeckar.kanary/OutputSerializer/flush/#/PointingToDeclaration/kanary/io.github.aeckar.kanary/-output-serializer/flush.html
 $dokka.location:io.github.aeckar.kanary/OutputSerializer/write/#kotlin.Any?/PointingToDeclaration/kanary/io.github.aeckar.kanary/-output-serializer/write.html
@@ -55,17 +59,27 @@ $dokka.location:io.github.aeckar.kanary/OutputSerializer/writeFloat/#kotlin.Floa
 $dokka.location:io.github.aeckar.kanary/OutputSerializer/writeInt/#kotlin.Int/PointingToDeclaration/kanary/io.github.aeckar.kanary/-output-serializer/write-int.html
 $dokka.location:io.github.aeckar.kanary/OutputSerializer/writeLong/#kotlin.Long/PointingToDeclaration/kanary/io.github.aeckar.kanary/-output-serializer/write-long.html
 $dokka.location:io.github.aeckar.kanary/OutputSerializer/writeShort/#kotlin.Short/PointingToDeclaration/kanary/io.github.aeckar.kanary/-output-serializer/write-short.html
+$dokka.location:io.github.aeckar.kanary/ProtocolBuilder.DefaultOperation///PointingToDeclaration/kanary/io.github.aeckar.kanary/-protocol-builder/-default-operation/index.html
+$dokka.location:io.github.aeckar.kanary/ProtocolBuilder.DefaultOperation/read/#io.github.aeckar.kanary.TypedReadOperation[TypeParam(bounds=[kotlin.Any])]/PointingToDeclaration/kanary/io.github.aeckar.kanary/-protocol-builder/-default-operation/read.html
+$dokka.location:io.github.aeckar.kanary/ProtocolBuilder.DefaultOperation/write/#io.github.aeckar.kanary.TypedWriteOperation[TypeParam(bounds=[kotlin.Any])]/PointingToDeclaration/kanary/io.github.aeckar.kanary/-protocol-builder/-default-operation/write.html
+$dokka.location:io.github.aeckar.kanary/ProtocolBuilder.FallbackModifier///PointingToDeclaration/kanary/io.github.aeckar.kanary/-protocol-builder/-fallback-modifier/index.html
+$dokka.location:io.github.aeckar.kanary/ProtocolBuilder.FallbackModifier/read/#io.github.aeckar.kanary.TypedReadOperation[TypeParam(bounds=[kotlin.Any])]/PointingToDeclaration/kanary/io.github.aeckar.kanary/-protocol-builder/-fallback-modifier/read.html
+$dokka.location:io.github.aeckar.kanary/ProtocolBuilder.StaticModifier///PointingToDeclaration/kanary/io.github.aeckar.kanary/-protocol-builder/-static-modifier/index.html
+$dokka.location:io.github.aeckar.kanary/ProtocolBuilder.StaticModifier/write/#io.github.aeckar.kanary.TypedWriteOperation[TypeParam(bounds=[kotlin.Any])]/PointingToDeclaration/kanary/io.github.aeckar.kanary/-protocol-builder/-static-modifier/write.html
 $dokka.location:io.github.aeckar.kanary/ProtocolBuilder///PointingToDeclaration/kanary/io.github.aeckar.kanary/-protocol-builder/index.html
 $dokka.location:io.github.aeckar.kanary/ProtocolBuilder/ProtocolBuilder/#kotlin.reflect.KClass[*]/PointingToDeclaration/kanary/io.github.aeckar.kanary/-protocol-builder/-protocol-builder.html
-$dokka.location:io.github.aeckar.kanary/ProtocolBuilder/fallback/#kotlin.Function1[io.github.aeckar.kanary.ObjectDeserializer,TypeParam(bounds=[kotlin.Any])]/PointingToDeclaration/kanary/io.github.aeckar.kanary/-protocol-builder/fallback.html
-$dokka.location:io.github.aeckar.kanary/ProtocolBuilder/read/#/PointingToDeclaration/kanary/io.github.aeckar.kanary/-protocol-builder/read.html
-$dokka.location:io.github.aeckar.kanary/ProtocolBuilder/static/#kotlin.Function2[io.github.aeckar.kanary.Serializer,TypeParam(bounds=[kotlin.Any]),kotlin.Unit]/PointingToDeclaration/kanary/io.github.aeckar.kanary/-protocol-builder/static.html
-$dokka.location:io.github.aeckar.kanary/ProtocolBuilder/write/#/PointingToDeclaration/kanary/io.github.aeckar.kanary/-protocol-builder/write.html
+$dokka.location:io.github.aeckar.kanary/ProtocolBuilder/default/#/PointingToDeclaration/kanary/io.github.aeckar.kanary/-protocol-builder/default.html
+$dokka.location:io.github.aeckar.kanary/ProtocolBuilder/fallback/#/PointingToDeclaration/kanary/io.github.aeckar.kanary/-protocol-builder/fallback.html
+$dokka.location:io.github.aeckar.kanary/ProtocolBuilder/read/#io.github.aeckar.kanary.TypedReadOperation[TypeParam(bounds=[kotlin.Any])]/PointingToDeclaration/kanary/io.github.aeckar.kanary/-protocol-builder/read.html
+$dokka.location:io.github.aeckar.kanary/ProtocolBuilder/static/#/PointingToDeclaration/kanary/io.github.aeckar.kanary/-protocol-builder/static.html
+$dokka.location:io.github.aeckar.kanary/ProtocolBuilder/write/#io.github.aeckar.kanary.TypedWriteOperation[TypeParam(bounds=[kotlin.Any])]/PointingToDeclaration/kanary/io.github.aeckar.kanary/-protocol-builder/write.html
 $dokka.location:io.github.aeckar.kanary/Schema///PointingToDeclaration/kanary/io.github.aeckar.kanary/-schema/index.html
 $dokka.location:io.github.aeckar.kanary/Schema/plus/#io.github.aeckar.kanary.Schema/PointingToDeclaration/kanary/io.github.aeckar.kanary/-schema/plus.html
+$dokka.location:io.github.aeckar.kanary/SchemaBuilder.ImportStatement///PointingToDeclaration/kanary/io.github.aeckar.kanary/-schema-builder/-import-statement/index.html
+$dokka.location:io.github.aeckar.kanary/SchemaBuilder.ImportStatement/from/#io.github.aeckar.kanary.Schema/PointingToDeclaration/kanary/io.github.aeckar.kanary/-schema-builder/-import-statement/from.html
 $dokka.location:io.github.aeckar.kanary/SchemaBuilder///PointingToDeclaration/kanary/io.github.aeckar.kanary/-schema-builder/index.html
 $dokka.location:io.github.aeckar.kanary/SchemaBuilder/define/#kotlin.Function1[io.github.aeckar.kanary.ProtocolBuilder[TypeParam(bounds=[kotlin.Any])],kotlin.Unit]/PointingToDeclaration/kanary/io.github.aeckar.kanary/-schema-builder/define.html
-$dokka.location:io.github.aeckar.kanary/SchemaBuilder/plusAssign/#io.github.aeckar.kanary.Schema/PointingToDeclaration/kanary/io.github.aeckar.kanary/-schema-builder/plus-assign.html
+$dokka.location:io.github.aeckar.kanary/SchemaBuilder/import/#/PointingToDeclaration/kanary/io.github.aeckar.kanary/-schema-builder/import.html
 $dokka.location:io.github.aeckar.kanary/Serializer///PointingToDeclaration/kanary/io.github.aeckar.kanary/-serializer/index.html
 $dokka.location:io.github.aeckar.kanary/Serializer/write/#kotlin.Any?/PointingToDeclaration/kanary/io.github.aeckar.kanary/-serializer/write.html
 $dokka.location:io.github.aeckar.kanary/Serializer/write/#kotlin.Array[TypeParam(bounds=[kotlin.Any])]/PointingToDeclaration/kanary/io.github.aeckar.kanary/-serializer/write.html
@@ -85,6 +99,8 @@ $dokka.location:io.github.aeckar.kanary/Serializer/writeLong/#kotlin.Long/Pointi
 $dokka.location:io.github.aeckar.kanary/Serializer/writeShort/#kotlin.Short/PointingToDeclaration/kanary/io.github.aeckar.kanary/-serializer/write-short.html
 $dokka.location:io.github.aeckar.kanary/TypeFlagMismatchException///PointingToDeclaration/kanary/io.github.aeckar.kanary/-type-flag-mismatch-exception/index.html
 $dokka.location:io.github.aeckar.kanary/TypedReadOperation///PointingToDeclaration/kanary/io.github.aeckar.kanary/-typed-read-operation/index.html
+$dokka.location:io.github.aeckar.kanary/TypedReadOperation/readOperation/io.github.aeckar.kanary.ObjectDeserializer#/PointingToDeclaration/kanary/io.github.aeckar.kanary/-typed-read-operation/read-operation.html
 $dokka.location:io.github.aeckar.kanary/TypedWriteOperation///PointingToDeclaration/kanary/io.github.aeckar.kanary/-typed-write-operation/index.html
+$dokka.location:io.github.aeckar.kanary/TypedWriteOperation/writeOperation/io.github.aeckar.kanary.Serializer#TypeParam(bounds=[kotlin.Any?])/PointingToDeclaration/kanary/io.github.aeckar.kanary/-typed-write-operation/write-operation.html
 io.github.aeckar.kanary
 

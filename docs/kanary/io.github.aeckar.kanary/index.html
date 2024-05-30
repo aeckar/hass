@@ -45,7 +45,7 @@
                     </a>
             </div>
             <div class="library-version">
-1.0.3            </div>
+2.0.0            </div>
         </div>
         <div class="filter-section" id="filter-section">
                 <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":dokkaHtml/main">jvm</button>
@@ -72,7 +72,37 @@
     <div class="tabs-section-body">
       <div data-togglable="TYPE">
         <h2 class="">Types</h2>
-        <div class="table"><a data-name="-476746707%2FClasslikes%2F769193423" anchor-label="Deserializer" id="-476746707%2FClasslikes%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
+        <div class="table"><a data-name="570128751%2FClasslikes%2F769193423" anchor-label="CollectionDeserializer" id="570128751%2FClasslikes%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-collection-deserializer/index.html"><span>Collection</span><wbr></wbr><span><span>Deserializer</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="570128751%2FClasslikes%2F769193423"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">sealed </span><span class="token keyword">class </span><a href="-collection-deserializer/index.html">CollectionDeserializer</a> : <a href="-deserializer/index.html">Deserializer</a></div><div class="brief "><p class="paragraph">Permits the reading of serialized collections in Kanary format.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-357198911%2FClasslikes%2F769193423" anchor-label="Container" id="-357198911%2FClasslikes%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-container/index.html"><span><span>Container</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-357198911%2FClasslikes%2F769193423"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.annotation/-target/index.html"><span class="token annotation builtin">Target</span></a><span class="token punctuation">(</span><span>allowedTargets<span class="token operator"> = </span><span class="token punctuation">[</span><span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.annotation/-annotation-target/-c-l-a-s-s/index.html">AnnotationTarget.CLASS</a></span><wbr></wbr><span class="token punctuation">]</span></span><wbr></wbr><span class="token punctuation">)</span></div></div><span class="token keyword">annotation class </span><a href="-container/index.html">Container</a></div><div class="brief "><p class="paragraph">Classes with this annotation can be (de)serialized without a defined protocol.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-476746707%2FClasslikes%2F769193423" anchor-label="Deserializer" id="-476746707%2FClasslikes%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
           <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
@@ -97,7 +127,22 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="-input-deserializer/index.html">InputDeserializer</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">stream<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/io/InputStream.html">InputStream</a><span class="token punctuation">, </span></span><span class="parameter ">schema<span class="token operator">: </span><a href="-schema/index.html">Schema</a></span></span><span class="token punctuation">)</span> : <a href="-deserializer/index.html">Deserializer</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/io/Closeable.html">Closeable</a></div><div class="brief "><p class="paragraph">Reads serialized data from a stream in Kanary format.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="-input-deserializer/index.html">InputDeserializer</a> : <a href="-collection-deserializer/index.html">CollectionDeserializer</a>, <a href="-deserializer/index.html">Deserializer</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/io/Closeable.html">Closeable</a></div><div class="brief "><p class="paragraph">Reads serialized data from a stream in Kanary format.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-159496423%2FClasslikes%2F769193423" anchor-label="MalformedContainerException" id="-159496423%2FClasslikes%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-malformed-container-exception/index.html"><span>Malformed</span><wbr></wbr><span>Container</span><wbr></wbr><span><span>Exception</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-159496423%2FClasslikes%2F769193423"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="-malformed-container-exception/index.html">MalformedContainerException</a> : <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html">Exception</a></div><div class="brief "><p class="paragraph">Thrown when a <a href="-container/index.html">container</a> does not have a primary constructor, its primary constructor is not public, or its primary constructor arguments are not all public properties.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -112,7 +157,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="-malformed-protocol-exception/index.html">MalformedProtocolException</a> : <a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html">IOException</a></div><div class="brief "><p class="paragraph">Thrown when an attempt is made to define a protocol for a class that is not top-level.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="-malformed-protocol-exception/index.html">MalformedProtocolException</a> : <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html">Exception</a></div><div class="brief "><p class="paragraph">Thrown when the definition of a <a href="-protocol-builder/index.html">protocol</a> is invalid.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -127,22 +172,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="-missing-operation-exception/index.html">MissingOperationException</a> : <a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html">IOException</a></div><div class="brief "><p class="paragraph">Thrown when a <a href="-protocol-builder/read.html">read</a> or <a href="-protocol-builder/write.html">write</a> operation is expected, but not found.</p></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="-1662453565%2FClasslikes%2F769193423" anchor-label="NotSerializableException" id="-1662453565%2FClasslikes%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
-          <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="-not-serializable-exception/index.html"><span>Not</span><wbr></wbr><span>Serializable</span><wbr></wbr><span><span>Exception</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1662453565%2FClasslikes%2F769193423"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="-not-serializable-exception/index.html">NotSerializableException</a> : <a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html">IOException</a></div><div class="brief "><p class="paragraph">Thrown when an attempt is made to serialize an object that cannot be serialized due to the nature of its type.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="-missing-operation-exception/index.html">MissingOperationException</a> : <a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html">IOException</a></div><div class="brief "><p class="paragraph">Thrown when an applicable <a href="-protocol-builder/read.html">read</a> or <a href="-protocol-builder/write.html">write</a> operation is expected, but not found.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -157,7 +187,22 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="-object-deserializer/index.html">ObjectDeserializer</a> : <a href="-deserializer/index.html">Deserializer</a></div><div class="brief "><p class="paragraph">Deserializer allowing extraction of data from supertypes with a defined <a href="-protocol-builder/write.html">write operation</a>.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="-object-deserializer/index.html">ObjectDeserializer</a> : <a href="-collection-deserializer/index.html">CollectionDeserializer</a>, <a href="-deserializer/index.html">Deserializer</a></div><div class="brief "><p class="paragraph">Deserializer allowing extraction of data from supertypes with a defined <a href="-protocol-builder/write.html">write operation</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1478134528%2FClasslikes%2F769193423" anchor-label="ObjectMismatchException" id="-1478134528%2FClasslikes%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-object-mismatch-exception/index.html"><span>Object</span><wbr></wbr><span>Mismatch</span><wbr></wbr><span><span>Exception</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1478134528%2FClasslikes%2F769193423"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="-object-mismatch-exception/index.html">ObjectMismatchException</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-type-cast-exception/index.html">TypeCastException</a></div><div class="brief "><p class="paragraph">Thrown when an object is read as a certain type, but was serialized as a different type.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -172,7 +217,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="-output-serializer/index.html">OutputSerializer</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">stream<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/io/OutputStream.html">OutputStream</a><span class="token punctuation">, </span></span><span class="parameter ">schema<span class="token operator">: </span><a href="-schema/index.html">Schema</a></span></span><span class="token punctuation">)</span> : <a href="https://docs.oracle.com/javase/8/docs/api/java/io/Closeable.html">Closeable</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/io/Flushable.html">Flushable</a>, <a href="-serializer/index.html">Serializer</a></div><div class="brief "><p class="paragraph">Writes serialized data to a stream in Kanary format.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="-output-serializer/index.html">OutputSerializer</a> : <a href="-serializer/index.html">Serializer</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/io/Closeable.html">Closeable</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/io/Flushable.html">Flushable</a></div><div class="brief "><p class="paragraph">Writes serialized data to a stream in Kanary format.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -187,7 +232,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="-protocol-builder/index.html">ProtocolBuilder</a><span class="token operator">&lt;</span><a href="-protocol-builder/index.html">T</a><span class="token operator"> : </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">classRef<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html">KClass</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">The scope wherein a protocol's <a href="-protocol-builder/read.html">read</a> and <a href="-protocol-builder/write.html">write</a> operations are defined.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="-protocol-builder/index.html">ProtocolBuilder</a><span class="token operator">&lt;</span><a href="-protocol-builder/index.html">T</a><span class="token operator"> : </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">classRef<span class="token operator">: </span><span data-unresolved-link="io.github.aeckar.kanary.reflect/Type///PointingToDeclaration/">Type</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">The scope wherein a protocol's <a href="-protocol-builder/read.html">read</a> and <a href="-protocol-builder/write.html">write</a> operations are defined.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -247,7 +292,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">typealias </span><a href="-typed-read-operation/index.html">TypedReadOperation</a><span class="token operator">&lt;</span><a href="-typed-read-operation/index.html">T</a><span class="token operator">&gt;</span><span class="token operator"> = </span><a href="-object-deserializer/index.html">ObjectDeserializer</a><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="-typed-read-operation/index.html">T</a></div><div class="brief "><p class="paragraph">Lambda specified by <a href="-protocol-builder/read.html">read operation</a>.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="-typed-read-operation/index.html">TypedReadOperation</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="-typed-read-operation/index.html">T</a><span class="token operator">&gt;</span> : <a href="https://docs.oracle.com/javase/8/docs/api/java/io/Serializable.html">Serializable</a></div><div class="brief "><p class="paragraph">A <a href="-protocol-builder/read.html">read operation</a>.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -262,7 +307,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">typealias </span><a href="-typed-write-operation/index.html">TypedWriteOperation</a><span class="token operator">&lt;</span><a href="-typed-write-operation/index.html">T</a><span class="token operator">&gt;</span><span class="token operator"> = </span><a href="-serializer/index.html">Serializer</a><span class="token punctuation">.</span><span class="token punctuation">(</span><a href="-typed-write-operation/index.html">T</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></div><div class="brief "><p class="paragraph">Lambda specified by <a href="-protocol-builder/write.html">write operation</a>.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="-typed-write-operation/index.html">TypedWriteOperation</a><span class="token operator">&lt;</span><span class="token keyword">in </span><a href="-typed-write-operation/index.html">T</a><span class="token operator">&gt;</span> : <a href="https://docs.oracle.com/javase/8/docs/api/java/io/Serializable.html">Serializable</a></div><div class="brief "><p class="paragraph">A <a href="-protocol-builder/write.html">write operation</a>.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -277,7 +322,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="-type-flag-mismatch-exception/index.html">TypeFlagMismatchException</a> : <a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html">IOException</a></div><div class="brief "><p class="paragraph">Thrown when an attempt is made to read serialized data of a certain flagged type, but another type is encountered.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="-type-flag-mismatch-exception/index.html">TypeFlagMismatchException</a> : <a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html">IOException</a></div><div class="brief "><p class="paragraph">Thrown when an attempt is made to read serialized data of a certain type flag, but another type flag is encountered.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -301,32 +346,32 @@
               </div>
             </div>
           </div>
-<a data-name="-1457588386%2FFunctions%2F769193423" anchor-label="readOf" id="-1457588386%2FFunctions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
+<a data-name="-4766948%2FFunctions%2F769193423" anchor-label="read" id="-4766948%2FFunctions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
           <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="read-of.html"><span>read</span><wbr></wbr><span><span>Of</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1457588386%2FFunctions%2F769193423"></span>
+                  <div><a href="read.html"><span><span>read</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-4766948%2FFunctions%2F769193423"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="read-of.html">T</a><span class="token operator">&gt; </span><a href="read-of.html"><span class="token function">readOf</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">noinline </span>read<span class="token operator">: </span><a href="-typed-read-operation/index.html">TypedReadOperation</a><span class="token operator">&lt;</span><a href="read-of.html">T</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-object-deserializer/index.html">ObjectDeserializer</a><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="read-of.html">T</a></div><div class="brief "><p class="paragraph">Instantiates a read operation.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="read.html">T</a><span class="token operator">&gt; </span><a href="read.html"><span class="token function">read</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">readOperation<span class="token operator">: </span><a href="-typed-read-operation/index.html">TypedReadOperation</a><span class="token operator">&lt;</span><a href="read.html">T</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-typed-read-operation/index.html">TypedReadOperation</a><span class="token operator">&lt;</span><a href="read.html">T</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Creates a new <a href="-typed-read-operation/index.html">TypedReadOperation</a> that can be supplied to <a href="-protocol-builder/read.html">ProtocolBuilder.read</a>.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1316639833%2FFunctions%2F769193423" anchor-label="schema" id="-1316639833%2FFunctions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
+<a data-name="505712457%2FFunctions%2F769193423" anchor-label="schema" id="505712457%2FFunctions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
           <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="schema.html"><span><span>schema</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1316639833%2FFunctions%2F769193423"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="505712457%2FFunctions%2F769193423"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="schema.html"><span class="token function">schema</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">builder<span class="token operator">: </span><a href="-schema-builder/index.html">SchemaBuilder</a><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-schema/index.html">Schema</a></div><div class="brief "><p class="paragraph">Provides a scope wherein protocols for various classes may be defined.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><a href="schema.html"><span class="token function">schema</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">threadSafe<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter ">builder<span class="token operator">: </span><a href="-schema-builder/index.html">SchemaBuilder</a><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-schema/index.html">Schema</a></div><div class="brief "><p class="paragraph">Provides a scope wherein protocols for various classes may be defined.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -346,6 +391,21 @@
               </div>
             </div>
           </div>
+<a data-name="-1020900566%2FFunctions%2F769193423" anchor-label="write" id="-1020900566%2FFunctions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="write.html"><span><span>write</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1020900566%2FFunctions%2F769193423"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="write.html">T</a><span class="token operator">&gt; </span><a href="write.html"><span class="token function">write</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">writeOperation<span class="token operator">: </span><a href="-typed-write-operation/index.html">TypedWriteOperation</a><span class="token operator">&lt;</span><a href="write.html">T</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-typed-write-operation/index.html">TypedWriteOperation</a><span class="token operator">&lt;</span><a href="write.html">T</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Creates a new <a href="-typed-write-operation/index.html">TypedWriteOperation</a> that can be supplied to <a href="-protocol-builder/write.html">ProtocolBuilder.write</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
 <a data-name="2005645464%2FFunctions%2F769193423" anchor-label="write" id="2005645464%2FFunctions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
           <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
             <div class="main-subrow keyValue ">
@@ -357,21 +417,6 @@
               <div>
                 <div class="title">
                   <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="-serializer/index.html">Serializer</a><span class="token punctuation">.</span><a href="write.html"><span class="token function">write</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">vararg </span>objs<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Writes the objects in binary format according to the protocol of each type.</p></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="1777816373%2FFunctions%2F769193423" anchor-label="writeOf" id="1777816373%2FFunctions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
-          <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="write-of.html"><span>write</span><wbr></wbr><span><span>Of</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1777816373%2FFunctions%2F769193423"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="write-of.html">T</a><span class="token operator">&gt; </span><a href="write-of.html"><span class="token function">writeOf</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">noinline </span>write<span class="token operator">: </span><a href="-typed-write-operation/index.html">TypedWriteOperation</a><span class="token operator">&lt;</span><a href="write-of.html">T</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-serializer/index.html">Serializer</a><span class="token punctuation">.</span><span class="token punctuation">(</span><a href="write-of.html">T</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></div><div class="brief "><p class="paragraph">Instantiates a write operation.</p></div></div></div>
                 </div>
               </div>
             </div>

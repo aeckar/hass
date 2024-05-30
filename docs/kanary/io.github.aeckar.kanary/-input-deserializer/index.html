@@ -45,7 +45,7 @@
                     </a>
             </div>
             <div class="library-version">
-1.0.3            </div>
+2.0.0            </div>
         </div>
         <div class="filter-section" id="filter-section">
                 <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":dokkaHtml/main">jvm</button>
@@ -65,33 +65,59 @@
   <div class="breadcrumbs"><a href="../../../index.html">kanary</a><span class="delimiter">/</span><a href="../index.html">io.github.aeckar.kanary</a><span class="delimiter">/</span><span class="current">InputDeserializer</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Input</span><wbr></wbr><span><span>Deserializer</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">InputDeserializer</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">stream<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/io/InputStream.html">InputStream</a><span class="token punctuation">, </span></span><span class="parameter ">schema<span class="token operator">: </span><a href="../-schema/index.html">Schema</a></span></span><span class="token punctuation">)</span> : <a href="../-deserializer/index.html">Deserializer</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/io/Closeable.html">Closeable</a></div><p class="paragraph">Reads serialized data from a stream in Kanary format.</p><p class="paragraph">Does not need to be closed so long as the underlying stream is closed. Calling <a href="close.html">close</a> also closes the underlying stream.</p></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">InputDeserializer</a> : <a href="../-collection-deserializer/index.html">CollectionDeserializer</a>, <a href="../-deserializer/index.html">Deserializer</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/io/Closeable.html">Closeable</a></div><p class="paragraph">Reads serialized data from a stream in Kanary format.</p><p class="paragraph">Does not need to be closed so long as the underlying stream is closed. Calling <a href="close.html">close</a> also closes the underlying stream.</p></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
     <div class="tabs-section-body">
-      <div data-togglable="CONSTRUCTOR">
-        <h2 class="">Constructors</h2>
-        <div class="table"><a data-name="-348730083%2FConstructors%2F769193423" anchor-label="InputDeserializer" id="-348730083%2FConstructors%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
-          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-1119169656%2FFunctions%2F769193423" anchor-label="asMutableList" id="-1119169656%2FFunctions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="-input-deserializer.html"><span>Input</span><wbr></wbr><span><span>Deserializer</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-348730083%2FConstructors%2F769193423"></span>
+                  <div><a href="../-collection-deserializer/as-mutable-list.html"><span>as</span><wbr></wbr><span>Mutable</span><wbr></wbr><span><span>List</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1119169656%2FFunctions%2F769193423"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">stream<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/io/InputStream.html">InputStream</a><span class="token punctuation">, </span></span><span class="parameter ">schema<span class="token operator">: </span><a href="../-schema/index.html">Schema</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="../-collection-deserializer/as-mutable-list.html">E</a><span class="token operator">&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../-collection-deserializer/as-mutable-list.html">E</a><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="../-collection-deserializer/as-mutable-list.html"><span class="token function">asMutableList</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html">MutableList</a><span class="token operator">&lt;</span><a href="../-collection-deserializer/as-mutable-list.html">E</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">If the list was instantiated through deserialization, its backing <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html">MutableList</a> is returned.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-      <div data-togglable="FUNCTION">
-        <h2 class="">Functions</h2>
-        <div class="table"><a data-name="1794344072%2FFunctions%2F769193423" anchor-label="close" id="1794344072%2FFunctions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
+<a data-name="1180816186%2FFunctions%2F769193423" anchor-label="asMutableMap" id="1180816186%2FFunctions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-collection-deserializer/as-mutable-map.html"><span>as</span><wbr></wbr><span>Mutable</span><wbr></wbr><span><span>Map</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1180816186%2FFunctions%2F769193423"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="../-collection-deserializer/as-mutable-map.html">K</a><span class="token punctuation">, </span><a href="../-collection-deserializer/as-mutable-map.html">V</a><span class="token operator">&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="../-collection-deserializer/as-mutable-map.html">K</a><span class="token punctuation">, </span><a href="../-collection-deserializer/as-mutable-map.html">V</a><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="../-collection-deserializer/as-mutable-map.html"><span class="token function">asMutableMap</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-map/index.html">MutableMap</a><span class="token operator">&lt;</span><a href="../-collection-deserializer/as-mutable-map.html">K</a><span class="token punctuation">, </span><a href="../-collection-deserializer/as-mutable-map.html">V</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">If the map was instantiated through deserialization, its backing <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-map/index.html">MutableMap</a> is returned.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2027136274%2FFunctions%2F769193423" anchor-label="asMutableSet" id="2027136274%2FFunctions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-collection-deserializer/as-mutable-set.html"><span>as</span><wbr></wbr><span>Mutable</span><wbr></wbr><span><span>Set</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2027136274%2FFunctions%2F769193423"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="../-collection-deserializer/as-mutable-set.html">E</a><span class="token operator">&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html">Set</a><span class="token operator">&lt;</span><a href="../-collection-deserializer/as-mutable-set.html">E</a><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="../-collection-deserializer/as-mutable-set.html"><span class="token function">asMutableSet</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-set/index.html">MutableSet</a><span class="token operator">&lt;</span><a href="../-collection-deserializer/as-mutable-set.html">E</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">If the set was instantiated through deserialization, its backing <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-set/index.html">MutableSet</a> is returned.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1794344072%2FFunctions%2F769193423" anchor-label="close" id="1794344072%2FFunctions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
           <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
@@ -116,7 +142,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="read.html">T</a><span class="token operator">&gt; </span><a href="read.html"><span class="token function">read</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="read.html">T</a></div><div class="brief "><p class="paragraph">If <a href="read.html">T</a> is a primitive type, is capable of reading a primitive value. Can be null.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="read.html">T</a><span class="token operator">&gt; </span><a href="read.html"><span class="token function">read</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="read.html">T</a></div><div class="brief "><p class="paragraph">If <a href="read.html">T</a> is a primitive type, is capable of reading a primitive value.</p></div></div></div>
                 </div>
               </div>
             </div>

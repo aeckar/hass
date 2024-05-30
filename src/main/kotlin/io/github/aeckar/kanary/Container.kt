@@ -5,6 +5,7 @@ package io.github.aeckar.kanary
  *
  * Such classes must have a public primary constructor with all arguments being declared as public properties.
  */
+@MustBeDocumented
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Container
