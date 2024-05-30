@@ -1,5 +1,6 @@
 package io.github.aeckar.kanary.reflect
 
+import io.github.aeckar.kanary.MalformedContainerException
 import java.io.NotSerializableException
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
@@ -21,7 +22,6 @@ internal val Type.isSAMConversion
  * @see io.github.aeckar.kanary.Container
  */
 // TODO look into caching after we get this working
-// TODO test with private constructors
 internal val Type.containedProperties: Array<KProperty<*>>?
     inline get() {
         val parameters = primaryConstructor?.valueParameters?.map { it.name } ?: return null
@@ -29,7 +29,10 @@ internal val Type.containedProperties: Array<KProperty<*>>?
         val properties = Array<KProperty<*>?>(parameters.size) { null }
         for (index in properties.indices) {
             properties[index] = allProperties.find { it.name == parameters[index] }
-                ?: throw NotSerializableException("All args in the primary constructor of a container must be properties")
+                ?: throw MalformedContainerException(
+                    qualifiedName,
+                    "All arguments in the primary constructor of a container must be public properties"
+                )
         }
         @Suppress("UNCHECKED_CAST")
         return properties as Array<KProperty<*>>

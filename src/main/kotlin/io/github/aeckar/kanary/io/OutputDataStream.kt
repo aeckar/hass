@@ -27,7 +27,7 @@ internal class OutputDataStream(override val raw: OutputStream) : DataStream() {
     // ------------------------------ object write operations ------------------------------
 
     fun writeTypeFlag(flag: TypeFlag) = raw.write(flag.ordinal)
-    fun writeSerializable(f: Any) = ObjectOutputStream(raw).writeObject(f)
+    fun writeSerializable(obj: Any) = ObjectOutputStream(raw).writeObject(obj)
     fun writeType(kClass: Type) = writeString(kClass.jvmName)
 
     fun writeString(s: String) {

@@ -7,6 +7,7 @@ import io.github.aeckar.kanary.reflect.Type
 import java.io.Closeable
 import java.io.InputStream
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.reflect.full.IllegalCallableAccessException
 import kotlin.reflect.full.primaryConstructor
 
 /**
@@ -272,10 +273,15 @@ class InputDeserializer internal constructor(
             },
             builtInReadOf(CONTAINER) {
                 val totalParameters = stream.readByte().toInt()
-                val constructor = Class.forName(stream.readString()).kotlin.primaryConstructor!!
+                val className = stream.readString()
+                val constructor = Class.forName(className).kotlin.primaryConstructor!!
                 val parameters = Array<Any?>(totalParameters) {}
                 repeat(totalParameters) { parameters[it] = read() }
-                constructor.call(*parameters)
+                try {
+                    constructor.call(*parameters)
+                } catch (_: IllegalCallableAccessException) {
+                    throw MalformedContainerException(className, "Primary constructor of container is not public")
+                }
             },
             builtInReadOf(UNIT) { /* noop */ },
             builtInReadOf(FUNCTION) {

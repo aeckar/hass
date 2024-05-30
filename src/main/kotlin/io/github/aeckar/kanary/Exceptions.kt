@@ -3,10 +3,22 @@ package io.github.aeckar.kanary
 import io.github.aeckar.kanary.reflect.Type
 import java.io.IOException
 /**
- * Thrown when the definition of a protocol is invalid.
+ * Thrown when the definition of a [protocol][ProtocolBuilder] is invalid.
  */
-class MalformedProtocolException @PublishedApi internal constructor(classRef: Type, reason: String)
-        : IllegalArgumentException("$reason (in protocol of '${classRef.qualifiedName}')")
+class MalformedProtocolException @PublishedApi internal constructor(
+    classRef: Type,
+    reason: String
+) : Exception("$reason (in protocol of '${classRef.qualifiedName}')")
+
+/**
+ * Thrown when a [container][Container] does not have a primary constructor,
+ * its primary constructor is not public,
+ * or its primary constructor arguments are not all public properties.
+ */
+class MalformedContainerException internal constructor(
+    className: String?,
+    reason: String
+) : Exception("$reason (in '$className')")
 
 /**
  * Thrown when an object is read as a certain type, but was serialized as a different type.

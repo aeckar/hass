@@ -79,15 +79,6 @@ class OutputSerializer internal constructor(
         stream.writeDouble(n)
     }
 
-    /**
-     * Writes the object in binary format according to the protocol of its type.
-     *
-     * Null objects are accepted, however their non-nullable type information is erased.
-     * If the object is not null and its type does not have a defined protocol, the protocol of its superclass or
-     * the first interface declared in source code with a protocol is chosen.
-     * @throws MissingOperationException any object of an anonymous or local class,
-     * or an appropriate write operation cannot be found
-     */
     override fun write(obj: Any?) {
         if (obj == null) {
             stream.writeTypeFlag(NULL)
@@ -96,55 +87,12 @@ class OutputSerializer internal constructor(
         writeObject(obj)
     }
 
-    /**
-     * Writes all elements in array according to the protocol of each instance.
-     *
-     * Avoids null check for elements, unlike generic `write`.
-     * Arrays of primitive types should be passed to the generic overload.
-     */
     override fun <T : Any> write(array: Array<out T>) = writeObject(array, nonNullElements = true)
-
-    /**
-     * Writes all elements in the list according the protocol of each.
-     *
-     * Avoids null check for elements, unlike generic `write`.
-     */
     override fun <T : Any> write(list: List<T>) = writeObject(list, nonNullElements = true)
-
-    /**
-     * Writes all elements in the iterable object according the protocol of each as a list.
-     *
-     * The caller must ensure that the object has a finite number of elements.
-     * Avoids null check for elements, unlike generic `write`.
-     */
     override fun <T : Any> write(iter: Iterable<T>) = writeObject(iter, nonNullElements = true)
-
-    /**
-     * Writes the given pair according to the protocols of its elements.
-     *
-     * Avoids null check for elements, unlike generic `write`.
-     */
     override fun <T : Any> write(pair: Pair<T, T>) = writeObject(pair, nonNullElements = true)
-
-    /**
-     * Writes the given triple according to the protocols of its elements.
-     *
-     * Avoids null check for elements, unlike generic `write`.
-     */
     override fun <T : Any> write(triple: Triple<T, T, T>) = writeObject(triple, nonNullElements = true)
-
-    /**
-     * Writes the given map entry according to the protocols of its key and value.
-     *
-     * Avoids null check for elements, unlike generic `write`.
-     */
     override fun <K : Any, V : Any> write(entry: Map.Entry<K, V>) = writeObject(entry, nonNullElements = true)
-
-    /**
-     * Writes the given map according to the protocols of its keys and values.
-     *
-     * Avoids null check for entries, unlike generic `write`.
-     */
     override fun <K : Any, V : Any> write(map: Map<K, V>) = writeObject(map, nonNullElements = true)
 
     /**
@@ -180,12 +128,12 @@ class OutputSerializer internal constructor(
             }
         }
 
-        fun writeFunction(obj: Any, notSerializableMessage: String) {
-            if (obj !is Serializable) {
+        fun writeFunction(function: Any, notSerializableMessage: String) {
+            if (function !is Serializable) {
                 throw NotSerializableException(notSerializableMessage)
             }
             writeTypeFlag(FUNCTION)
-            writeSerializable(obj)
+            writeSerializable(function)
             return
         }
 
@@ -198,21 +146,21 @@ class OutputSerializer internal constructor(
             return
         }
         val classRef = obj::class
+        if (classRef.isSAMConversion) {
+            writeFunction(obj, "SAM conversions must implement Serializable")
+            return
+        }
+        val className = classRef.takeIf { !it.isLocalOrAnonymous }?.jvmName
+            ?: throw NotSerializableException("Serialization of local and anonymous class instances not supported")
         if (classRef.hasAnnotation<Container>()) {
             val parameters = classRef.containedProperties
-                ?: throw NotSerializableException("Containers must declare a public primary constructor")
+                ?: throw MalformedContainerException(className, "Container does not have a primary constructor")
             stream.writeTypeFlag(CONTAINER)
             stream.writeByte(parameters.size.toByte())
             stream.writeString(classRef.jvmName)
             parameters.forEach { write(it.call(obj)) }
             return
         }
-        if (classRef.isSAMConversion) {
-            writeFunction(obj, "Functional interfaces of SAM conversions must implement Serializable")
-            return
-        }
-        val className = classRef.takeIf { !it.isLocalOrAnonymous }?.jvmName
-            ?: throw NotSerializableException("Serialization of local and anonymous class instances not supported")
         val protocol = schema.protocols[classRef]
         val builtIns = BuiltInWriteOperations given nonNullElements
         val builtInKClass: Type?

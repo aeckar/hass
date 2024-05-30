@@ -463,13 +463,13 @@ class KanaryTest {
                 define<SerializableData> {
                     read {
                         SerializableData(
-                            readBoolean(),
+                            read(),
                             readByte(),
-                            readChar(),
+                            read(),
                             readShort(),
-                            readInt(),
+                            read(),
                             readLong(),
-                            readFloat(),
+                            read(),
                             readDouble(),
                             read(),
                             read(),

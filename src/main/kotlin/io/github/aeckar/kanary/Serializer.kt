@@ -82,6 +82,10 @@ sealed interface Serializer {
      * See [Schema] for the full list of types with pre-defined protocols.
      * @throws MissingOperationException obj is not an instance of a top-level or nested class,
      * or a suitable write operation cannot be determined
+     * @throws MalformedContainerException a [Container] is passed whose primary constructor
+     * is not public
+     * @throws java.io.NotSerializableException
+     * A lambda or SAM conversion is passed that does not implement [Serializable]
      */
     fun write(obj: Any?)
 

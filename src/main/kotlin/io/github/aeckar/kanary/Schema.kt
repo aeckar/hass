@@ -107,8 +107,8 @@ class Schema @PublishedApi internal constructor(
 
     private fun resolveReadOrFallback(classRef: Type): TypedReadOperation<*> {
         fun resolveFallback(classRef: Type, superclasses: List<Type>): TypedReadOperation<*>? {
-            for (kClass in superclasses) {
-                protocols[kClass]?.takeIf { it.hasFallback }?.read?.let { return it }
+            for (superclass in superclasses) {
+                protocols[superclass]?.takeIf { it.hasFallback }?.read?.let { return it }
             }
             return superclasses.firstNotNullOfOrNull { resolveFallback(classRef, it.superclasses) }
         }
@@ -121,11 +121,11 @@ class Schema @PublishedApi internal constructor(
         fun MutableWriteMap.appendMappings(
             superclasses: List<Type>,
         ): WriteMap? {
-            for (kClass in superclasses) {
-                val protocol = protocols[kClass]
-                val lambda = protocol?.write ?: continue
-                if (kClass !in this) {
-                    this[kClass] = lambda
+            for (superclass in superclasses) {
+                val protocol = protocols[superclass]
+                val superWrite = protocol?.write ?: continue
+                if (superclass !in this) {
+                    this[superclass] = superWrite
                     if (protocol.hasStatic) {
                         if (this.size > 1) {
                             throw MalformedProtocolException(entries.first().key,

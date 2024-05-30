@@ -3,16 +3,22 @@
   <component name="AnalysisUIOptions">
     <option name="ANALYZE_TEST_SOURCES" value="false" />
     <option name="ANALYZE_INJECTED_CODE" value="false" />
-    <option name="SCOPE_TYPE" value="3" />
   </component>
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Added Container functionality">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Container.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Container.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Exceptions.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Exceptions.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/InputDeserializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/InputDeserializer.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/OutputSerializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/OutputSerializer.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Schema.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Schema.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/SchemaBuilder.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/SchemaBuilder.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Serializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Serializer.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/io/OutputDataStream.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/io/OutputDataStream.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/reflect/Reflection.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/reflect/Reflection.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/kotlin/io/github/aeckar/kanary/KanaryTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/io/github/aeckar/kanary/KanaryTest.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
