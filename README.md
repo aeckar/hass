@@ -38,7 +38,7 @@ It *does* however, provide an API that lets you serialize things easily and with
 and *excellent* memory-efficiency. One drawback, though, is that because the library makes use of JVM-specific reflection,
 it is unlikely that it'll be ported to other platforms. You win some, you lose some. 🤷‍♂️
 
-To view the online documenation, visit [documentation](https://aeckar.github.io/kanary/).
+To view the online documenation, visit [https://aeckar.github.io/kanary/](https://aeckar.github.io/kanary/).
 
 Happy serializing!
 
