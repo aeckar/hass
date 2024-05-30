@@ -27,7 +27,7 @@ There are no contraints that your classes have a primary constructor with proper
 how every serializable class without a built-in protocol should behave. Despite being a powerful tool, it can be a nuisance
 for trivial classes whose sole purpose is to contain data. With this, Kanary provides the `Container` annotation that automatically
 makes any class annotated with it serializable and deserializable, so long as it abides by the same rules set by
-`kotlinx.serialization`'s `@Serializable` annotation, that is:
+`kotlinx.serialization`'s `@Serializable` annotation. That is to say:
 
 - The class must have a public primary constructor
 - All arguments in the primary constructor (if any) must be public properties
