@@ -5,7 +5,6 @@ package io.github.aeckar.kanary
  *
  * Such classes must have a public primary constructor with all arguments being declared as public properties.
  */
-// TODO test protected and internal constructors/arg-properties
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Container

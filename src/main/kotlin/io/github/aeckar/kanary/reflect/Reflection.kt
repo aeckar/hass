@@ -1,7 +1,6 @@
 package io.github.aeckar.kanary.reflect
 
 import io.github.aeckar.kanary.MalformedContainerException
-import java.io.NotSerializableException
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.declaredMemberProperties
