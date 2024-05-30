@@ -8,79 +8,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Removed unused imports, cleaned up CollectionDeserializer, removed Container TODOs.">
+    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Added 2.0.0 documentation">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-deserializer/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-deserializer/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-deserializer/read-boolean.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-deserializer/read-boolean.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-deserializer/read-byte.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-deserializer/read-byte.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-deserializer/read-char.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-deserializer/read-char.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-deserializer/read-double.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-deserializer/read-double.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-deserializer/read-float.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-deserializer/read-float.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-deserializer/read-int.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-deserializer/read-int.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-deserializer/read-long.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-deserializer/read-long.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-deserializer/read-short.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-deserializer/read-short.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-deserializer/read.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-deserializer/read.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-input-deserializer/close.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-input-deserializer/close.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-input-deserializer/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-input-deserializer/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-input-deserializer/read-boolean.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-input-deserializer/read-boolean.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-input-deserializer/read-byte.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-input-deserializer/read-byte.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-input-deserializer/read-char.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-input-deserializer/read-char.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-input-deserializer/read-double.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-input-deserializer/read-double.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-input-deserializer/read-float.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-input-deserializer/read-float.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-input-deserializer/read-int.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-input-deserializer/read-int.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-input-deserializer/read-long.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-input-deserializer/read-long.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-input-deserializer/read-short.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-input-deserializer/read-short.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-input-deserializer/read.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-input-deserializer/read.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-malformed-protocol-exception/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-malformed-protocol-exception/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-missing-operation-exception/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-missing-operation-exception/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-object-deserializer/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-object-deserializer/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-object-deserializer/superclass.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-object-deserializer/superclass.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-object-deserializer/supertype.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-object-deserializer/supertype.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/close.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/close.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/flush.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/flush.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/write-boolean.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/write-boolean.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/write-byte.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/write-byte.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/write-char.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/write-char.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/write-double.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/write-double.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/write-float.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/write-float.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/write-int.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/write-int.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/write-long.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/write-long.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/write-short.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/write-short.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/write.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/write.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/-protocol-builder.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/-protocol-builder.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/fallback.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/fallback.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/read.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/read.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/static.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/static.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/write.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/write.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-schema-builder/define.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-schema-builder/define.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-schema-builder/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-schema-builder/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-schema/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-schema/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-schema/plus.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-schema/plus.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-serializer/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-serializer/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-serializer/write-boolean.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-serializer/write-boolean.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-serializer/write-byte.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-serializer/write-byte.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-serializer/write-char.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-serializer/write-char.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-serializer/write-double.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-serializer/write-double.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-serializer/write-float.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-serializer/write-float.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-serializer/write-int.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-serializer/write-int.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-serializer/write-long.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-serializer/write-long.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-serializer/write-short.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-serializer/write-short.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-serializer/write.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-serializer/write.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-type-flag-mismatch-exception/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-type-flag-mismatch-exception/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-typed-read-operation/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-typed-read-operation/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-typed-write-operation/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-typed-write-operation/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/deserializer.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/deserializer.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/schema.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/schema.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/serializer.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/serializer.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/write.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/write.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/package-list" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/package-list" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/navigation.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/navigation.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/scripts/pages.json" beforeDir="false" afterPath="$PROJECT_DIR$/docs/scripts/pages.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Container.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Container.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -365,22 +295,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1714597578047</updated>
-    </task>
-    <task id="LOCAL-00015" summary="Readded .idea">
-      <option name="closed" value="true" />
-      <created>1714668466833</created>
-      <option name="number" value="00015" />
-      <option name="presentableId" value="LOCAL-00015" />
-      <option name="project" value="LOCAL" />
-      <updated>1714668466833</updated>
-    </task>
-    <task id="LOCAL-00016" summary="Incremented version number">
-      <option name="closed" value="true" />
-      <created>1714668576673</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
-      <option name="project" value="LOCAL" />
-      <updated>1714668576673</updated>
     </task>
     <task id="LOCAL-00017" summary="Fixed group ID">
       <option name="closed" value="true" />
@@ -758,12 +672,27 @@
       <option name="project" value="LOCAL" />
       <updated>1717036641350</updated>
     </task>
-    <option name="localTasksCounter" value="64" />
+    <task id="LOCAL-00064" summary="Added 2.0.0 documentation">
+      <option name="closed" value="true" />
+      <created>1717036975172</created>
+      <option name="number" value="00064" />
+      <option name="presentableId" value="LOCAL-00064" />
+      <option name="project" value="LOCAL" />
+      <updated>1717036975172</updated>
+    </task>
+    <task id="LOCAL-00065" summary="Added 2.0.0 documentation">
+      <option name="closed" value="true" />
+      <created>1717037006540</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1717037006540</updated>
+    </task>
+    <option name="localTasksCounter" value="66" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="Updated to 3.1" />
     <MESSAGE value="Updated to 3.2" />
     <MESSAGE value="Added Dokka packages and generated test binaries" />
     <MESSAGE value="Added += operator for SchemaBuilder" />
@@ -788,7 +717,8 @@
     <MESSAGE value="Added Container functionality" />
     <MESSAGE value="Code cleanup &amp; finalize Container functionality" />
     <MESSAGE value="Removed unused imports, cleaned up CollectionDeserializer, removed Container TODOs." />
-    <option name="LAST_COMMIT_MESSAGE" value="Removed unused imports, cleaned up CollectionDeserializer, removed Container TODOs." />
+    <MESSAGE value="Added 2.0.0 documentation" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added 2.0.0 documentation" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

@@ -31,6 +31,8 @@ tasks.test {
 }
 
 tasks.dokkaHtml {
+    delete("docs/")
+
     pluginsMapConfiguration.set(
         mapOf("org.jetbrains.dokka.base.DokkaBase" to "{ \"footerMessage\": \"© 2024 Angel Eckardt\" }")
     )
