@@ -52,7 +52,9 @@ repositories {
     maven { url  = uri("https://jitpack.io") }
 }
 
-implementation("com.github.aeckar:kanary:master-SNAPSHOT")
+dependencies {
+    implementation("com.github.aeckar:kanary:master-SNAPSHOT")
+}
 ```
 
 ## Getting Started
