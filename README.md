@@ -43,6 +43,18 @@ To view the online documentation, visit [https://aeckar.github.io/kanary/](https
 
 Happy serializing!
 
+## Setup
+
+To download the library, paste the following into your `build.gradle.kts` file:
+
+```kotlin
+repositories {
+    maven { url  = uri("https://jitpack.io") }
+}
+
+implementation("com.github.aeckar:kanary:master-SNAPSHOT")
+```
+
 ## Getting Started
 
 ```kotlin
