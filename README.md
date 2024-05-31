@@ -20,9 +20,10 @@ saving the need to serialize data that will ultimately be left unused.
 
 During building, schemas may extend their functionality with protocols defined in other schemas using an `import from` statement.
 For API designers, this allows for modularity of serialization logic and a more organized codebase overall.
+Additionally, they may be optionally made thread-safe by setting the `threadSafe` parameter to true.
 
 The beauty of the library is that it's *unopinionated*. You can serialize your objects in however way you want.
-There are no contraints that your classes have a primary constructor with property arguments or derive from a common interface
+There are no constraints that your classes have a primary constructor with property arguments or derive from a common interface
 (an exception being SAM conversions and lambdas). However, with this flexibility, the user must also explicitly define
 how every serializable class without a built-in protocol should behave. Despite being a powerful tool, it can be a nuisance
 for trivial classes whose sole purpose is to contain data. With this, Kanary provides the `Container` annotation that automatically
@@ -38,7 +39,7 @@ It *does* however, provide an API that lets you serialize things easily and with
 and *excellent* memory-efficiency. One drawback, though, is that because the library makes use of JVM-specific reflection,
 it is unlikely that it'll be ported to other platforms. You win some, you lose some. 🤷‍♂️
 
-To view the online documenation, visit [https://aeckar.github.io/kanary/](https://aeckar.github.io/kanary/).
+To view the online documentation, visit [https://aeckar.github.io/kanary/](https://aeckar.github.io/kanary/).
 
 Happy serializing!
 
@@ -63,14 +64,3 @@ fun main() {
     println(myPerson)    // { name: "John Doe", age: 34 }
 }
 ```
-
-## Planned Features
-
-**API:**
-- Java interoperability
-- Ability to track changes in schema state
-
-**Implementation:**
-- Container caching
-- Dependency injection of cached data between different schemas
-- Automatic update of serialized schemas upon mutation
