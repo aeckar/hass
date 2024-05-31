@@ -6,6 +6,10 @@ import kotlin.reflect.full.superclasses
 /**
  * Deserializer allowing extraction of data from supertypes with
  * a defined [write operation][ProtocolBuilder.write].
+ *
+ * All objects serialized by supertypes are decoded eagerly.
+ * To prevent unneeded information from being serialized, use the
+ * [static][ProtocolBuilder.static] write modifier to override any defined supertype write operations.
  */
 class ObjectDeserializer internal constructor( // Each instance used to read a single OBJECT
     private val classRef: Type,
