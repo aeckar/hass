@@ -41,7 +41,7 @@ class ObjectDeserializer internal constructor( // Each instance used to read a s
     internal fun resolveObject(): Any? {
         return try {
             val read = parent.schema.readOrFallbackOf(classRef)
-            with(read) { deserializer.readOperation() }.also { parent.stream.readTypeFlag() /* = END_OBJECT */ }
+            with(read) { deserializer.readOperation() }.also { parent.decoder.decodeTypeFlag() /* = END_OBJECT */ }
         } catch (_: NoSuchElementException) {
             throw MalformedProtocolException(classRef,
                     "Attempted read of object after object deserializer was exhausted")

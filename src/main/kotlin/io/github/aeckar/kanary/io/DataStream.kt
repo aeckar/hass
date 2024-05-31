@@ -6,10 +6,10 @@ import java.nio.ByteBuffer
 private const val MAX_PRIMITIVE_BYTES = Double.SIZE_BYTES
 
 /**
- * Provides type-specific operations for the underlying stream.
+ * Performs type-specific encoding on/decoding from the underlying stream.
  */
 internal sealed class DataStream {
-    abstract val raw: Closeable
+    abstract val stream: Closeable
 
     /**
      * Temporarily stores primitives during reading and writing.

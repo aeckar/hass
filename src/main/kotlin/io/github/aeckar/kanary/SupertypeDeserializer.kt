@@ -1,6 +1,5 @@
 package io.github.aeckar.kanary
 
-import io.github.aeckar.kanary.io.TypeFlag
 import io.github.aeckar.kanary.reflect.Type
 import java.io.EOFException
 
@@ -11,22 +10,9 @@ import java.io.EOFException
 internal class SupertypeDeserializer(
     private val classRef: Type,
     private val supertype: Type,
-    superFlag: TypeFlag,
-    source: InputDeserializer,
-    isBuiltIn: Boolean
+    private val objects: List<Any?>
 ) : Deserializer {
     private var cursor = 0
-    private val objects = if (isBuiltIn) {
-        listOf(source.readObject(superFlag))
-    } else {
-        buildList {
-            var flag = source.stream.readTypeFlag()
-            while (flag !== TypeFlag.END_OBJECT) {
-                this += source.readObject(flag)
-                flag = source.stream.readTypeFlag()
-            }
-        }
-    }
 
     // ------------------------------ public API ------------------------------
 

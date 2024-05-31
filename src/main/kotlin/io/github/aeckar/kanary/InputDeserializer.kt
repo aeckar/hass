@@ -2,13 +2,12 @@ package io.github.aeckar.kanary
 
 import io.github.aeckar.kanary.io.TypeFlag
 import io.github.aeckar.kanary.io.TypeFlag.*
-import io.github.aeckar.kanary.io.InputDataStream
+import io.github.aeckar.kanary.io.Decoder
+import io.github.aeckar.kanary.reflect.Callable
 import io.github.aeckar.kanary.reflect.Type
 import java.io.Closeable
 import java.io.InputStream
-import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.full.IllegalCallableAccessException
-import kotlin.reflect.full.primaryConstructor
 
 /**
  * Performs an unchecked cast to [T], throwing [ObjectMismatchException] if the cast fails.
@@ -34,50 +33,48 @@ class InputDeserializer internal constructor(
     internal val schema: Schema // Accessed by ObjectDeserializer
 ) : CollectionDeserializer(), Deserializer, Closeable {
     // Accessed by ObjectDeserializer, SupertypeDeserializer
-    internal val stream = InputDataStream(stream)
+    internal val decoder = Decoder(stream)
 
     // -------------------- public API --------------------
 
-
-
     override fun readBoolean(): Boolean {
-        stream.ensureTypeFlag(BOOLEAN)
-        return stream.readBoolean()
+        decoder.ensureTypeFlag(BOOLEAN)
+        return decoder.decodeBoolean()
     }
 
     override fun readByte(): Byte {
-        stream.ensureTypeFlag(BYTE)
-        return stream.readByte()
+        decoder.ensureTypeFlag(BYTE)
+        return decoder.decodeByte()
     }
 
     override fun readChar(): Char {
-        stream.ensureTypeFlag(CHAR)
-        return stream.readChar()
+        decoder.ensureTypeFlag(CHAR)
+        return decoder.decodeChar()
     }
 
     override fun readShort(): Short {
-        stream.ensureTypeFlag(SHORT)
-        return stream.readShort()
+        decoder.ensureTypeFlag(SHORT)
+        return decoder.decodeShort()
     }
 
     override fun readInt(): Int {
-        stream.ensureTypeFlag(INT)
-        return stream.readInt()
+        decoder.ensureTypeFlag(INT)
+        return decoder.decodeInt()
     }
 
     override fun readLong(): Long {
-        stream.ensureTypeFlag(LONG)
-        return stream.readLong()
+        decoder.ensureTypeFlag(LONG)
+        return decoder.decodeLong()
     }
 
     override fun readFloat(): Float {
-        stream.ensureTypeFlag(FLOAT)
-        return stream.readFloat()
+        decoder.ensureTypeFlag(FLOAT)
+        return decoder.decodeFloat()
     }
 
     override fun readDouble(): Double {
-        stream.ensureTypeFlag(DOUBLE)
-        return stream.readDouble()
+        decoder.ensureTypeFlag(DOUBLE)
+        return decoder.decodeDouble()
     }
 
     override fun <T> read() = readObject().matchCast<T>()
@@ -86,33 +83,41 @@ class InputDeserializer internal constructor(
      * Closes the underlying stream and releases any system resources associated with it.
      * If the stream is already closed then invoking this method has no effect.
      */
-    override fun close() = stream.raw.close()
+    override fun close() = decoder.stream.close()
 
     // ------------------------------------------------------------------------
 
     // Accessed by SupertypeDeserializer
-    internal fun readObject(flag: TypeFlag = stream.readTypeFlag()): Any? {
+    internal fun readObject(flag: TypeFlag = decoder.decodeTypeFlag()): Any? {
         BuiltInReadOperations()[flag]?.let { return it() }
         // flag == OBJECT
-        val classRef = stream.readType()    // Serialized as string data
-        val superCount = stream.readRawByte()
-        val supertypes = if (superCount == 0) {
-            emptyMap()
-        } else {
-            val source = this
-            HashMap<Type, Deserializer>(superCount).apply {
-                repeat(superCount) {
-                    val superFlag = stream.readTypeFlag()
-                    val isBuiltIn = superFlag in BuiltInReadOperations()
-                    val supertype = if (isBuiltIn) {
-                        superFlag.kClass
+        val classRef = decoder.decodeType()    // Serialized as string data
+        val totalSupers = decoder.decodeRawByte()
+        val supertypes = if (totalSupers != 0) {
+            buildMap {
+                repeat(totalSupers) {
+                    val superFlag = decoder.decodeTypeFlag()
+                    val supertype: Type
+                    val objects: List<Any?>
+                    if (superFlag in BuiltInReadOperations()) {
+                        supertype = superFlag.type
+                        objects = listOf(readObject(superFlag))
                     } else {
                         // superFlag == OBJECT
-                        stream.readType()
+                        supertype = decoder.decodeType()
+                        objects = buildList {
+                            var objectFlag = decoder.decodeTypeFlag()
+                            while (objectFlag !== END_OBJECT) {
+                                this += readObject(objectFlag)
+                                objectFlag = decoder.decodeTypeFlag()
+                            }
+                        }
                     }
-                    this[supertype] = SupertypeDeserializer(classRef, supertype, superFlag, source, isBuiltIn)
+                    this[supertype] = SupertypeDeserializer(classRef, supertype, objects)
                 }
             }
+        } else {
+            emptyMap()
         }
         return ObjectDeserializer(classRef, supertypes, this).resolveObject()
     }
@@ -120,77 +125,77 @@ class InputDeserializer internal constructor(
     private object BuiltInReadOperations {
         private val builtInReads: Map<TypeFlag, InputDeserializer.() -> Any?> = hashMapOf(
             builtInReadOf(BOOLEAN) {
-                stream.readBoolean()
+                decoder.decodeBoolean()
             },
             builtInReadOf(BYTE) {
-                stream.readByte()
+                decoder.decodeByte()
             },
             builtInReadOf(CHAR) {
-                stream.readChar()
+                decoder.decodeChar()
             },
             builtInReadOf(SHORT) {
-                stream.readShort()
+                decoder.decodeShort()
             },
             builtInReadOf(INT) {
-                stream.readInt()
+                decoder.decodeInt()
             },
             builtInReadOf(LONG) {
-                stream.readLong()
+                decoder.decodeLong()
             },
             builtInReadOf(FLOAT) {
-                stream.readFloat()
+                decoder.decodeFloat()
             },
             builtInReadOf(DOUBLE) {
-                stream.readDouble()
+                decoder.decodeDouble()
             },
             builtInReadOf(BOOLEAN_ARRAY) {
-                BooleanArray(stream.readInt()) { stream.readBoolean() }
+                BooleanArray(decoder.decodeInt()) { decoder.decodeBoolean() }
             },
             builtInReadOf(BYTE_ARRAY) {
-                ByteArray(stream.readInt()) { stream.readByte() }
+                ByteArray(decoder.decodeInt()) { decoder.decodeByte() }
             },
             builtInReadOf(CHAR_ARRAY) {
-                val buffer = stream.readPrimitiveArray(Char.SIZE_BYTES).asCharBuffer()
+                val buffer = decoder.decodePrimitiveArray(Char.SIZE_BYTES).asCharBuffer()
                 CharArray(buffer.remaining()).apply { buffer.get(this) }
             },
             builtInReadOf(SHORT_ARRAY) {
-                val buffer = stream.readPrimitiveArray(Short.SIZE_BYTES).asShortBuffer()
+                val buffer = decoder.decodePrimitiveArray(Short.SIZE_BYTES).asShortBuffer()
                 ShortArray(buffer.remaining()).apply { buffer.get(this) }
             },
             builtInReadOf(INT_ARRAY) {
-                val buffer = stream.readPrimitiveArray(Int.SIZE_BYTES).asIntBuffer()
+                val buffer = decoder.decodePrimitiveArray(Int.SIZE_BYTES).asIntBuffer()
                 IntArray(buffer.remaining()).apply { buffer.get(this) }
             },
             builtInReadOf(LONG_ARRAY) {
-                val buffer = stream.readPrimitiveArray(Long.SIZE_BYTES).asLongBuffer()
+                val buffer = decoder.decodePrimitiveArray(Long.SIZE_BYTES).asLongBuffer()
                 LongArray(buffer.remaining()).apply { buffer.get(this) }
             },
             builtInReadOf(FLOAT_ARRAY) {
-                val buffer = stream.readPrimitiveArray(Float.SIZE_BYTES).asFloatBuffer()
+                val buffer = decoder.decodePrimitiveArray(Float.SIZE_BYTES).asFloatBuffer()
                 FloatArray(buffer.remaining()).apply { buffer.get(this) }
             },
             builtInReadOf(DOUBLE_ARRAY) {
-                val buffer = stream.readPrimitiveArray(Double.SIZE_BYTES).asDoubleBuffer()
+                val buffer = decoder.decodePrimitiveArray(Double.SIZE_BYTES).asDoubleBuffer()
                 DoubleArray(buffer.remaining()).apply { buffer.get(this) }
             },
             builtInReadOf(STRING) {
-                stream.readString()
+                decoder.decodeString()
             },
             builtInReadOf(OBJECT_ARRAY) {
-                Array(stream.readInt()) { readObject() }
+                Array(decoder.decodeInt()) { readObject() }
             },
             builtInReadOf(LIST) {
-                val size = stream.readInt()
+                val size = decoder.decodeInt()
                 val mutable = ArrayList<Any?>(size)
                 repeat(size) { mutable += readObject() }
                 DeserializedList(mutable, source = this)
             },
             builtInReadOf(ITERABLE) {
                 buildList {
-                    var flag = stream.readTypeFlag()
+                    var flag = decoder.decodeTypeFlag()
                     while (flag != END_OBJECT) {
                         this += readObject(flag)
-                        flag = stream.readTypeFlag()
+                        flag = decoder.decodeTypeFlag()
                     }
                 }
             },
@@ -201,7 +206,7 @@ class InputDeserializer internal constructor(
                 Triple(readObject(), readObject(), readObject())
             },
             builtInReadOf(MAP_ENTRY) {
-                val key = readObject()  // Closures CANNOT be inlined
+                val key = readObject()
                 val value = readObject()
                 object : Map.Entry<Any?,Any?> {
                     override val key get() = key
@@ -209,36 +214,36 @@ class InputDeserializer internal constructor(
                 }
             },
             builtInReadOf(MAP) {
-                val size = stream.readInt()
-                val mutable = LinkedHashMap<Any?,Any?>(size.coerceAtLeast(MIN_MAP_SIZE))
+                val size = decoder.decodeInt()
+                val mutable = LinkedHashMap<Any?,Any?>()
                 repeat(size) { mutable[readObject()] = readObject() }
                 DeserializedMap(mutable, source = this)
             },
             builtInReadOf(SET) {
-                val size = stream.readInt()
+                val size = decoder.decodeInt()
                 val mutable = LinkedHashSet<Any?>(size)
                 repeat(size) { mutable += readObject() }
                 DeserializedSet(mutable, source = this)
             },
             builtInReadOf(SCHEMA) {
-                with(stream) {
-                    val threadSafe = readBoolean()
-                    val totalProtocols = readInt()
+                with(decoder) {
+                    val threadSafe = decodeBoolean()
+                    val totalProtocols = decodeInt()
                     val protocols = if (totalProtocols > 0 ) {
-                        val protocolMap = HashMap<Type, Protocol>(totalProtocols.coerceAtLeast(MIN_MAP_SIZE))
+                        val protocolMap = HashMap<Type, Protocol>()
                         repeat(totalProtocols) {
-                            val type = readType()
+                            val type = decodeType()
                             var hasFallback = false
                             var hasStatic = false
-                            val read: ReadOperation? = if (readBoolean()) {
-                                hasFallback = readBoolean()
-                                readSerializable()
+                            val read: ReadOperation? = if (decodeBoolean()) {
+                                hasFallback = decodeBoolean()
+                                decodeSerializable()
                             } else {
                                 null
                             }
-                            val write: WriteOperation? = if (readBoolean()) {
-                                hasStatic = readBoolean()
-                                readSerializable()
+                            val write: WriteOperation? = if (decodeBoolean()) {
+                                hasStatic = decodeBoolean()
+                                decodeSerializable()
                             } else {
                                 null
                             }
@@ -248,44 +253,35 @@ class InputDeserializer internal constructor(
                     } else {
                         mapOf() // Mutability not necessary
                     }
-                    val totalReadsOrFallbacks = readInt()
-                    val totalWriteMaps = readInt()
-                    val readsOrFallbacksCapacity = totalReadsOrFallbacks.coerceAtLeast(MIN_MAP_SIZE)
-                    val writeMapsCapacity = totalReadsOrFallbacks.coerceAtLeast(MIN_MAP_SIZE)
-                    val readsOrFallbacks: MutableMap<Type, ReadOperation>
-                    val writeMaps: MutableMap<Type, WriteMap>
-                    if (threadSafe) {
-                        readsOrFallbacks = ConcurrentHashMap(readsOrFallbacksCapacity)
-                        writeMaps = ConcurrentHashMap(writeMapsCapacity)
-                    } else {
-                        readsOrFallbacks = HashMap(readsOrFallbacksCapacity)
-                        writeMaps = HashMap(writeMapsCapacity)
-                    }
-                    repeat(totalReadsOrFallbacks) { readsOrFallbacks[readType()] = readSerializable() }
-                    repeat(totalWriteMaps) {    // Each can never be empty
-                        val type = readType()
+                    val shared = Schema.Properties(threadSafe)
+                    repeat(decodeInt()) { shared.readsOrFallbacks[decodeType()] = decodeSerializable() }
+                    repeat(decodeInt()) {   // Each can never be empty
+                        val type = decodeType()
                         val writeMap: MutableWriteMap = hashMapOf()
-                        repeat(readInt()) { writeMap[readType()] = readSerializable() }
-                        writeMaps[type] = writeMap
+                        repeat(decodeInt()) { writeMap[decodeType()] = decodeSerializable() }
+                        shared.writeMaps[type] = writeMap
                     }
-                    Schema(protocols, readsOrFallbacks, writeMaps)
+                    repeat(decodeInt()) {
+                        shared.primaryPropertyArrays[decodeString()] = decodeSerializable<() -> Array<out Callable>>()()
+                    }
+                    repeat(decodeInt()) {
+                        shared.primaryConstructors[decodeString()] = decodeSerializable<() -> Callable>()()
+                    }
+                    Schema(protocols, shared)
                 }
             },
             builtInReadOf(CONTAINER) {
-                val totalParameters = stream.readByte().toInt()
-                val className = stream.readString()
-                val constructor = Class.forName(className).kotlin.primaryConstructor!!
-                val parameters = Array<Any?>(totalParameters) {}
-                repeat(totalParameters) { parameters[it] = read() }
+                val className = decoder.decodeString()
+                val parameters = Array<Any?>(decoder.decodeByte().toInt()) { read() }
                 try {
-                    constructor.call(*parameters)
+                    schema.primaryConstructorOf(className).call(*parameters)
                 } catch (_: IllegalCallableAccessException) {
                     throw MalformedContainerException(className, "Primary constructor of container is not public")
                 }
             },
             builtInReadOf(UNIT) { /* noop */ },
             builtInReadOf(FUNCTION) {
-                stream.readSerializable()
+                decoder.decodeSerializable()
             },
             builtInReadOf(NULL) {
                 null
@@ -294,8 +290,6 @@ class InputDeserializer internal constructor(
                 throw NoSuchElementException("No object serialized in the current position")
             },
         )
-
-        private const val MIN_MAP_SIZE = 16
 
         operator fun invoke() = builtInReads
 

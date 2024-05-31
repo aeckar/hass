@@ -8,7 +8,7 @@ import io.github.aeckar.kanary.reflect.Type
  * and determine relative position during deserialization.
  */
 @PublishedApi
-internal enum class TypeFlag(val kClass: Type = Nothing::class) {
+internal enum class TypeFlag(val type: Type = Nothing::class) {
     BOOLEAN(Boolean::class),
     BYTE(Byte::class),
     CHAR(Char::class),
@@ -47,6 +47,6 @@ internal enum class TypeFlag(val kClass: Type = Nothing::class) {
         /**
          * Types specified by [Schema][io.github.aeckar.kanary.Schema] as having pre-defined protocols.
          */
-        val TYPES = TypeFlag.entries.asSequence().map { it.kClass }.toSet()
+        val TYPES = TypeFlag.entries.asSequence().map { it.type }.toSet()
     }
 }

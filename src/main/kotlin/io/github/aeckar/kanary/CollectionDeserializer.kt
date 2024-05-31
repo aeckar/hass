@@ -1,4 +1,3 @@
-@file:Suppress("UNUSED")
 package io.github.aeckar.kanary
 
 /**
@@ -25,6 +24,7 @@ sealed class CollectionDeserializer : Deserializer {
      * @return the receiver as a mutable list
      * @throws IllegalArgumentException the list was not instantiated through deserialization
      */
+    @Suppress("UNUSED")
     fun <E> List<E>.asMutableList() = ensureCast<DeserializedList<E>>().mutable
 
     /**
@@ -32,6 +32,7 @@ sealed class CollectionDeserializer : Deserializer {
      * @return the receiver as a mutable map
      * @throws IllegalArgumentException the map was not instantiated through deserialization
      */
+    @Suppress("UNUSED")
     fun <K, V> Map<K, V>.asMutableMap() = ensureCast<DeserializedMap<K,V>>().mutable
 
     /**
@@ -39,6 +40,7 @@ sealed class CollectionDeserializer : Deserializer {
      * @return the receiver as a mutable set
      * @throws IllegalArgumentException the set was not instantiated through deserialization
      */
+    @Suppress("UNUSED")
     fun <E> Set<E>.asMutableSet(): MutableSet<E> = ensureCast<DeserializedSet<E>>().mutable
 
     // ------------------------------------------------------------------------

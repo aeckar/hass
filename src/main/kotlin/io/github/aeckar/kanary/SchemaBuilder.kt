@@ -6,14 +6,18 @@ import io.github.aeckar.kanary.reflect.Type
 /**
  * The scope wherein binary I/O protocols may be [defined][define].
  */
-class SchemaBuilder @PublishedApi internal constructor() {  // No intent to add explicit versioning support
+class SchemaBuilder @PublishedApi internal constructor(
+    private val isThreadSafe: Boolean,
+    @PublishedApi internal val definedProtocols: MutableMap<Type, Protocol>
+) {
+    @PublishedApi
+    internal var shared: Schema.Properties? = null
+
     /**
-     * Enables the adding of all protocols from another [Schema] to this one.
+     * Pseudo-keyword which, when prepended to [from][ImportStatement.from],
+     * adds all protocols from another [schema][Schema] to this one.
      */
     val import inline get() = ImportStatement(this)
-
-    @PublishedApi
-    internal val definedProtocols: MutableMap<Type, Protocol> = HashMap()
 
     // ------------------------------ public API ------------------------------
 
@@ -55,14 +59,22 @@ class SchemaBuilder @PublishedApi internal constructor() {  // No intent to add 
          * If the union of two schemas is used only sparingly, [Schema.plus] should be used instead.
          * @throws MalformedProtocolException there exist conflicting declarations of a given protocol
          */
-        infix fun from(other: Schema) {
-            val otherClassRefs = other.protocols.keys
-            for (classRef in parent.definedProtocols.keys) {
-                if (classRef in otherClassRefs) {
-                    throw MalformedProtocolException(classRef, "Conflicting protocol declarations")
-                }
+        infix fun from(other: Schema) = with(parent) {
+            val protocols = definedProtocols
+            Protocol.ensureUniqueMaps(protocols, other.protocols)
+            protocols += other.protocols
+            shared = if (this.isThreadSafe == other.isThreadSafe || other.isThreadSafe) {
+                shared?.let {
+                    Schema.Properties(threadSafe = other.isThreadSafe).also { other.shared = it }
+                } ?: other.shared
+            } else {    // Import non-thread-safe properties to thread-safe builder
+                shared?.apply {
+                    readsOrFallbacks += other.shared.readsOrFallbacks
+                    writeMaps += other.shared.writeMaps
+                    primaryPropertyArrays += other.shared.primaryPropertyArrays
+                    primaryConstructors += other.shared.primaryConstructors
+                } ?: Schema.Properties.threadSafe(other.shared)
             }
-            parent.definedProtocols += other.protocols
         }
     }
 

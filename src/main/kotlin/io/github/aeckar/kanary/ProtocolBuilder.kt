@@ -44,23 +44,29 @@ fun interface TypedWriteOperation<in T> : Serializable {
  */
 class ProtocolBuilder<T : Any>(internal val classRef: Type) {
     /**
-     * When prepended to a [read operation][read], declares that subtypes without a read operation
+     * Pseudo-keyword which, when prepended to [read], declares that subtypes without a read operation
      * can still be instantiated as an instance of [T] using this read operation.
+     *
      * Generally, this should be used for types whose subtypes have the same public API.
      * Any information not deserialized as a result is lost.
      */
     val fallback inline get() = FallbackModifier(this)
 
     /**
-     * When prepended to a [write operation][write], declares that the only information serialized
+     * Pseudo-keyword which, when prepended to a [write], declares that the only information serialized
      * from an instance of [T] is that which is specifically written here.
+     *
      * If used, subtypes of this type may not define a protocol with a write operation.
      * Enables certain optimizations.
      */
     val static inline get() = StaticModifier(this)
 
     /**
-     * Provides a concise API for passing a read or write operation from a scope outside of [ProtocolBuilder].
+     * Pseudo-keyword which, when prepended to [read] or [write],
+     * declares that the operation does not have any modifiers.
+     *
+     * Provides a concise API for declaring a read or write operation
+     * by using a lambda from outside the current scope without modifiers.
      */
     val default inline get() = DefaultOperation(this)
 

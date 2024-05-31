@@ -1,10 +1,13 @@
 package io.github.aeckar.kanary
 
+import io.github.aeckar.kanary.reflect.Callable
 import io.github.aeckar.kanary.reflect.Type
+import io.github.aeckar.kanary.reflect.primaryProperties
+import java.util.Objects.hash
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.full.superclasses
 
-internal typealias ProtocolMap = Map<Type, Protocol>
 internal typealias WriteMap = Map<Type, WriteOperation>
 internal typealias MutableWriteMap = MutableMap<Type, WriteOperation>
 
@@ -18,14 +21,9 @@ internal typealias MutableWriteMap = MutableMap<Type, WriteOperation>
  * to provide the directions for serializing the specified reference types
  */
 inline fun schema(threadSafe: Boolean = true, builder: SchemaBuilder.() -> Unit): Schema {
-    val builderScope = SchemaBuilder()
+    val builderScope = SchemaBuilder(threadSafe, definedProtocols = hashMapOf())
     builder(builderScope)
-    val protocols = builderScope.definedProtocols
-    return if (threadSafe) {
-        Schema(protocols, ConcurrentHashMap(), ConcurrentHashMap())
-    } else {
-        Schema(protocols, hashMapOf(), hashMapOf())
-    }
+    return Schema(builderScope.definedProtocols, builderScope.shared ?: Schema.Properties(threadSafe))
 }
 
 /**
@@ -53,9 +51,10 @@ inline fun schema(threadSafe: Boolean = true, builder: SchemaBuilder.() -> Unit)
  */
 class Schema @PublishedApi internal constructor(
     internal val protocols: ProtocolMap,
-    private val readsOrFallbacks: MutableMap<Type, ReadOperation>,
-    private val writeMaps: MutableMap<Type, WriteMap>
+    internal var shared: Properties
 ) {
+    val isThreadSafe get() = shared.readsOrFallbacks is ConcurrentHashMap
+
     // ------------------------------ public API ------------------------------
 
     /**
@@ -64,9 +63,11 @@ class Schema @PublishedApi internal constructor(
      * Should be used if the union is used only once.
      * If used more than once, a new [schema] should be defined with both [added][SchemaBuilder.import] to it.
      *
+     * If any one schema is thread-safe, the returned schema is also thread-safe.
+     *
      * This function is shorthand for:
      * ```kotlin
-     * schema(threadSafe = true) {
+     * schema(threadSafe = this.isThreadSafe || other.isThreadSafe) {
      *     import from this@Schema
      *     import from other
      * }
@@ -74,36 +75,82 @@ class Schema @PublishedApi internal constructor(
      * @throws MalformedProtocolException there exist conflicting declarations of a given protocol
      */
     operator fun plus(other: Schema): Schema {
-        return schema {
+        Protocol.ensureUniqueMaps(protocols, other.protocols)
+        return schema(isThreadSafe || other.isThreadSafe) {
             import from this@Schema
             import from other
         }
     }
 
-    // ------------------------------------------------------------------------
-
-    internal fun readsOrFallBacks(): Map<Type, ReadOperation> = readsOrFallbacks
-
-    internal fun writeMaps(): Map<Type, WriteMap> = writeMaps
-
-    internal fun writeMapOf(classRef: Type): WriteMap {
-        return writeMaps[classRef] ?: resolveWriteMap(classRef).also { writeMaps[classRef] = it }
+    /**
+     * Generated according to protocols defined in this schema,
+     * as well as its internal mutable state.
+     *
+     * For performance reasons, the result of many reflection operations are cached
+     * within the internal state of every schema. To account for this during schema serialization,
+     * the result of this function may be used to determine whether re-serialization is necessary.
+     * In doing so, future deserialization produces a schema instance with the result of these reflection operations
+     * already computed.
+     * @return a unique hashcode, including mutable state
+     */
+    @Suppress("UNUSED")
+    fun deepHashCode() = with (shared) {
+        hash(protocols, readsOrFallBacks.size, writeMaps.size, primaryPropertyArrays.size, primaryConstructors.size)
     }
 
-    internal fun readOrFallbackOf(classRef: Type): TypedReadOperation<*> {
+    /**
+     * Two schemas are structurally equivalent if they define protocols for the same types.
+     *
+     * The actual [read][ProtocolBuilder.read] and [write][ProtocolBuilder.write]
+     * operations of each protocol (or, whether they exist or not) are not considered.
+     * @return true if this equals [other]
+     * @see hashCode
+     */
+    override fun equals(other: Any?) = other is Schema && protocols == other.protocols
+
+    /**
+     * Generated according to the protocols defined in this schema.
+     * @return a unique hashcode
+     * @see equals
+     */
+    override fun hashCode() = protocols.hashCode()
+
+    // ------------------------------------------------------------------------
+
+    /*
+        Immutable views of shared properties
+     */
+
+    internal val readsOrFallBacks: Map<Type, ReadOperation> inline get() = shared.readsOrFallbacks
+    internal val writeMaps: Map<Type, WriteMap> inline get() = shared.writeMaps
+    internal val primaryPropertyArrays: Map<String, Array<out Callable>> inline get() = shared.primaryPropertyArrays
+    internal val primaryConstructors: Map<String, Callable> inline get() = shared.primaryConstructors
+
+    internal fun readOrFallbackOf(classRef: Type): TypedReadOperation<*> = with(shared) {
         return readsOrFallbacks[classRef] ?: resolveReadOrFallback(classRef).also { readsOrFallbacks[classRef] = it }
     }
 
+    internal fun writeMapOf(classRef: Type): WriteMap = with(shared) {
+        return writeMaps[classRef] ?: resolveWriteMap(classRef).also { writeMaps[classRef] = it }
+    }
+
+    internal fun primaryPropertiesOf(containerRef: Type, containerName: String): Array<out Callable> = with(shared) {
+        return shared.primaryPropertyArrays[containerName]
+            ?: containerRef.primaryProperties?.also { primaryPropertyArrays[containerName] = it }
+            ?: throw MalformedContainerException(containerName, "Container does not have a primary constructor")
+    }
+
+    internal fun primaryConstructorOf(containerName: String): Callable = with(shared) {
+        return primaryConstructors[containerName]
+            ?: Type(containerName).primaryConstructor?.also { primaryConstructors[containerName] = it }
+            ?: throw MalformedContainerException(containerName, "Container does not have a public primary constructor")
+    }
+
     /*
-        Properties are resolved in the following order:
+        Mappings are resolved in the following order:
             - Subtypes before supertypes
             - For a given type, its supertypes in the order that they are declared in source code
      */
-
-    // TODO FEATURE: if kanary.noreflect is used, check for in generated first
-    // TODO FEATURE: the names of read resolutions should be serialized to avoid having to create another read()
-    // TODO FEATURE: write maps will be resolved by using the generated <T : @StaticResolution> write(obj: T)
-    // TODO FEATURE: <T : @StaticResolution> write(obj: T) will provide a specific write map further down the call chain
 
     private fun resolveReadOrFallback(classRef: Type): TypedReadOperation<*> {
         fun resolveFallback(classRef: Type, superclasses: List<Type>): TypedReadOperation<*>? {
@@ -149,5 +196,36 @@ class Schema @PublishedApi internal constructor(
             throw MissingOperationException("Write operation for '${classRef.qualifiedName}' expected, but not found")
         }
     }
-}
 
+    @PublishedApi
+    internal class Properties private constructor(
+        val readsOrFallbacks: MutableMap<Type, ReadOperation>,
+        val writeMaps: MutableMap<Type, WriteMap>,
+        val primaryPropertyArrays: MutableMap<String, Array<out Callable>>,
+        val primaryConstructors: MutableMap<String, Callable>
+    ) {
+        constructor(threadSafe: Boolean) : this(
+            propertyMap(threadSafe),
+            propertyMap(threadSafe),
+            propertyMap(threadSafe),
+            propertyMap(threadSafe)
+        )
+
+        companion object {
+            @Suppress("UNCHECKED_CAST")
+             private fun <T : MutableMap<Any?,Any?>> propertyMap(threadSafe: Boolean): T {
+                val possiblyThreadSafeMap: MutableMap<Any?,Any?> = if (threadSafe) ConcurrentHashMap() else hashMapOf()
+                return possiblyThreadSafeMap as T
+            }
+
+            fun threadSafe(copyFrom: Properties): Properties {
+                return Properties(
+                    ConcurrentHashMap(copyFrom.readsOrFallbacks),
+                    ConcurrentHashMap(copyFrom.writeMaps),
+                    ConcurrentHashMap(copyFrom.primaryPropertyArrays),
+                    ConcurrentHashMap(copyFrom.primaryConstructors)
+                )
+            }
+        }
+    }
+}
