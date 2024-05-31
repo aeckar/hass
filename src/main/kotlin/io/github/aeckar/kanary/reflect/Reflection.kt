@@ -37,4 +37,4 @@ internal val Type.primaryProperties: Array<out Callable>?
         return properties as Array<out Callable>
     }
 
-fun Type(forName: String): Type = Class.forName(forName).kotlin
+internal fun Type(forName: String): Type = Class.forName(forName).kotlin

@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "io.github.aeckar"
-version = "2.1.0"
+version = "2.1.1-ALPHA"
 
 dependencies {
     implementation(kotlin("reflect"))
@@ -19,7 +19,7 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "io.github.aeckar"
             artifactId = "kanary"
-            version = "2.1.0"
+            version = "2.1.1-ALPHA"
 
             from(components["kotlin"])
         }

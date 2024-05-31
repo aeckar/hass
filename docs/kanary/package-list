@@ -1,7 +1,5 @@
 $dokka.format:html-v1
 $dokka.linkExtension:html
-$dokka.location:io.github.aeckar.kanary.reflect////PointingToDeclaration/kanary/io.github.aeckar.kanary.reflect/index.html
-$dokka.location:io.github.aeckar.kanary.reflect//Type/#kotlin.String/PointingToDeclaration/kanary/io.github.aeckar.kanary.reflect/-type.html
 $dokka.location:io.github.aeckar.kanary////PointingToDeclaration/kanary/io.github.aeckar.kanary/index.html
 $dokka.location:io.github.aeckar.kanary//deserializer/java.io.InputStream#io.github.aeckar.kanary.Schema/PointingToDeclaration/kanary/io.github.aeckar.kanary/deserializer.html
 $dokka.location:io.github.aeckar.kanary//read/#io.github.aeckar.kanary.TypedReadOperation[TypeParam(bounds=[kotlin.Any?])]/PointingToDeclaration/kanary/io.github.aeckar.kanary/read.html
@@ -109,5 +107,4 @@ $dokka.location:io.github.aeckar.kanary/TypedReadOperation/readOperation/io.gith
 $dokka.location:io.github.aeckar.kanary/TypedWriteOperation///PointingToDeclaration/kanary/io.github.aeckar.kanary/-typed-write-operation/index.html
 $dokka.location:io.github.aeckar.kanary/TypedWriteOperation/writeOperation/io.github.aeckar.kanary.Serializer#TypeParam(bounds=[kotlin.Any?])/PointingToDeclaration/kanary/io.github.aeckar.kanary/-typed-write-operation/write-operation.html
 io.github.aeckar.kanary
-io.github.aeckar.kanary.reflect
 
