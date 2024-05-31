@@ -2,10 +2,8 @@ $dokka.format:html-v1
 $dokka.linkExtension:html
 $dokka.location:io.github.aeckar.kanary////PointingToDeclaration/kanary/io.github.aeckar.kanary/index.html
 $dokka.location:io.github.aeckar.kanary//deserializer/java.io.InputStream#io.github.aeckar.kanary.Schema/PointingToDeclaration/kanary/io.github.aeckar.kanary/deserializer.html
-$dokka.location:io.github.aeckar.kanary//read/#io.github.aeckar.kanary.TypedReadOperation[TypeParam(bounds=[kotlin.Any?])]/PointingToDeclaration/kanary/io.github.aeckar.kanary/read.html
 $dokka.location:io.github.aeckar.kanary//schema/#kotlin.Boolean#kotlin.Function1[io.github.aeckar.kanary.SchemaBuilder,kotlin.Unit]/PointingToDeclaration/kanary/io.github.aeckar.kanary/schema.html
 $dokka.location:io.github.aeckar.kanary//serializer/java.io.OutputStream#io.github.aeckar.kanary.Schema/PointingToDeclaration/kanary/io.github.aeckar.kanary/serializer.html
-$dokka.location:io.github.aeckar.kanary//write/#io.github.aeckar.kanary.TypedWriteOperation[TypeParam(bounds=[kotlin.Any?])]/PointingToDeclaration/kanary/io.github.aeckar.kanary/write.html
 $dokka.location:io.github.aeckar.kanary//write/io.github.aeckar.kanary.Serializer#kotlin.Array[kotlin.Any?]/PointingToDeclaration/kanary/io.github.aeckar.kanary/write.html
 $dokka.location:io.github.aeckar.kanary/CollectionDeserializer///PointingToDeclaration/kanary/io.github.aeckar.kanary/-collection-deserializer/index.html
 $dokka.location:io.github.aeckar.kanary/CollectionDeserializer/asMutableList/kotlin.collections.List[TypeParam(bounds=[kotlin.Any?])]#/PointingToDeclaration/kanary/io.github.aeckar.kanary/-collection-deserializer/as-mutable-list.html

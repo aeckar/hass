@@ -8,23 +8,9 @@ internal typealias ReadOperation = TypedReadOperation<Any?>
 internal typealias WriteOperation = TypedWriteOperation<Any?>
 
 /**
- * Creates a new [TypedReadOperation] that can be supplied to [ProtocolBuilder.read].
- * @return the given read operation
- */
-@Suppress("NOTHING_TO_INLINE")
-inline fun <T> read(readOperation: TypedReadOperation<T>) = readOperation
-
-/**
- * Creates a new [TypedWriteOperation] that can be supplied to [ProtocolBuilder.write].
- * @return the given write operation
- */
-@Suppress("NOTHING_TO_INLINE")
-inline fun <T> write(writeOperation: TypedWriteOperation<T>) = writeOperation
-
-/**
  * A [read operation][ProtocolBuilder.read].
  *
- * Standalone instances should be instantiated using [read] for conciseness.
+ * May be implemented by a companion object to allow deserialization of private members.
  */
 fun interface TypedReadOperation<out T> : Serializable {
     fun ObjectDeserializer.readOperation(): T
@@ -33,7 +19,7 @@ fun interface TypedReadOperation<out T> : Serializable {
 /**
  * A [write operation][ProtocolBuilder.write].
  *
- * Standalone instances should be instantiated using [write] for conciseness.
+ *  May be implemented by a companion object to allow serialization of private members.
  */
 fun interface TypedWriteOperation<in T> : Serializable {
     fun Serializer.writeOperation(obj: T)
