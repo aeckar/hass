@@ -9,7 +9,7 @@ import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.jvmName
 
-private fun interface BuiltInWriteOperation<T> : TypedWriteOperation<T> {
+private fun interface BuiltInWriteOperation<T> : WriteOperation<T> {
     fun OutputSerializer.writeOperation(obj: T)
     override fun Serializer.writeOperation(obj: T) = (this as OutputSerializer).writeOperation(obj)
 }
@@ -116,11 +116,12 @@ class OutputSerializer internal constructor(
      * (supers: superData*)(builtInSuper: builtIn?)(userData: ...)(end: flag = END_OBJECT)
      * ```
      */
+    @Suppress("UNCHECKED_CAST")
     private fun writeObject(obj: Any, nonNullElements: Boolean = false): Unit = with (encoder) {
         fun Type.writeBuiltIn(obj: Any, builtIns: Map<Type, WriteSignature>) {
             builtIns.getValue(this).let { (flag, write) ->
                 encodeTypeFlag(flag)
-                write.apply { serializer.writeOperation(obj) }
+                (write as WriteOperation<Any?>).apply { serializer.writeOperation(obj) }
             }
         }
 
@@ -187,12 +188,12 @@ class OutputSerializer internal constructor(
                 val (supertype, superWrite) = entries.next()
                 encodeTypeFlag(OBJECT)
                 encodeType(supertype)
-                superWrite.apply { serializer.writeOperation(obj) }
+                (superWrite as WriteOperation<Any?>).apply { serializer.writeOperation(obj) }
                 encodeTypeFlag(END_OBJECT)
             }
             builtInType?.writeBuiltIn(obj, builtIns) // Marks stream with appropriate built-in flag
         }
-        write.apply { serializer.writeOperation(obj) }
+        (write as WriteOperation<Any?>).apply { serializer.writeOperation(obj) }
         encodeTypeFlag(END_OBJECT)
     }
 
@@ -395,16 +396,15 @@ class OutputSerializer internal constructor(
          */
         infix fun given(nonNullElements: Boolean) = if (nonNullElements) nonNullBuiltInWrites else nullableBuiltInWrites
 
-        @Suppress("UNCHECKED_CAST")
         private inline fun <reified T : Any> builtInWriteOf(
             flag: TypeFlag,
             write: BuiltInWriteOperation<T>
         ): Pair<Type, WriteSignature> =
-            T::class to WriteSignature(flag, write as WriteOperation)
+            T::class to WriteSignature(flag, write)
     }
 }
 
 /**
  * Specifies the [flag] from where the given [write operation][lambda] originates from.
  */
-private data class WriteSignature(val flag: TypeFlag, val lambda: WriteOperation)
+private data class WriteSignature(val flag: TypeFlag, val lambda: WriteOperation<*>)

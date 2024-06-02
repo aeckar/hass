@@ -32,7 +32,6 @@ class SchemaBuilder @PublishedApi internal constructor(
      * or either of the operations are defined twice,
      * or this is called more than once for the given type
      */
-    @Suppress("UNCHECKED_CAST")
     inline fun <reified T : Any> define(builder: ProtocolBuilder<T>.() -> Unit) {
         val classRef = T::class
         if (classRef in TypeFlag.TYPES) {
@@ -44,7 +43,7 @@ class SchemaBuilder @PublishedApi internal constructor(
         val builderScope = ProtocolBuilder<T>(classRef)
         builder(builderScope)
         definedProtocols[classRef] = with (builderScope) {
-            Protocol(read, write as WriteOperation?, hasFallback, hasStatic)
+            Protocol(read, write, hasFallback, hasStatic)
         }
     }
 

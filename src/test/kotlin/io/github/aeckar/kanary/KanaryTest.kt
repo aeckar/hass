@@ -374,13 +374,11 @@ class KanaryTest {
 
     open /* <- allow fallback */ class MyClass {
         companion object {
-            val READ = read {
+            val Read = ReadOperation {
                 assertEquals(read(), "Your data here")
                 MyClass()
             }
-            val WRITE = write<MyClass> {
-                write("Your data here")
-            }
+            val Write = WriteOperation<MyClass> { write("Your data here") }
         }
     }
 
@@ -388,8 +386,8 @@ class KanaryTest {
     fun locally_defined_protocol() {
         val schema = schema(threadSafe = false) {
             define<MyClass> {
-                fallback read MyClass.READ
-                static write MyClass.WRITE
+                fallback read MyClass.Read
+                static write MyClass.Write
             }
         }
         val serialized = MyClass()
@@ -403,7 +401,7 @@ class KanaryTest {
 
     open class Kenny {
         companion object {
-            val READ = read { Kenny() }
+            val Read = ReadOperation { Kenny() }
         }
     }
 
@@ -411,7 +409,7 @@ class KanaryTest {
     fun mixed_local_and_schema_protocol() {
         val schema = schema(threadSafe = false) {
             define<Kenny> {
-                default read Kenny.READ
+                default read Kenny.Read
                 write { write("Oh my god, they killed Kenny!") }
             }
         }

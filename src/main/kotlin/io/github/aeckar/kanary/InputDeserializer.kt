@@ -235,13 +235,13 @@ class InputDeserializer internal constructor(
                             val type = decodeType()
                             var hasFallback = false
                             var hasStatic = false
-                            val read: ReadOperation? = if (decodeBoolean()) {
+                            val read: ReadOperation<*>? = if (decodeBoolean()) {
                                 hasFallback = decodeBoolean()
                                 decodeSerializable()
                             } else {
                                 null
                             }
-                            val write: WriteOperation? = if (decodeBoolean()) {
+                            val write: WriteOperation<*>? = if (decodeBoolean()) {
                                 hasStatic = decodeBoolean()
                                 decodeSerializable()
                             } else {

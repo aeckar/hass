@@ -1,8 +1,8 @@
 package io.github.aeckar.kanary
 
 /**
- * Ensure immutability of the underlying mutable collection unless the user
- * requests it  from within the same Serializer they were given the object
+ * Ensures immutability of the underlying mutable collection, unless the user
+ * requests it from within the same [serializer][Serializer] they were given the object.
  */
 internal sealed class DeserializedCollection(val source: Deserializer)
 

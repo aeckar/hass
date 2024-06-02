@@ -8,8 +8,8 @@ import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.full.superclasses
 
-internal typealias WriteMap = Map<Type, WriteOperation>
-internal typealias MutableWriteMap = MutableMap<Type, WriteOperation>
+internal typealias WriteMap = Map<Type, WriteOperation<*>>
+internal typealias MutableWriteMap = MutableMap<Type, WriteOperation<*>>
 
 /**
  * Provides a scope wherein protocols for various classes may be defined.
@@ -121,12 +121,12 @@ class Schema @PublishedApi internal constructor(
         Immutable views of shared properties
      */
 
-    internal val readsOrFallBacks: Map<Type, ReadOperation> inline get() = shared.readsOrFallbacks
+    internal val readsOrFallBacks: Map<Type, ReadOperation<*>> inline get() = shared.readsOrFallbacks
     internal val writeMaps: Map<Type, WriteMap> inline get() = shared.writeMaps
     internal val primaryPropertyArrays: Map<String, Array<out Callable>> inline get() = shared.primaryPropertyArrays
     internal val primaryConstructors: Map<String, Callable> inline get() = shared.primaryConstructors
 
-    internal fun readOrFallbackOf(classRef: Type): TypedReadOperation<*> = with(shared) {
+    internal fun readOrFallbackOf(classRef: Type): ReadOperation<*> = with(shared) {
         return readsOrFallbacks[classRef] ?: resolveReadOrFallback(classRef).also { readsOrFallbacks[classRef] = it }
     }
 
@@ -152,8 +152,8 @@ class Schema @PublishedApi internal constructor(
             - For a given type, its supertypes in the order that they are declared in source code
      */
 
-    private fun resolveReadOrFallback(classRef: Type): TypedReadOperation<*> {
-        fun resolveFallback(classRef: Type, superclasses: List<Type>): TypedReadOperation<*>? {
+    private fun resolveReadOrFallback(classRef: Type): ReadOperation<*> {
+        fun resolveFallback(classRef: Type, superclasses: List<Type>): ReadOperation<*>? {
             for (superclass in superclasses) {
                 protocols[superclass]?.takeIf { it.hasFallback }?.read?.let { return it }
             }
@@ -199,7 +199,7 @@ class Schema @PublishedApi internal constructor(
 
     @PublishedApi
     internal class Properties private constructor(
-        val readsOrFallbacks: MutableMap<Type, ReadOperation>,
+        val readsOrFallbacks: MutableMap<Type, ReadOperation<*>>,
         val writeMaps: MutableMap<Type, WriteMap>,
         val primaryPropertyArrays: MutableMap<String, Array<out Callable>>,
         val primaryConstructors: MutableMap<String, Callable>

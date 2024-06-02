@@ -87,6 +87,8 @@ sealed interface Deserializer {
      * @return the serialized object of the given type
      * @throws TypeFlagMismatchException the value was not serialized as a singular object or null
      * @throws TypeCastException the object is not an instance of type [T]
+     * @throws MalformedContainerException if the serialized object is container and
+     * its primary constructor is not public
      * @throws EOFException the stream is exhausted before a value can be determined
      */
     fun <T> read(): T

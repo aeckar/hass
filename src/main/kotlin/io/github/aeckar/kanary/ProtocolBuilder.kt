@@ -4,24 +4,41 @@ import io.github.aeckar.kanary.reflect.Type
 import io.github.aeckar.kanary.reflect.isLocalOrAnonymous
 import java.io.Serializable
 
-internal typealias ReadOperation = TypedReadOperation<Any?>
-internal typealias WriteOperation = TypedWriteOperation<Any?>
-
 /**
  * A [read operation][ProtocolBuilder.read].
  *
- * May be implemented by a companion object to allow deserialization of private members.
+ * SAM conversions of this interface may be defined locally to allow for deserialization of private members.
+ * The common convention for this is to assign the object to a constant named `Read` in the corresponding companion.
+ * For example:
+ *
+ * ```kotlin
+ * class MyClass {
+ *     companion object {
+ *         val Read = ReadOperation { /* read behavior with inferred type */ }
+ *     }
+ * }
+ * ```
  */
-fun interface TypedReadOperation<out T> : Serializable {
+fun interface ReadOperation<out T> : Serializable {
     fun ObjectDeserializer.readOperation(): T
 }
 
 /**
  * A [write operation][ProtocolBuilder.write].
  *
- *  May be implemented by a companion object to allow serialization of private members.
+ * SAM conversions of this interface may be defined locally to allow for serialization of private members.
+ * The common convention for this is to assign the object to a constant named `Write` in the corresponding companion.
+ * For example:
+ *
+ * ```kotlin
+ * class MyClass {
+ *     companion object {
+ *         val Write = WriteOperation<MyClass> { /* write behavior */ }
+ *     }
+ * }
+ * ```
  */
-fun interface TypedWriteOperation<in T> : Serializable {
+fun interface WriteOperation<in T> : Serializable {
     fun Serializer.writeOperation(obj: T)
 }
 
@@ -56,8 +73,8 @@ class ProtocolBuilder<T : Any>(internal val classRef: Type) {
      */
     val default inline get() = DefaultOperation(this)
 
-    @PublishedApi internal var read: TypedReadOperation<T>? = null
-    @PublishedApi internal var write: TypedWriteOperation<T>? = null
+    @PublishedApi internal var read: ReadOperation<T>? = null
+    @PublishedApi internal var write: WriteOperation<T>? = null
     @PublishedApi internal var hasFallback = false
     @PublishedApi internal var hasStatic = false
 
@@ -76,7 +93,7 @@ class ProtocolBuilder<T : Any>(internal val classRef: Type) {
      * from which the read operation can use the information to create a new instance of [T].
      * @throws MalformedProtocolException [T] is abstract, or this function is called more than once in a single scope
      */
-    fun read(readOperation: TypedReadOperation<T>) {
+    fun read(readOperation: ReadOperation<T>) {
         if (classRef.isAbstract) {
             throw MalformedProtocolException(classRef,
                 "Read operation without 'fallback' modifier not supported for abstract classes and interfaces")
@@ -91,7 +108,7 @@ class ProtocolBuilder<T : Any>(internal val classRef: Type) {
      * Defines the binary write operation called when [Serializer.write] is called with an object of class [T].
      * @throws MalformedProtocolException this function is called more than once in a single scope
      */
-    fun write(writeOperation: TypedWriteOperation<T>) {
+    fun write(writeOperation: WriteOperation<T>) {
         write?.let {
             throw MalformedProtocolException(classRef, "Write operation assigned a value more than once")
         }
@@ -109,7 +126,7 @@ class ProtocolBuilder<T : Any>(internal val classRef: Type) {
          * or this function is called more than once in a single scope
          * @see ProtocolBuilder.read
          */
-        infix fun read(readOperation: TypedReadOperation<T>) {
+        infix fun read(readOperation: ReadOperation<T>) {
             if (parent.classRef.isFinal) {
                 throw MalformedProtocolException(parent.classRef, "'fallback' modifier not supported for final classes")
             }
@@ -128,7 +145,7 @@ class ProtocolBuilder<T : Any>(internal val classRef: Type) {
          * @throws MalformedProtocolException this function is called more than once in a single scope
          * @see ProtocolBuilder.write
          */
-        infix fun write(writeOperation: TypedWriteOperation<T>) {
+        infix fun write(writeOperation: WriteOperation<T>) {
             parent.write = writeOperation
             parent.hasStatic = true
         }
@@ -145,14 +162,14 @@ class ProtocolBuilder<T : Any>(internal val classRef: Type) {
          * or this function is called more than once in a single scope
          * @see ProtocolBuilder.read
          */
-        infix fun read(readOperation: TypedReadOperation<T>) = parent.read(readOperation)
+        infix fun read(readOperation: ReadOperation<T>) = parent.read(readOperation)
 
         /**
          * Defines a 'static' write operation with no modifier.
          * @throws MalformedProtocolException this function is called more than once in a single scope
          * @see ProtocolBuilder.write
          */
-        infix fun write(writeOperation: TypedWriteOperation<T>) = parent.write(writeOperation)
+        infix fun write(writeOperation: WriteOperation<T>) = parent.write(writeOperation)
     }
 
     // ------------------------------------------------------------------------
