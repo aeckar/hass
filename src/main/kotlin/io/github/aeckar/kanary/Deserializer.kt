@@ -5,9 +5,11 @@ import java.io.InputStream
 
 /**
  * See [Schema] for a list of types that can be deserialized by default.
+ *
  * @return a new deserializer capable of reading primitives, primitive arrays, strings, and
  * instances of any type with a defined protocol from Kanary format
  */
+@JvmName("of")
 fun InputStream.deserializer(protocols: Schema) = InputDeserializer(this, protocols)
 
 /**

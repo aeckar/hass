@@ -8,37 +8,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Removed local read() and write() in favor of direct implementation of read and write interfaces.">
+    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Added more concise documentation for defining read-and-write operations locally. Cleaned up other documentation as well.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-deserializer/read.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-deserializer/read.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-input-deserializer/read.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-input-deserializer/read.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/-default-operation/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/-default-operation/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/-default-operation/read.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/-default-operation/read.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/-default-operation/write.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/-default-operation/write.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/-fallback-modifier/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/-fallback-modifier/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/-fallback-modifier/read.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/-fallback-modifier/read.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/-static-modifier/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/-static-modifier/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/-static-modifier/write.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/-static-modifier/write.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/read.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/read.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/write.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/write.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-typed-read-operation/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-typed-read-operation/read-operation.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-typed-write-operation/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-typed-write-operation/write-operation.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/package-list" beforeDir="false" afterPath="$PROJECT_DIR$/docs/kanary/package-list" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/navigation.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/navigation.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/scripts/pages.json" beforeDir="false" afterPath="$PROJECT_DIR$/docs/scripts/pages.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/DeserializedCollection.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/DeserializedCollection.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Deserializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Deserializer.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/InputDeserializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/InputDeserializer.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/OutputSerializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/OutputSerializer.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Protocol.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Protocol.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/ProtocolBuilder.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/ProtocolBuilder.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Schema.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Schema.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/SchemaBuilder.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/SchemaBuilder.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/kotlin/io/github/aeckar/kanary/KanaryTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/io/github/aeckar/kanary/KanaryTest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Serializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Serializer.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

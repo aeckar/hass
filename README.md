@@ -41,6 +41,13 @@ it is unlikely that it'll be ported to other platforms. You win some, you lose s
 
 To view the full online documentation, visit [https://aeckar.github.io/kanary/](https://aeckar.github.io/kanary/).
 
+## Cross-Language Compatibility
+
+Schema definition is not supported for other JVM languages.
+However, information may still be deserialized and serialized
+by importing schemas and passing them to `Deserializer.of()` and `Serializer.of()`,
+respectively.
+
 ## Setup
 
 To download the library, paste the following into your `build.gradle.kts` file:
