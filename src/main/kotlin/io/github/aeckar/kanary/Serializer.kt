@@ -1,3 +1,4 @@
+@file:JvmName("Serializer")
 package io.github.aeckar.kanary
 
 import java.io.OutputStream

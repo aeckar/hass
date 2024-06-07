@@ -8,12 +8,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Added more concise documentation for defining read-and-write operations locally. Cleaned up other documentation as well.">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Deserializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Deserializer.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Serializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Serializer.kt" afterDir="false" />
-    </list>
+    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Updated cross-language compatibility" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -299,22 +294,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1714597578047</updated>
-    </task>
-    <task id="LOCAL-00024" summary="Removed unused imports">
-      <option name="closed" value="true" />
-      <created>1714797225062</created>
-      <option name="number" value="00024" />
-      <option name="presentableId" value="LOCAL-00024" />
-      <option name="project" value="LOCAL" />
-      <updated>1714797225062</updated>
-    </task>
-    <task id="LOCAL-00025" summary="Continued development I">
-      <option name="closed" value="true" />
-      <created>1715139047159</created>
-      <option name="number" value="00025" />
-      <option name="presentableId" value="LOCAL-00025" />
-      <option name="project" value="LOCAL" />
-      <updated>1715139047159</updated>
     </task>
     <task id="LOCAL-00026" summary="Updated Serializer.kt">
       <option name="closed" value="true" />
@@ -692,12 +671,27 @@
       <option name="project" value="LOCAL" />
       <updated>1717173310996</updated>
     </task>
-    <option name="localTasksCounter" value="73" />
+    <task id="LOCAL-00073" summary="Updated cross-language compatibility">
+      <option name="closed" value="true" />
+      <created>1717788480172</created>
+      <option name="number" value="00073" />
+      <option name="presentableId" value="LOCAL-00073" />
+      <option name="project" value="LOCAL" />
+      <updated>1717788480173</updated>
+    </task>
+    <task id="LOCAL-00074" summary="Updated cross-language compatibility">
+      <option name="closed" value="true" />
+      <created>1717788572750</created>
+      <option name="number" value="00074" />
+      <option name="presentableId" value="LOCAL-00074" />
+      <option name="project" value="LOCAL" />
+      <updated>1717788572750</updated>
+    </task>
+    <option name="localTasksCounter" value="75" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="Updated docs." />
     <MESSAGE value="Added 'kanary' package to docs." />
     <MESSAGE value="Updated InputDeserializer and OutputSerializer documentation." />
     <MESSAGE value="Added spacing to documentation." />
@@ -722,7 +716,8 @@
     <MESSAGE value="Made Type() pseudo-constructor internal instead of public" />
     <MESSAGE value="Unversioned project &amp; clarified ObjectDeserializer documentation." />
     <MESSAGE value="Removed local read() and write() in favor of direct implementation of read and write interfaces." />
-    <option name="LAST_COMMIT_MESSAGE" value="Removed local read() and write() in favor of direct implementation of read and write interfaces." />
+    <MESSAGE value="Updated cross-language compatibility" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated cross-language compatibility" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

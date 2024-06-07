@@ -1,3 +1,4 @@
+@file:JvmName("Deserializer")
 package io.github.aeckar.kanary
 
 import java.io.EOFException
