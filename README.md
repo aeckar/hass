@@ -36,12 +36,10 @@ makes any class annotated with it serializable and deserializable, so long as it
 This library is *not* a replacement for [kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization).
 It does not reap the performance benefits of compile-time code generation or the guarantee of multiplatform support.
 It *does* however, provide an API that lets you serialize things easily and without much thought with *reasonable* performance
-and *excellent* memory-efficiency. One drawback, though, is that because the library makes use of JVM-specific reflection,
+and *excellent* space-efficiency. One drawback, though, is that because the library makes use of JVM-specific reflection,
 it is unlikely that it'll be ported to other platforms. You win some, you lose some. 🤷‍♂️
 
-To view the online documentation, visit [https://aeckar.github.io/kanary/](https://aeckar.github.io/kanary/).
-
-Happy serializing!
+To view the full online documentation, visit [https://aeckar.github.io/kanary/](https://aeckar.github.io/kanary/).
 
 ## Setup
 
@@ -78,3 +76,7 @@ fun main() {
     println(myPerson)    // { name: "John Doe", age: 34 }
 }
 ```
+
+---
+
+Made with ❤ by Angel Eckardt. If you find this library useful or interesting, please consider giving it a star! 😄
