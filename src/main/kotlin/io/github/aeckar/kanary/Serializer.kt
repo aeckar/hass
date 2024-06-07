@@ -1,4 +1,5 @@
-@file:JvmName("Serializer")
+@file:JvmName("Kanary")
+@file:JvmMultifileClass
 package io.github.aeckar.kanary
 
 import java.io.OutputStream
@@ -8,7 +9,6 @@ import java.io.OutputStream
  * @return a new serializer capable of writing primitives, primitive arrays,
  * and instances of any type with a defined protocol to Kanary format
  */
-@JvmName("of")
 fun OutputStream.serializer(protocols: Schema) = OutputSerializer(this, protocols)
 
 /**

@@ -8,7 +8,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Updated cross-language compatibility" />
+    <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Changed JVM names for classes of static &quot;of&quot; functions" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -159,7 +159,7 @@
       <recent name="kanary" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.kanary [jar]">
+  <component name="RunManager" selected="Gradle.kanary [dokkaHtml]">
     <configuration name="KanaryTest (1)" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -278,8 +278,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.kanary [jar]" />
         <item itemvalue="Gradle.kanary [dokkaHtml]" />
+        <item itemvalue="Gradle.kanary [jar]" />
         <item itemvalue="Gradle.KanaryTest (1)" />
         <item itemvalue="Gradle.KanaryTest.container_class" />
         <item itemvalue="Gradle.KanaryTest.deserialized_data_is_same_as_serialized_data" />
@@ -294,14 +294,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1714597578047</updated>
-    </task>
-    <task id="LOCAL-00026" summary="Updated Serializer.kt">
-      <option name="closed" value="true" />
-      <created>1715147266603</created>
-      <option name="number" value="00026" />
-      <option name="presentableId" value="LOCAL-00026" />
-      <option name="project" value="LOCAL" />
-      <updated>1715147266603</updated>
     </task>
     <task id="LOCAL-00027" summary="Reworked entire API">
       <option name="closed" value="true" />
@@ -687,12 +679,19 @@
       <option name="project" value="LOCAL" />
       <updated>1717788572750</updated>
     </task>
-    <option name="localTasksCounter" value="75" />
+    <task id="LOCAL-00075" summary="Changed JVM names for classes of static &quot;of&quot; functions">
+      <option name="closed" value="true" />
+      <created>1717788702264</created>
+      <option name="number" value="00075" />
+      <option name="presentableId" value="LOCAL-00075" />
+      <option name="project" value="LOCAL" />
+      <updated>1717788702264</updated>
+    </task>
+    <option name="localTasksCounter" value="76" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="Added 'kanary' package to docs." />
     <MESSAGE value="Updated InputDeserializer and OutputSerializer documentation." />
     <MESSAGE value="Added spacing to documentation." />
     <MESSAGE value="Updated to Kotlin 2.0." />
@@ -717,7 +716,8 @@
     <MESSAGE value="Unversioned project &amp; clarified ObjectDeserializer documentation." />
     <MESSAGE value="Removed local read() and write() in favor of direct implementation of read and write interfaces." />
     <MESSAGE value="Updated cross-language compatibility" />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated cross-language compatibility" />
+    <MESSAGE value="Changed JVM names for classes of static &quot;of&quot; functions" />
+    <option name="LAST_COMMIT_MESSAGE" value="Changed JVM names for classes of static &quot;of&quot; functions" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

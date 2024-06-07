@@ -1,4 +1,5 @@
-@file:JvmName("Deserializer")
+@file:JvmName("Kanary")
+@file:JvmMultifileClass
 package io.github.aeckar.kanary
 
 import java.io.EOFException
@@ -10,7 +11,6 @@ import java.io.InputStream
  * @return a new deserializer capable of reading primitives, primitive arrays, strings, and
  * instances of any type with a defined protocol from Kanary format
  */
-@JvmName("of")
 fun InputStream.deserializer(protocols: Schema) = InputDeserializer(this, protocols)
 
 /**

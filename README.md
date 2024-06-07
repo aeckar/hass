@@ -45,7 +45,7 @@ To view the full online documentation, visit [https://aeckar.github.io/kanary/](
 
 Schema definition is not supported for other JVM languages.
 However, information may still be deserialized and serialized
-by importing schemas and passing them to `Deserializer.of()` and `Serializer.of()`,
+by importing schemas and passing them to `Kanary.deserializer()` and `Kanary.serializer()`,
 respectively.
 
 ## Setup
