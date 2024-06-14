@@ -58,7 +58,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.aeckar:hass:1.0.0")
+    implementation("com.github.aeckar:hass:v1.0.0")
 }
 ```
 
