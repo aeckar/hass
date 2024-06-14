@@ -1,7 +1,7 @@
-# Kanary
-**Effortless binary serialization for Kotlin JVM**
+# Hass
+***H**eap-**A**llocated **S**erialization **S**chemas*
 
-[![JitPack: v1.0.0](https://jitpack.io/v/aeckar/kanary.svg)](https://jitpack.io/#aeckar/kanary) [![pages-build-deployment](https://github.com/aeckar/kanary/actions/workflows/pages/pages-build-deployment/badge.svg?branch=master)](https://github.com/aeckar/kanary/actions/workflows/pages/pages-build-deployment) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) ![Maintained?: yes](https://img.shields.io/badge/Maintained%3F-yes-green.svg)
+[![JitPack: v1.0.0](https://jitpack.io/v/aeckar/hass.svg)](https://jitpack.io/#aeckar/hass) [![pages-build-deployment](https://github.com/aeckar/hass/actions/workflows/pages/pages-build-deployment/badge.svg?branch=master)](https://github.com/aeckar/hass/actions/workflows/pages/pages-build-deployment) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) ![Maintained?: yes](https://img.shields.io/badge/Maintained%3F-yes-green.svg)
 
 ## Overview
 
@@ -26,7 +26,7 @@ The beauty of the library is that it's *unopinionated*. You can serialize your o
 There are no constraints that your classes have a primary constructor with property arguments or derive from a common interface
 (an exception being SAM conversions and lambdas). However, with this flexibility, the user must also explicitly define
 how every serializable class without a built-in protocol should behave. Despite being a powerful tool, it can be a nuisance
-for trivial classes whose sole purpose is to contain data. With this, Kanary provides the `Container` annotation that automatically
+for trivial classes whose sole purpose is to contain data. With this, Hass provides the `Container` annotation that automatically
 makes any class annotated with it serializable and deserializable, so long as it abides by the same rules set by
 `kotlinx.serialization`'s `@Serializable` annotation. That is to say:
 
@@ -39,13 +39,13 @@ It *does* however, provide an API that lets you serialize things easily and with
 and *excellent* space-efficiency. One drawback, though, is that because the library makes use of JVM-specific reflection,
 it is unlikely that it'll be ported to other platforms. You win some, you lose some. 🤷‍♂️
 
-To view the full online documentation, visit [https://aeckar.github.io/kanary/](https://aeckar.github.io/kanary/).
+To view the full online documentation, visit [https://aeckar.github.io/hass/](https://aeckar.github.io/hass/).
 
 ## Cross-Language Compatibility
 
 Schema definition is not supported for other JVM languages.
 However, information may still be deserialized and serialized
-by importing schemas and passing them to `Kanary.deserializer()` and `Kanary.serializer()`,
+by importing schemas and passing them to `Hass.deserializer()` and `Hass.serializer()`,
 respectively.
 
 ## Setup
@@ -58,18 +58,18 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.aeckar:kanary:master-SNAPSHOT")
+    implementation("com.github.aeckar:hass:1.0.0")
 }
 ```
 
 ## Getting Started
 
 ```kotlin
-import io.github.aeckar.kanary.Container
-import io.github.aeckar.kanary.Schema
-import io.github.aeckar.kanary.deserializer
-import io.github.aeckar.kanary.schema
-import io.github.aeckar.kanary.serializer
+import io.github.aeckar.hass.Container
+import io.github.aeckar.hass.Schema
+import io.github.aeckar.hass.deserializer
+import io.github.aeckar.hass.schema
+import io.github.aeckar.hass.serializer
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
@@ -78,8 +78,8 @@ data class Person(val name: String, val age: Int)
 
 fun main() {
     val schema: Schema = schema {}
-    FileOutputStream("myKanaryFile.bin").serializer(schema).use { it.write(Person("John Doe", 34)) }
-    val myPerson: Person = FileInputStream("myKanaryFile.bin").deserializer(schema).use { it.read() }
+    FileOutputStream("myHassFile.bin").serializer(schema).use { it.write(Person("John Doe", 34)) }
+    val myPerson: Person = FileInputStream("myHassFile.bin").deserializer(schema).use { it.read() }
     println(myPerson)    // { name: "John Doe", age: 34 }
 }
 ```
