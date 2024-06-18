@@ -41,7 +41,7 @@ it is unlikely that it'll be ported to other platforms. You win some, you lose s
 
 To view the full online documentation, visit [https://aeckar.github.io/hass/](https://aeckar.github.io/hass/).
 
-## Cross-Language Compatibility
+## JVM Interoperability
 
 Schema definition is not supported for other JVM languages.
 However, information may still be deserialized and serialized
