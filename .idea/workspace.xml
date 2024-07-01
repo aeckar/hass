@@ -9,166 +9,136 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5657d87a-a1e4-4447-9660-7c30cef30dfe" name="Changes" comment="Moved test suite to root package">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-collection-deserializer/as-mutable-list.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-collection-deserializer/as-mutable-map.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-collection-deserializer/as-mutable-set.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-collection-deserializer/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-container/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-deserializer/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-deserializer/read-boolean.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-deserializer/read-byte.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-deserializer/read-char.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-deserializer/read-double.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-deserializer/read-float.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-deserializer/read-int.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-deserializer/read-long.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-deserializer/read-short.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-deserializer/read.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-input-deserializer/close.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-input-deserializer/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-input-deserializer/read-boolean.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-input-deserializer/read-byte.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-input-deserializer/read-char.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-input-deserializer/read-double.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-input-deserializer/read-float.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-input-deserializer/read-int.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-input-deserializer/read-long.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-input-deserializer/read-short.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-input-deserializer/read.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-malformed-container-exception/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-malformed-protocol-exception/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-missing-operation-exception/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-object-deserializer/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-object-deserializer/superclass.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-object-deserializer/supertype.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-object-mismatch-exception/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-output-serializer/close.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-output-serializer/flush.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-output-serializer/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-output-serializer/write-boolean.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-output-serializer/write-byte.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-output-serializer/write-char.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-output-serializer/write-double.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-output-serializer/write-float.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-output-serializer/write-int.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-output-serializer/write-long.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-output-serializer/write-short.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-output-serializer/write.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-protocol-builder/-default-operation/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-protocol-builder/-default-operation/read.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-protocol-builder/-default-operation/write.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-protocol-builder/-fallback-modifier/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-protocol-builder/-fallback-modifier/read.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-protocol-builder/-protocol-builder.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-protocol-builder/-static-modifier/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-protocol-builder/-static-modifier/write.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-protocol-builder/default.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-protocol-builder/fallback.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-protocol-builder/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-protocol-builder/read.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-protocol-builder/static.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-protocol-builder/write.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-read-operation/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-read-operation/read-operation.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-schema-builder/-import-statement/from.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-schema-builder/-import-statement/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-schema-builder/define.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-schema-builder/import.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-schema-builder/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-schema/deep-hash-code.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-schema/equals.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-schema/hash-code.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-schema/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-schema/is-thread-safe.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-schema/plus.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-serializer/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-serializer/write-boolean.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-serializer/write-byte.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-serializer/write-char.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-serializer/write-double.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-serializer/write-float.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-serializer/write-int.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-serializer/write-long.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-serializer/write-short.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-serializer/write.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-type-flag-mismatch-exception/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-write-operation/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/-write-operation/write-operation.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/deserializer.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/schema.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/serializer.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/io.github.aeckar.hass/write.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/hass/package-list" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/images/anchor-copy-button.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/images/arrow_down.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/images/burger.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/images/copy-icon.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/images/copy-successful-icon.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/images/footer-go-to-link.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/images/go-to-top-icon.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/images/homepage.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/images/logo-icon.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/images/nav-icons/abstract-class-kotlin.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/images/nav-icons/abstract-class.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/images/nav-icons/annotation-kotlin.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/images/nav-icons/annotation.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/images/nav-icons/class-kotlin.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/images/nav-icons/class.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/images/nav-icons/enum-kotlin.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/images/nav-icons/enum.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/images/nav-icons/exception-class.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/images/nav-icons/field-value.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/images/nav-icons/field-variable.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/images/nav-icons/function.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/images/nav-icons/interface-kotlin.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/images/nav-icons/interface.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/images/nav-icons/object.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/images/nav-icons/typealias-kotlin.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/images/theme-toggle.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-collection-deserializer/as-mutable-list.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-collection-deserializer/as-mutable-map.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-collection-deserializer/as-mutable-set.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-collection-deserializer/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-container/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-deserializer/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-deserializer/read-boolean.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-deserializer/read-byte.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-deserializer/read-char.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-deserializer/read-double.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-deserializer/read-float.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-deserializer/read-int.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-deserializer/read-long.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-deserializer/read-short.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-deserializer/read.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-input-deserializer/close.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-input-deserializer/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-input-deserializer/read-boolean.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-input-deserializer/read-byte.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-input-deserializer/read-char.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-input-deserializer/read-double.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-input-deserializer/read-float.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-input-deserializer/read-int.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-input-deserializer/read-long.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-input-deserializer/read-short.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-input-deserializer/read.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-malformed-container-exception/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-malformed-protocol-exception/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-missing-operation-exception/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-object-deserializer/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-object-deserializer/superclass.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-object-deserializer/supertype.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-object-mismatch-exception/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/close.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/flush.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/write-boolean.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/write-byte.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/write-char.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/write-double.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/write-float.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/write-int.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/write-long.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/write-short.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-output-serializer/write.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/-default-operation/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/-default-operation/read.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/-default-operation/write.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/-fallback-modifier/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/-fallback-modifier/read.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/-protocol-builder.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/-static-modifier/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/-static-modifier/write.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/default.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/fallback.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/read.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/static.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-protocol-builder/write.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-read-operation/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-read-operation/read-operation.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-schema-builder/-import-statement/from.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-schema-builder/-import-statement/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-schema-builder/define.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-schema-builder/import.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-schema-builder/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-schema/deep-hash-code.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-schema/equals.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-schema/hash-code.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-schema/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-schema/is-thread-safe.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-schema/plus.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-serializer/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-serializer/write-boolean.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-serializer/write-byte.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-serializer/write-char.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-serializer/write-double.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-serializer/write-float.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-serializer/write-int.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-serializer/write-long.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-serializer/write-short.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-serializer/write.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-type-flag-mismatch-exception/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-write-operation/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/-write-operation/write-operation.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/deserializer.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/schema.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/serializer.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/io.github.aeckar.kanary/write.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/kanary/package-list" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/navigation.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/scripts/clipboard.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/scripts/main.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/scripts/navigation-loader.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/scripts/pages.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/scripts/platform-content-handler.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/scripts/prism.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/scripts/sourceset_dependencies.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/scripts/symbol-parameters-wrapper_deferred.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/styles/font-jb-sans-auto.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/styles/logo-styles.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/styles/main.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/styles/prism.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/styles/style.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages.md" beforeDir="false" afterPath="$PROJECT_DIR$/packages.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/settings.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/CollectionDeserializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/hass/CollectionDeserializer.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Container.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/hass/Container.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/DeserializedCollection.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/hass/DeserializedCollection.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Deserializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/hass/Deserializer.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Exceptions.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/hass/Exceptions.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/InputDeserializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/hass/InputDeserializer.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/ObjectDeserializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/hass/ObjectDeserializer.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/OutputSerializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/hass/OutputSerializer.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Protocol.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/hass/Protocol.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/ProtocolBuilder.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/hass/ProtocolBuilder.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Schema.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/hass/Schema.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/SchemaBuilder.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/hass/SchemaBuilder.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/Serializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/hass/Serializer.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/SupertypeDeserializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/hass/SupertypeDeserializer.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/io/DataStream.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/hass/io/DataStream.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/io/Decoder.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/hass/io/Decoder.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/io/Encoder.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/hass/io/Encoder.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/io/TypeFlag.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/hass/io/TypeFlag.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/kanary/reflect/Reflection.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/io/github/aeckar/hass/reflect/Reflection.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/module-info.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/kotlin/io/github/aeckar/kanary/KanaryTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/io/github/aeckar/hass/HassTest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/images/anchor-copy-button.svg" beforeDir="false" afterPath="$PROJECT_DIR$/docs/images/anchor-copy-button.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/images/arrow_down.svg" beforeDir="false" afterPath="$PROJECT_DIR$/docs/images/arrow_down.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/images/burger.svg" beforeDir="false" afterPath="$PROJECT_DIR$/docs/images/burger.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/images/copy-icon.svg" beforeDir="false" afterPath="$PROJECT_DIR$/docs/images/copy-icon.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/images/copy-successful-icon.svg" beforeDir="false" afterPath="$PROJECT_DIR$/docs/images/copy-successful-icon.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/images/footer-go-to-link.svg" beforeDir="false" afterPath="$PROJECT_DIR$/docs/images/footer-go-to-link.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/images/go-to-top-icon.svg" beforeDir="false" afterPath="$PROJECT_DIR$/docs/images/go-to-top-icon.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/images/homepage.svg" beforeDir="false" afterPath="$PROJECT_DIR$/docs/images/homepage.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/images/logo-icon.svg" beforeDir="false" afterPath="$PROJECT_DIR$/docs/images/logo-icon.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/images/nav-icons/abstract-class-kotlin.svg" beforeDir="false" afterPath="$PROJECT_DIR$/docs/images/nav-icons/abstract-class-kotlin.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/images/nav-icons/abstract-class.svg" beforeDir="false" afterPath="$PROJECT_DIR$/docs/images/nav-icons/abstract-class.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/images/nav-icons/annotation-kotlin.svg" beforeDir="false" afterPath="$PROJECT_DIR$/docs/images/nav-icons/annotation-kotlin.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/images/nav-icons/annotation.svg" beforeDir="false" afterPath="$PROJECT_DIR$/docs/images/nav-icons/annotation.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/images/nav-icons/class-kotlin.svg" beforeDir="false" afterPath="$PROJECT_DIR$/docs/images/nav-icons/class-kotlin.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/images/nav-icons/class.svg" beforeDir="false" afterPath="$PROJECT_DIR$/docs/images/nav-icons/class.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/images/nav-icons/enum-kotlin.svg" beforeDir="false" afterPath="$PROJECT_DIR$/docs/images/nav-icons/enum-kotlin.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/images/nav-icons/enum.svg" beforeDir="false" afterPath="$PROJECT_DIR$/docs/images/nav-icons/enum.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/images/nav-icons/exception-class.svg" beforeDir="false" afterPath="$PROJECT_DIR$/docs/images/nav-icons/exception-class.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/images/nav-icons/field-value.svg" beforeDir="false" afterPath="$PROJECT_DIR$/docs/images/nav-icons/field-value.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/images/nav-icons/field-variable.svg" beforeDir="false" afterPath="$PROJECT_DIR$/docs/images/nav-icons/field-variable.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/images/nav-icons/function.svg" beforeDir="false" afterPath="$PROJECT_DIR$/docs/images/nav-icons/function.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/images/nav-icons/interface-kotlin.svg" beforeDir="false" afterPath="$PROJECT_DIR$/docs/images/nav-icons/interface-kotlin.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/images/nav-icons/interface.svg" beforeDir="false" afterPath="$PROJECT_DIR$/docs/images/nav-icons/interface.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/images/nav-icons/object.svg" beforeDir="false" afterPath="$PROJECT_DIR$/docs/images/nav-icons/object.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/images/nav-icons/typealias-kotlin.svg" beforeDir="false" afterPath="$PROJECT_DIR$/docs/images/nav-icons/typealias-kotlin.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/images/theme-toggle.svg" beforeDir="false" afterPath="$PROJECT_DIR$/docs/images/theme-toggle.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/scripts/clipboard.js" beforeDir="false" afterPath="$PROJECT_DIR$/docs/scripts/clipboard.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/scripts/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/docs/scripts/main.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/scripts/navigation-loader.js" beforeDir="false" afterPath="$PROJECT_DIR$/docs/scripts/navigation-loader.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/scripts/platform-content-handler.js" beforeDir="false" afterPath="$PROJECT_DIR$/docs/scripts/platform-content-handler.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/scripts/prism.js" beforeDir="false" afterPath="$PROJECT_DIR$/docs/scripts/prism.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/scripts/symbol-parameters-wrapper_deferred.js" beforeDir="false" afterPath="$PROJECT_DIR$/docs/scripts/symbol-parameters-wrapper_deferred.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/styles/font-jb-sans-auto.css" beforeDir="false" afterPath="$PROJECT_DIR$/docs/styles/font-jb-sans-auto.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/styles/logo-styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/docs/styles/logo-styles.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/styles/main.css" beforeDir="false" afterPath="$PROJECT_DIR$/docs/styles/main.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/styles/prism.css" beforeDir="false" afterPath="$PROJECT_DIR$/docs/styles/prism.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/styles/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/docs/styles/style.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -192,6 +162,17 @@
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="hass" type="f1a62948:ProjectNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="hass" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="hass" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="documentation" type="c8890929:TasksNode$1" />
               </path>
             </expand>
             <select />
@@ -235,8 +216,8 @@
 }</component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/aeckar/kanary.git&quot;,
-    &quot;accountId&quot;: &quot;6cba976d-76a2-45c0-97e8-f33b9f7c8fa6&quot;
+    &quot;url&quot;: &quot;https://github.com/aeckar/hass.git&quot;,
+    &quot;accountId&quot;: &quot;ba8afe73-161f-43ca-a709-90b5a866d6eb&quot;
   }
 }</component>
   <component name="ProblemsViewState">
@@ -253,43 +234,49 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "Gradle.Build kanary.executor": "Run",
-    "Gradle.Download Sources.executor": "Run",
-    "Gradle.KanaryTest (1).executor": "Run",
-    "Gradle.KanaryTest.container_class.executor": "Run",
-    "Gradle.KanaryTest.deserialized_data_is_same_as_serialized_data.executor": "Run",
-    "Gradle.KanaryTest.executor": "Run",
-    "Gradle.KanaryTest.fallback_read.executor": "Debug",
-    "Gradle.KanaryTest.kanaryTest.executor": "Run",
-    "Gradle.KanaryTest.malformed_protocol_throws.executor": "Run",
-    "Gradle.KanaryTest.polymorphic_read.executor": "Run",
-    "Gradle.KanaryTest.test (1).executor": "Run",
-    "Gradle.KanaryTest.test.executor": "Run",
-    "Gradle.Test.executor": "Run",
-    "Gradle.Test.test.executor": "Run",
-    "Gradle.kanary [dokkaHtml].executor": "Run",
-    "Gradle.kanary [jar].executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "android.gradle.sync.needed": "true",
-    "git-widget-placeholder": "master",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "project.kotlinCompiler"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;Gradle.Build kanary.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Download Sources.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest (1).executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.container_class.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.deserialized_data_is_same_as_serialized_data.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.fallback_read.executor&quot;: &quot;Debug&quot;,
+    &quot;Gradle.KanaryTest.kanaryTest.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.malformed_protocol_throws.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.polymorphic_read.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.test (1).executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.KanaryTest.test.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Test.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Test.test.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.kanary [dokkaHtml].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.kanary [jar].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;android.gradle.sync.needed&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.project.gradle&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "kotlin-gradle-user-dirs": [
-      "C:\\Users\\eckar\\.gradle"
+  &quot;keyToStringList&quot;: {
+    &quot;kotlin-gradle-user-dirs&quot;: [
+      &quot;C:\\Users\\eckar\\.gradle&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\eckar\IdeaProjects\kanary\src\test\kotlin" />
@@ -431,6 +418,14 @@
       </list>
     </recent_temporary>
   </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9f38398b9061-39b83d9b5494-intellij.indexing.shared.core-IU-241.17890.1" />
+        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-IU-241.17890.1" />
+      </set>
+    </attachedChunks>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -439,6 +434,8 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1714597578047</updated>
+      <workItem from="1719103259250" duration="556000" />
+      <workItem from="1719807596909" duration="589000" />
     </task>
     <task id="LOCAL-00027" summary="Reworked entire API">
       <option name="closed" value="true" />
@@ -834,6 +831,9 @@
     </task>
     <option name="localTasksCounter" value="76" />
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
